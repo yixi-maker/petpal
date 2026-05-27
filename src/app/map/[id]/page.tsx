@@ -18,7 +18,7 @@ import {
   Phone,
   Send,
 } from 'lucide-react';
-import { Avatar, Button } from '@/components/ui';
+import { Avatar, Button, Badge } from '@/components/ui';
 
 interface ReviewPet {
   id: number;
@@ -71,14 +71,14 @@ const TYPE_ICON_MAP: Record<string, React.ReactNode> = {
   BOARDING: <Home className="w-4 h-4" />,
 };
 
-const TYPE_COLOR_MAP: Record<string, string> = {
+const TYPE_CIRCLE_MAP: Record<string, string> = {
   HOSPITAL: 'bg-red-50 text-red-500',
-  PARK: 'bg-green-50 text-green-500',
-  MALL: 'bg-purple-50 text-purple-500',
-  CAFE: 'bg-amber-50 text-amber-500',
-  RESTAURANT: 'bg-orange-50 text-orange-500',
-  GROOMING: 'bg-pink-50 text-pink-500',
-  BOARDING: 'bg-blue-50 text-blue-500',
+  PARK: 'bg-sage-50 text-sage-500',
+  MALL: 'bg-coral-50 text-coral-500',
+  CAFE: 'bg-coral-50 text-coral-500',
+  RESTAURANT: 'bg-coral-50 text-coral-500',
+  GROOMING: 'bg-mist-50 text-mist-400',
+  BOARDING: 'bg-mist-50 text-mist-400',
 };
 
 const TYPE_LABEL_MAP: Record<string, string> = {
@@ -101,11 +101,11 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md
           className={`${iconSize} ${
             star <= rating
               ? 'text-amber-400 fill-amber-400'
-              : 'text-gray-200'
+              : 'text-ink-faded/30'
           }`}
         />
       ))}
-      <span className={`${size === 'md' ? 'text-sm' : 'text-xs'} text-gray-400 ml-1`}>{rating}</span>
+      <span className={`${size === 'md' ? 'text-[14px]' : 'text-[12px]'} text-ink-faded ml-1`}>{rating}</span>
     </div>
   );
 }
@@ -207,20 +207,20 @@ export default function PlaceDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-coral-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!place) {
     return (
-      <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-4">
-        <MapPin className="w-12 h-12 text-gray-300 mb-4" />
-        <p className="text-gray-400 font-medium">地点不存在</p>
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+        <MapPin className="w-12 h-12 text-ink-faded/30 mb-4" />
+        <p className="text-[15px] text-ink-faded font-medium">地点不存在</p>
         <button
           onClick={() => router.back()}
-          className="mt-4 text-brand-500 text-sm"
+          className="mt-4 text-coral-500 text-[14px]"
         >
           返回上页
         </button>
@@ -229,130 +229,126 @@ export default function PlaceDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-surface">
       {/* Header with back button */}
-      <div className="sticky top-0 bg-cream z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-50">
+      <div className="sticky top-0 bg-surface z-20 px-4 py-3 flex items-center gap-3 border-b border-border-light">
         <button
           onClick={() => router.back()}
-          className="p-1.5 hover:bg-gray-100 rounded-lg transition"
+          className="p-1.5 hover:bg-surface-alt rounded-[8px] transition-colors"
+          aria-label="返回"
         >
-          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
+          <ArrowLeft className="w-5 h-5 text-ink-muted" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-base font-semibold truncate">{place.name}</h1>
+          <h1 className="text-[17px] font-semibold text-ink truncate">地点详情</h1>
         </div>
       </div>
 
       {/* Map placeholder */}
-      <div className="h-48 bg-gradient-to-br from-brand-50 via-blue-50 to-green-50 flex items-center justify-center relative">
+      <div className="h-[200px] bg-gradient-to-br from-mist-50 to-surface-alt flex items-center justify-center relative">
         <div className="text-center">
-          <MapPin className="w-10 h-10 text-brand-400 mx-auto mb-2" />
-          <p className="text-sm text-brand-500 font-medium">接入高德地图后显示位置</p>
+          <MapPin className="w-10 h-10 text-ink-faded/30 mx-auto mb-2" />
+          <p className="text-[14px] text-ink-faded">接入高德地图后显示位置</p>
         </div>
         {/* AMAP integration point: replace the above div with an actual map component */}
       </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 py-4 space-y-4 max-w-mobile mx-auto">
         {/* Place info card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          {/* Type badge */}
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                TYPE_COLOR_MAP[place.type] || 'bg-gray-50 text-gray-400'
+        <div className="bg-surface-white rounded-[12px] p-4 shadow-card">
+          {/* Name + type badge */}
+          <div className="flex items-center gap-2.5 mb-3">
+            <div
+              className={`w-[28px] h-[28px] rounded-[8px] flex items-center justify-center shrink-0 ${
+                TYPE_CIRCLE_MAP[place.type] || 'bg-surface-alt text-ink-faded'
               }`}
             >
               {TYPE_ICON_MAP[place.type] || <MapPin className="w-3.5 h-3.5" />}
-            </span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-50 text-brand-500 font-medium">
-              {TYPE_LABEL_MAP[place.type]}
-            </span>
+            </div>
+            <h2 className="text-[20px] font-semibold text-ink truncate">{place.name}</h2>
+            <Badge variant="coral" size="sm">{TYPE_LABEL_MAP[place.type]}</Badge>
           </div>
 
           {/* Rating */}
           <div className="flex items-center gap-3 mb-3">
             <StarRating rating={place.rating} size="md" />
-            <span className="text-sm text-gray-400">{place.reviewCount} 条评价</span>
+            <span className="text-[14px] text-ink-faded">{place.reviewCount} 条评价</span>
           </div>
 
           {/* Status */}
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+          <div className="flex items-center gap-2 text-[14px] text-ink-muted mb-3">
             <Clock className="w-4 h-4" />
             {place.isOpen ? (
-              <span className="text-green-500 font-medium">营业中</span>
+              <Badge variant="sage" size="sm">营业中</Badge>
             ) : (
-              <span className="text-gray-400">休息中</span>
+              <Badge variant="danger" size="sm">休息中</Badge>
             )}
             {place.openHours && <span>{place.openHours}</span>}
           </div>
 
           {/* Address */}
-          <div className="flex items-start gap-2 text-sm text-gray-500 mb-3">
-            <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-gray-400" />
+          <div className="flex items-start gap-2 text-[14px] text-ink-muted mb-3">
+            <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-ink-faded" />
             <span>{place.address}</span>
           </div>
 
           {/* Phone */}
           {place.phone && (
-            <div className="flex items-start gap-2 text-sm text-gray-500 mb-3">
-              <Phone className="w-4 h-4 shrink-0 mt-0.5 text-gray-400" />
+            <div className="flex items-start gap-2 text-[14px] text-ink-muted mb-3">
+              <Phone className="w-4 h-4 shrink-0 mt-0.5 text-ink-faded" />
               <span>{place.phone}</span>
             </div>
           )}
 
           {/* Pet friendly tags */}
           {place.petFriendlyTags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-3">
+            <div className="flex flex-wrap gap-1.5 mb-4">
               {place.petFriendlyTags.map((tag, i) => (
-                <span
-                  key={i}
-                  className="text-xs px-2.5 py-1 rounded-full bg-green-50 text-green-600 font-medium"
-                >
-                  {tag}
-                </span>
+                <Badge key={i} variant="coral" size="sm">{tag}</Badge>
               ))}
             </div>
           )}
 
           {/* Navigate button */}
-          <button
+          <Button
+            variant="outline"
             onClick={() => alert('导航功能将在接入高德地图后启用，需要配置 AMAP_KEY 环境变量')}
-            className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 bg-brand-500 text-white text-sm rounded-xl font-medium hover:bg-brand-600 transition"
+            className="w-full"
           >
-            <Navigation className="w-4 h-4" />
+            <Navigation className="w-4 h-4 mr-1.5" />
             导航到此
-          </button>
+          </Button>
         </div>
 
         {/* Reviews section */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <h2 className="font-semibold text-sm mb-4">
-            评价 ({place.reviewCount})
+        <div className="bg-surface-white rounded-[12px] p-4 shadow-card">
+          <h2 className="text-[15px] font-semibold text-ink mb-4">
+            用户评价 ({place.reviewCount})
           </h2>
 
           {place.reviews.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">暂无评价，来写第一条吧</p>
+            <p className="text-[14px] text-ink-faded text-center py-6">暂无评价，来写第一条吧</p>
           ) : (
             <div className="space-y-4">
               {place.reviews.map((review) => (
                 <div key={review.id} className="flex gap-3">
                   <Avatar
                     src={review.pet.avatar}
-                    size="sm"
+                    size="md"
                     className="shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{review.pet.name}</span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-[14px] font-medium text-ink">{review.pet.name}</span>
+                      <span className="text-[12px] text-ink-faded">
                         {review.pet.breed || review.pet.type}
                       </span>
                     </div>
                     <StarRating rating={review.rating} />
-                    <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">
+                    <p className="text-[14px] text-ink-muted mt-1.5 leading-relaxed">
                       {review.content}
                     </p>
-                    <p className="text-xs text-gray-300 mt-1">
+                    <p className="text-[12px] text-ink-faded mt-1">
                       {new Date(review.createdAt).toLocaleDateString('zh-CN')}
                     </p>
                   </div>
@@ -363,33 +359,33 @@ export default function PlaceDetailPage() {
         </div>
 
         {/* Add review form */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <h2 className="font-semibold text-sm mb-4">写评价</h2>
+        <div className="bg-surface-white rounded-[12px] p-4 shadow-card">
+          <h2 className="text-[15px] font-semibold text-ink mb-4">写评价</h2>
 
           {userPets.length === 0 ? (
             <div className="text-center py-4">
-              <p className="text-sm text-gray-400">请先创建宠物后发表评价</p>
+              <p className="text-[14px] text-ink-faded">请先创建宠物后发表评价</p>
               <button
                 onClick={() => router.push('/pets/new')}
-                className="mt-2 text-sm text-brand-500"
+                className="mt-2 text-[14px] text-coral-500 font-medium"
               >
                 去创建宠物
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Pet selector */}
               <div>
-                <label className="text-xs text-gray-500 mb-1.5 block">使用宠物身份</label>
+                <label className="text-[13px] font-medium text-ink-muted mb-1.5 block">使用宠物身份</label>
                 <div className="flex gap-2">
                   {userPets.map((pet) => (
                     <button
                       key={pet.id}
                       onClick={() => setSelectedPetId(pet.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-[8px] border transition-colors ${
                         selectedPetId === pet.id
-                          ? 'border-brand-500 bg-brand-50 text-brand-500'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                          ? 'border-coral-500 bg-coral-50 text-coral-500'
+                          : 'border-border text-ink-muted hover:border-ink-faded/30 hover:text-ink'
                       }`}
                     >
                       <Avatar src={pet.avatar} size="sm" />
@@ -401,19 +397,20 @@ export default function PlaceDetailPage() {
 
               {/* Rating selector */}
               <div>
-                <label className="text-xs text-gray-500 mb-1.5 block">评分</label>
+                <label className="text-[13px] font-medium text-ink-muted mb-1.5 block">评分</label>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() => setReviewRating(star)}
                       className="p-0.5 transition"
+                      aria-label={`${star} 星`}
                     >
                       <Star
-                        className={`w-6 h-6 ${
+                        className={`w-6 h-6 transition-colors ${
                           star <= reviewRating
                             ? 'text-amber-400 fill-amber-400'
-                            : 'text-gray-200'
+                            : 'text-ink-faded/25'
                         }`}
                       />
                     </button>
@@ -423,18 +420,21 @@ export default function PlaceDetailPage() {
 
               {/* Content */}
               <div>
-                <label className="text-xs text-gray-500 mb-1.5 block">评价内容</label>
+                <label className="text-[13px] font-medium text-ink-muted mb-1.5 block">评价内容</label>
                 <textarea
                   value={reviewContent}
                   onChange={(e) => setReviewContent(e.target.value)}
                   maxLength={500}
                   rows={3}
                   placeholder="分享一下你的体验吧..."
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition resize-none"
+                  className="w-full px-3.5 py-2.5 text-[14px] text-ink bg-surface-white border border-border
+                    rounded-[8px] placeholder:text-ink-faded/50
+                    focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+                    transition duration-150 resize-none"
                 />
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-gray-300">{reviewContent.length}/500</span>
-                  {error && <span className="text-xs text-red-500">{error}</span>}
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className="text-[12px] text-ink-faded">{reviewContent.length}/500</span>
+                  {error && <span className="text-[12px] text-red-500">{error}</span>}
                 </div>
               </div>
 
@@ -443,7 +443,7 @@ export default function PlaceDetailPage() {
                 loading={submitting}
                 className="w-full"
               >
-                <Send className="w-4 h-4 mr-1.5" aria-label="发送" />
+                <Send className="w-4 h-4 mr-1.5" />
                 发布评价
               </Button>
             </div>

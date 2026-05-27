@@ -1,4 +1,4 @@
-import { User } from 'lucide-react';
+import { PawPrint } from 'lucide-react';
 
 interface AvatarProps {
   src?: string | null;
@@ -7,14 +7,14 @@ interface AvatarProps {
   className?: string;
 }
 
-const sizeMap: Record<string, string> = {
-  sm: 'w-8 h-8',
-  md: 'w-10 h-10',
-  lg: 'w-14 h-14',
-  xl: 'w-20 h-20',
+const sizes: Record<string, string> = {
+  sm: 'w-[28px] h-[28px]',
+  md: 'w-[36px] h-[36px]',
+  lg: 'w-[48px] h-[48px]',
+  xl: 'w-[72px] h-[72px]',
 };
 
-const iconSizeMap: Record<string, number> = { sm: 14, md: 18, lg: 24, xl: 32 };
+const iconSizes: Record<string, number> = { sm: 14, md: 18, lg: 22, xl: 32 };
 
 export function Avatar({ src, alt = '', size = 'md', className = '' }: AvatarProps) {
   if (src) {
@@ -22,13 +22,14 @@ export function Avatar({ src, alt = '', size = 'md', className = '' }: AvatarPro
       <img
         src={src}
         alt={alt}
-        className={`${sizeMap[size]} rounded-full object-cover ${className}`}
+        className={`${sizes[size]} rounded-full object-cover border border-border-light ${className}`}
       />
     );
   }
   return (
-    <div className={`${sizeMap[size]} rounded-full bg-brand-100 flex items-center justify-center ${className}`}>
-      <User className="text-brand-500" size={iconSizeMap[size]} />
+    <div className={`${sizes[size]} rounded-full bg-surface-alt flex items-center justify-center
+      border border-border-light ${className}`}>
+      <PawPrint className="text-ink-faded" size={iconSizes[size]} />
     </div>
   );
 }

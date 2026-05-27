@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { usePet } from '@/contexts/PetContext';
-import { Tabs, Button, Modal, Input } from '@/components/ui';
+import { Tabs, Button, Modal, Input, EmptyState } from '@/components/ui';
 import { AIResultCard } from '@/components/health/AIResultCard';
 import { HealthRecordList } from '@/components/health/HealthRecordList';
-import { Loader2, Heart, Edit3, Plus, Stethoscope } from 'lucide-react';
+import { Loader2, Heart, Edit3, Plus, Stethoscope, AlertTriangle } from 'lucide-react';
 import type { AITriageResult } from '@/lib/ai-provider';
 
 interface HealthProfile {
@@ -283,22 +283,26 @@ export default function HealthPage() {
 
   if (!currentPet) {
     return (
-      <div className="p-4 text-center text-gray-400 pt-20">
-        <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-        <p>请先添加宠物</p>
+      <div className="max-w-mobile mx-auto px-4 pt-20">
+        <EmptyState
+          icon={<Heart className="w-12 h-12" />}
+          title="请先在「我的」页面选择当前宠物"
+          description="选择一个宠物后即可查看健康档案与AI分诊"
+        />
       </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-lg font-bold mb-4">健康管理</h1>
+    <div className="max-w-mobile mx-auto px-4 pb-24">
+      <h1 className="text-lg font-bold text-ink mb-4 pt-4">健康管理</h1>
 
-      {/* Pet selector */}
+      {/* Pet selector for multiple pets */}
       {pets.length > 1 && (
         <div className="mb-4">
           <select
-            className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full px-4 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+              focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
             value={currentPet.id}
             onChange={(e) => switchPet(Number(e.target.value))}
           >
@@ -319,49 +323,77 @@ export default function HealthPage() {
       />
 
       <div className="mt-4">
-        {/* Tab 1: 健康档案 */}
+        {/* ========== Tab 1: 健康档案 ========== */}
         {activeTab === 'record' && (
-          <div>
-            {/* Profile summary */}
+          <div className="space-y-4">
+            {/* Profile card */}
             {profileLoading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-coral-500" />
               </div>
             ) : profile ? (
-              <div className="bg-brand-50 rounded-2xl p-4 mb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-700">健康档案</h3>
-                  <button onClick={openEditModal} className="flex items-center gap-1 text-xs text-brand-500 hover:text-brand-600">
-                    <Edit3 className="w-3.5 h-3.5" /> 编辑档案
-                  </button>
+              <div className="bg-surface-white rounded-[12px] p-4 shadow-card">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-[15px] font-semibold text-ink">健康档案</h3>
+                  <Button variant="outline" size="sm" onClick={openEditModal}>
+                    <Edit3 className="w-3.5 h-3.5 mr-1" />
+                    编辑档案
+                  </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <ProfileItem label="体重" value={profile.weight ? `${profile.weight} kg` : '未记录'} />
-                  <ProfileItem label="绝育" value={profile.isNeutered === true ? '已绝育' : profile.isNeutered === false ? '未绝育' : '未记录'} />
-                  <ProfileItem label="疫苗接种" value={tryParseVaccineRecords(profile.vaccineRecords)} />
-                  <ProfileItem label="驱虫记录" value={tryParseVaccineRecords(profile.dewormRecords)} />
-                  <ProfileItem label="过敏史" value={profile.allergies || '无'} />
-                  <ProfileItem label="既往病史" value={profile.medicalHistory || '无'} />
-                  <ProfileItem label="当前用药" value={profile.currentMeds || '无'} />
-                  <ProfileItem label="上次就诊" value={formatDate(profile.lastVetVisit)} />
-                  <ProfileItem label="就诊原因" value={profile.lastVetReason || '未记录'} />
-                  <ProfileItem label="下次提醒" value={formatDate(profile.nextReminder)} />
-                </div>
+
+                {/* Section: 基本信息 */}
+                <SectionGroup title="基本信息" last={false}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ProfileField label="体重" value={profile.weight ? `${profile.weight} kg` : '未记录'} />
+                    <ProfileField label="绝育" value={profile.isNeutered === true ? '已绝育' : profile.isNeutered === false ? '未绝育' : '未记录'} />
+                  </div>
+                </SectionGroup>
+
+                {/* Section: 免疫与驱虫 */}
+                <SectionGroup title="免疫与驱虫" last={false}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ProfileField label="疫苗接种" value={tryParseVaccineRecords(profile.vaccineRecords)} />
+                    <ProfileField label="驱虫记录" value={tryParseVaccineRecords(profile.dewormRecords)} />
+                  </div>
+                </SectionGroup>
+
+                {/* Section: 病史与用药 */}
+                <SectionGroup title="病史与用药" last={false}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ProfileField label="过敏史" value={profile.allergies || '未记录'} />
+                    <ProfileField label="既往病史" value={profile.medicalHistory || '未记录'} />
+                    <ProfileField label="当前用药" value={profile.currentMeds || '未记录'} />
+                  </div>
+                </SectionGroup>
+
+                {/* Section: 就医记录 */}
+                <SectionGroup title="就医记录" last={true}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <ProfileField label="上次就诊" value={formatDate(profile.lastVetVisit)} />
+                    <ProfileField label="就诊原因" value={profile.lastVetReason || '未记录'} />
+                    <ProfileField label="下次提醒" value={formatDate(profile.nextReminder)} />
+                  </div>
+                </SectionGroup>
               </div>
             ) : (
-              <p className="text-sm text-gray-400 text-center py-8">正在加载...</p>
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-coral-500" />
+              </div>
             )}
 
-            {/* Records list */}
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-700">健康记录</h3>
-              <button onClick={() => setAddRecordModalOpen(true)} className="flex items-center gap-1 text-xs text-brand-500 hover:text-brand-600">
-                <Plus className="w-3.5 h-3.5" /> 添加记录
-              </button>
+            {/* Records section header */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-semibold text-ink">健康记录</h3>
+              <Button variant="outline" size="sm" onClick={() => setAddRecordModalOpen(true)}>
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                添加记录
+              </Button>
             </div>
+
+            {/* Records list */}
             {recordsLoading ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
+                <Loader2 className="w-6 h-6 animate-spin text-coral-500" />
               </div>
             ) : (
               <HealthRecordList records={records} />
@@ -369,201 +401,234 @@ export default function HealthPage() {
           </div>
         )}
 
-        {/* Tab 2: AI 健康助手 */}
+        {/* ========== Tab 2: AI 健康助手 ========== */}
         {activeTab === 'ai' && (
-          <div>
-            {/* Symptom form */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4 mb-4">
-              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <Stethoscope className="w-4 h-4 text-brand-500" /> 症状咨询
+          <div className="space-y-4">
+            {/* Warning banner */}
+            <div className="bg-warning-50 border border-warning-500/20 rounded-[10px] p-3 flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-warning-500 flex-shrink-0 mt-[1px]" />
+              <p className="text-[12px] text-ink-muted leading-relaxed">
+                AI 结果仅供初步分诊参考，不能替代执业兽医诊断。如宠物出现紧急症状，请立即前往宠物医院就诊。
+              </p>
+            </div>
+
+            {/* Triage form */}
+            <div className="bg-surface-white rounded-[12px] border border-border p-4 shadow-card">
+              <h3 className="text-[15px] font-semibold text-ink flex items-center gap-2 mb-4">
+                <Stethoscope className="w-5 h-5 text-coral-500" />
+                分诊表
               </h3>
 
-              {/* Pet selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">选择宠物 <span className="text-red-400">*</span></label>
-                <select
-                  className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  value={triageForm.petId}
-                  onChange={(e) => setTriageForm({ ...triageForm, petId: e.target.value })}
-                >
-                  {!triageForm.petId && <option value="">请选择宠物</option>}
-                  {pets.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-              </div>
+              <div className="space-y-4">
+                {/* a. 就诊宠物 */}
+                <div>
+                  <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                    就诊宠物 <span className="text-danger-500">*</span>
+                  </label>
+                  <select
+                    className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                      focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                    value={triageForm.petId}
+                    onChange={(e) => setTriageForm({ ...triageForm, petId: e.target.value })}
+                  >
+                    {!triageForm.petId && <option value="">请选择宠物</option>}
+                    {pets.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Symptoms */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">症状描述 <span className="text-red-400">*</span></label>
-                <textarea
-                  className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[100px] resize-none"
-                  placeholder="请详细描述您宠物的症状，例如：猫咪从昨天开始呕吐、不吃东西、精神萎靡..."
-                  value={triageForm.symptoms}
-                  onChange={(e) => setTriageForm({ ...triageForm, symptoms: e.target.value })}
-                />
-              </div>
+                {/* b. 症状描述 */}
+                <div>
+                  <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                    症状描述 <span className="text-danger-500">*</span>
+                  </label>
+                  <textarea
+                    className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                      placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+                      min-h-[100px] resize-none transition"
+                    placeholder="请详细描述宠物的症状，例如：猫咪从昨天开始呕吐、不吃东西、精神萎靡..."
+                    value={triageForm.symptoms}
+                    onChange={(e) => setTriageForm({ ...triageForm, symptoms: e.target.value })}
+                  />
+                </div>
 
-              {/* Select fields in grid */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">持续时间 <span className="text-red-400">*</span></label>
-                  <select
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    value={triageForm.duration}
-                    onChange={(e) => setTriageForm({ ...triageForm, duration: e.target.value })}
-                  >
-                    {DURATION_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
+                {/* c/d. Duration / Appetite / Drinking / Energy grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                      持续时间 <span className="text-danger-500">*</span>
+                    </label>
+                    <select
+                      className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                      value={triageForm.duration}
+                      onChange={(e) => setTriageForm({ ...triageForm, duration: e.target.value })}
+                    >
+                      {DURATION_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                      食欲状况 <span className="text-danger-500">*</span>
+                    </label>
+                    <select
+                      className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                      value={triageForm.appetite}
+                      onChange={(e) => setTriageForm({ ...triageForm, appetite: e.target.value })}
+                    >
+                      {APPETITE_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                      饮水状况 <span className="text-danger-500">*</span>
+                    </label>
+                    <select
+                      className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                      value={triageForm.drinking}
+                      onChange={(e) => setTriageForm({ ...triageForm, drinking: e.target.value })}
+                    >
+                      {DRINKING_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                      精神状态 <span className="text-danger-500">*</span>
+                    </label>
+                    <select
+                      className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                      value={triageForm.energy}
+                      onChange={(e) => setTriageForm({ ...triageForm, energy: e.target.value })}
+                    >
+                      {ENERGY_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">食欲 <span className="text-red-400">*</span></label>
-                  <select
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    value={triageForm.appetite}
-                    onChange={(e) => setTriageForm({ ...triageForm, appetite: e.target.value })}
-                  >
-                    {APPETITE_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">饮水 <span className="text-red-400">*</span></label>
-                  <select
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    value={triageForm.drinking}
-                    onChange={(e) => setTriageForm({ ...triageForm, drinking: e.target.value })}
-                  >
-                    {DRINKING_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">精神状态 <span className="text-red-400">*</span></label>
-                  <select
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    value={triageForm.energy}
-                    onChange={(e) => setTriageForm({ ...triageForm, energy: e.target.value })}
-                  >
-                    {ENERGY_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
 
-              {/* Bowel movement */}
-              <div>
+                {/* e. 排便 */}
                 <Input
-                  label="排便情况（选填）"
+                  label="排便/排尿（选填）"
                   placeholder="例如：正常 / 稀便 / 便秘"
                   value={triageForm.bowelMovement}
                   onChange={(e) => setTriageForm({ ...triageForm, bowelMovement: e.target.value })}
                 />
-              </div>
 
-              {/* Checkboxes */}
-              <div className="flex gap-6">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                    checked={triageForm.isVomiting}
-                    onChange={(e) => setTriageForm({ ...triageForm, isVomiting: e.target.checked })}
-                  />
-                  <span className="text-sm text-gray-700">有呕吐</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                    checked={triageForm.hasInjury}
-                    onChange={(e) => setTriageForm({ ...triageForm, hasInjury: e.target.checked })}
-                  />
-                  <span className="text-sm text-gray-700">有外伤</span>
-                </label>
-              </div>
-
-              {/* Image upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  相关图片（选填，最多 3 张）
-                </label>
-                {triageForm.images.length > 0 && (
-                  <div className="flex gap-2 mb-2 flex-wrap">
-                    {triageForm.images.map((file, i) => (
-                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`上传图片 ${i + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          onClick={() => {
-                            const newFiles = triageForm.images.filter((_, j) => j !== i);
-                            setTriageForm({ ...triageForm, images: newFiles });
-                          }}
-                          className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-bl-lg flex items-center justify-center"
-                          aria-label={`删除第 ${i + 1} 张图片`}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {triageForm.images.length < 3 && (
-                  <label className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-gray-300 rounded-xl text-sm text-gray-400 cursor-pointer hover:border-brand-400 hover:text-brand-500 transition">
-                    <Plus className="w-4 h-4" aria-label="添加" />
-                    选择图片
+                {/* f. Checkboxes */}
+                <div className="flex gap-6">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setTriageForm({
-                            ...triageForm,
-                            images: [...triageForm.images, file],
-                          });
-                        }
-                        e.target.value = '';
-                      }}
+                      type="checkbox"
+                      className="w-4 h-4 rounded border-border text-coral-500 focus:ring-coral-500/20"
+                      checked={triageForm.isVomiting}
+                      onChange={(e) => setTriageForm({ ...triageForm, isVomiting: e.target.checked })}
                     />
+                    <span className="text-[14px] text-ink-muted">有呕吐</span>
                   </label>
-                )}
-              </div>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 rounded border-border text-coral-500 focus:ring-coral-500/20"
+                      checked={triageForm.hasInjury}
+                      onChange={(e) => setTriageForm({ ...triageForm, hasInjury: e.target.checked })}
+                    />
+                    <span className="text-[14px] text-ink-muted">有外伤</span>
+                  </label>
+                </div>
 
-              {/* Submit */}
-              <Button
-                className="w-full"
-                loading={triageSubmitting}
-                disabled={!triageForm.petId || !triageForm.symptoms.trim()}
-                onClick={submitTriage}
-              >
-                {triageSubmitting ? 'AI 正在分析...' : '开始 AI 健康咨询'}
-              </Button>
+                {/* g. 相关图片 */}
+                <div>
+                  <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
+                    相关图片（选填，最多 3 张）
+                  </label>
+                  {triageForm.images.length > 0 && (
+                    <div className="flex gap-2 mb-2 flex-wrap">
+                      {triageForm.images.map((file, i) => (
+                        <div key={i} className="relative w-16 h-16 rounded-[8px] overflow-hidden bg-surface-alt">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`上传图片 ${i + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            onClick={() => {
+                              const newFiles = triageForm.images.filter((_, j) => j !== i);
+                              setTriageForm({ ...triageForm, images: newFiles });
+                            }}
+                            className="absolute top-0 right-0 w-5 h-5 bg-danger-500 text-white text-[11px] rounded-bl-[6px] flex items-center justify-center
+                              hover:bg-danger-600 transition-colors"
+                            aria-label={`删除第 ${i + 1} 张图片`}
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {triageForm.images.length < 3 && (
+                    <label className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-border rounded-[8px]
+                      text-[14px] text-ink-faded cursor-pointer hover:border-coral-400 hover:text-coral-500 transition">
+                      <Plus className="w-4 h-4" aria-label="添加" />
+                      选择图片
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setTriageForm({
+                              ...triageForm,
+                              images: [...triageForm.images, file],
+                            });
+                          }
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* h. Submit */}
+                <Button
+                  className="w-full"
+                  size="lg"
+                  loading={triageSubmitting}
+                  disabled={!triageForm.petId || !triageForm.symptoms.trim()}
+                  onClick={submitTriage}
+                >
+                  <Stethoscope className="w-4 h-4 mr-2" />
+                  {triageSubmitting ? 'AI 正在分析...' : '开始 AI 健康咨询'}
+                </Button>
+              </div>
             </div>
 
-            {/* Result */}
+            {/* Result display */}
             {triageResult && <AIResultCard result={triageResult} />}
           </div>
         )}
       </div>
 
-      {/* Edit Profile Modal */}
+      {/* ========== Edit Profile Modal ========== */}
       <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)} title="编辑健康档案">
         <div className="space-y-4">
           <Input label="体重 (kg)" type="number" step="0.1" value={editForm.weight || ''}
             onChange={(e) => setEditForm({ ...editForm, weight: e.target.value })} />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">是否绝育</label>
-            <select className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl"
+            <label className="block text-[13px] font-medium text-ink-muted mb-1.5">是否绝育</label>
+            <select className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+              focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
               value={editForm.isNeutered || ''}
               onChange={(e) => setEditForm({ ...editForm, isNeutered: e.target.value })}>
               <option value="">未选择</option>
@@ -587,12 +652,13 @@ export default function HealthPage() {
         </div>
       </Modal>
 
-      {/* Add Record Modal */}
+      {/* ========== Add Record Modal ========== */}
       <Modal open={addRecordModalOpen} onClose={() => setAddRecordModalOpen(false)} title="添加健康记录">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">记录类型</label>
-            <select className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl"
+            <label className="block text-[13px] font-medium text-ink-muted mb-1.5">记录类型</label>
+            <select className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+              focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
               value={addRecordForm.type}
               onChange={(e) => setAddRecordForm({ ...addRecordForm, type: e.target.value })}>
               {RECORD_TYPE_OPTIONS.map((o) => (
@@ -603,8 +669,10 @@ export default function HealthPage() {
           <Input label="日期" type="date" value={addRecordForm.recordDate}
             onChange={(e) => setAddRecordForm({ ...addRecordForm, recordDate: e.target.value })} />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">描述</label>
-            <textarea className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 min-h-[80px] resize-none"
+            <label className="block text-[13px] font-medium text-ink-muted mb-1.5">描述</label>
+            <textarea className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+              placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+              min-h-[80px] resize-none transition"
               placeholder="记录详情..."
               value={addRecordForm.description}
               onChange={(e) => setAddRecordForm({ ...addRecordForm, description: e.target.value })} />
@@ -616,11 +684,25 @@ export default function HealthPage() {
   );
 }
 
-function ProfileItem({ label, value }: { label: string; value: string }) {
+/* ---- Internal helpers ---- */
+
+function SectionGroup({ title, children, last }: { title: string; children: React.ReactNode; last: boolean }) {
+  return (
+    <div className={last ? '' : 'pb-3 mb-3 border-b border-border-light'}>
+      <h4 className="text-[12px] font-medium text-ink-faded mb-2">{title}</h4>
+      {children}
+    </div>
+  );
+}
+
+function ProfileField({ label, value }: { label: string; value: string }) {
+  const isEmpty = value === '未记录' || value === '无' || !value;
   return (
     <div>
-      <span className="text-xs text-gray-400">{label}</span>
-      <p className="text-sm text-gray-700 truncate">{value}</p>
+      <p className="text-[12px] text-ink-faded">{label}</p>
+      <p className={`text-[14px] truncate ${isEmpty ? 'text-ink-faded italic' : 'text-ink'}`}>
+        {isEmpty ? '未设置' : value}
+      </p>
     </div>
   );
 }

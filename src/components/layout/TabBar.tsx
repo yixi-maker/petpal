@@ -21,7 +21,8 @@ export function TabBar() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-white border-t border-border-light
+      pb-[env(safe-area-inset-bottom,0px)]">
       <div className="max-w-mobile mx-auto flex">
         {tabs.map(({ key, label, icon: Icon }) => {
           const isActive = key === '/' ? pathname === '/' : pathname.startsWith(key);
@@ -29,12 +30,25 @@ export function TabBar() {
             <Link
               key={key}
               href={key}
-              className={`flex-1 flex flex-col items-center py-1.5 text-[10px] transition ${
-                isActive ? 'text-brand-500' : 'text-gray-400'
-              }`}
+              className={`flex-1 flex flex-col items-center py-2 transition-colors duration-150
+                ${isActive ? 'text-coral-500' : 'text-ink-faded'}`}
             >
-              <Icon className="w-5 h-5 mb-0.5" strokeWidth={isActive ? 2.5 : 2} />
-              {label}
+              {/* Active indicator dot */}
+              {isActive && (
+                <span className="w-[3px] h-[3px] rounded-full bg-coral-500 mb-[3px]" />
+              )}
+              {!isActive && <span className="h-[6px]" />}
+              <Icon
+                className="w-[22px] h-[22px]"
+                strokeWidth={isActive ? 2 : 1.5}
+              />
+              <span
+                className={`text-[10px] mt-[3px] ${
+                  isActive ? 'font-medium' : ''
+                }`}
+              >
+                {label}
+              </span>
             </Link>
           );
         })}

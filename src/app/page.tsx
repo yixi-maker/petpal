@@ -5,7 +5,7 @@ import { usePet } from '@/contexts/PetContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { PawPrint, Plus } from 'lucide-react';
-import { Tabs, Modal } from '@/components/ui';
+import { Tabs, Modal, Avatar, EmptyState, Button } from '@/components/ui';
 import { PostList } from '@/components/post/PostList';
 import { PostForm } from '@/components/post/PostForm';
 import Link from 'next/link';
@@ -101,8 +101,8 @@ export default function HomePage() {
 
   if (authLoading || petLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <PawPrint className="w-8 h-8 text-brand-300 animate-pulse" />
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <PawPrint className="w-8 h-8 text-coral-500/40 animate-pulse" />
       </div>
     );
   }
@@ -110,47 +110,51 @@ export default function HomePage() {
   if (!user) return null;
 
   return (
-    <div className="relative">
+    <div className="relative bg-surface min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-1">
-        <h1 className="text-lg font-semibold flex items-center gap-2">
-          <PawPrint className="w-5 h-5 text-brand-500" />
+      <div className="flex items-center justify-between px-4 pt-3 pb-1">
+        <h1 className="text-lg font-semibold flex items-center gap-2 text-ink">
+          <PawPrint className="w-5 h-5 text-coral-500" />
           PetPal
         </h1>
         <div className="flex items-center gap-3">
           {/* Current pet indicator */}
           {currentPet && (
-            <div className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
-              正在用 {currentPet.name} 的身份
-            </div>
+            <Link href="/pets">
+              <div className="flex items-center gap-1.5 bg-surface-alt hover:bg-border-light rounded-full pl-1 pr-2.5 py-1 transition-colors cursor-pointer">
+                <Avatar src={currentPet.avatar} size="sm" />
+                <span className="text-[13px] text-ink-muted truncate max-w-[80px]">
+                  {currentPet.name}
+                </span>
+              </div>
+            </Link>
           )}
+          {/* Avatar button to /me */}
           <Link href="/me">
-            <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center">
-              <PawPrint className="w-4 h-4 text-brand-500" />
+            <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center hover:bg-border-light transition-colors">
+              <PawPrint className="w-4 h-4 text-ink-muted" />
             </div>
           </Link>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="sticky top-0 bg-cream z-10">
+      <div className="sticky top-0 z-10 bg-surface">
         <Tabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
       </div>
 
       {/* Feed */}
-      <div className="p-4 pb-24">
+      <div className="px-4 pb-24 mt-2">
         {activeTab === 'FOLLOWING' && !currentPet && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <PawPrint className="w-8 h-8 text-brand-300" />
-            </div>
-            <p className="text-gray-400 text-sm mb-4">创建宠物后即可关注其他宠物</p>
-            <Link href="/pets/new">
-              <span className="inline-block px-4 py-2 bg-brand-500 text-white text-sm rounded-xl">
-                添加宠物
-              </span>
-            </Link>
-          </div>
+          <EmptyState
+            icon={<PawPrint className="w-10 h-10" />}
+            title="创建宠物后即可关注其他宠物"
+            action={
+              <Link href="/pets/new">
+                <Button>添加宠物</Button>
+              </Link>
+            }
+          />
         )}
 
         {!(activeTab === 'FOLLOWING' && !currentPet) && (
@@ -165,10 +169,15 @@ export default function HomePage() {
 
       {/* FAB - Floating Action Button */}
       <button
+        type="button"
         onClick={() => setShowPostForm(true)}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-brand-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-brand-600 active:bg-brand-700 transition-colors z-20"
+        aria-label="发布动态"
+        className="fixed bottom-20 right-4 w-[52px] h-[52px] bg-coral-500 text-white rounded-full
+          shadow-[0_4px_16px_rgba(242,104,42,0.25)]
+          flex items-center justify-center
+          hover:bg-coral-600 active:bg-coral-600 transition-colors z-20"
       >
-        <Plus className="w-6 h-6" aria-label="发布动态" />
+        <Plus className="w-[22px] h-[22px]" />
       </button>
 
       {/* Post Form Modal */}

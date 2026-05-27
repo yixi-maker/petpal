@@ -41,92 +41,158 @@ export default function MePage() {
   };
 
   return (
-    <div className="p-4">
-      {/* User info */}
-      <div className="flex items-center gap-3 mb-6">
-        <Avatar size="lg" />
-        <div className="flex-1">
-          <div className="font-medium">{user?.nickname || '用户' + (user?.phone?.slice(-4) || '')}</div>
-          <div className="text-xs text-gray-400">{user?.phone}</div>
+    <div className="max-w-mobile mx-auto px-4 pb-24">
+      {/* ========== Profile header card ========== */}
+      <div className="bg-surface-white rounded-[12px] p-4 shadow-card mb-4 mt-4">
+        <div className="flex items-center gap-3">
+          <Avatar size="xl" className="w-[56px] h-[56px]" />
+          <div className="flex-1 min-w-0">
+            <div className="text-[16px] font-semibold text-ink truncate">
+              {user?.nickname || '用户' + (user?.phone?.slice(-4) || '')}
+            </div>
+            <div className="text-[13px] text-ink-faded truncate">{user?.phone}</div>
+          </div>
+          <Link href="/settings" className="p-2 -mr-1 hover:bg-surface-alt rounded-[8px] transition-colors">
+            <Settings className="w-5 h-5 text-ink-muted" aria-label="设置" />
+          </Link>
         </div>
-        <Link href="/settings" className="p-2"><Settings className="w-5 h-5 text-gray-400" aria-label="设置" /></Link>
       </div>
 
-      {/* Current pet switcher */}
-      <div className="bg-brand-50 rounded-2xl p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-500 mb-3">当前宠物身份</h3>
+      {/* ========== Current pet identity card ========== */}
+      <div className="bg-coral-50/50 border border-coral-100 rounded-[12px] p-4 mb-4">
+        <h3 className="text-[13px] font-medium text-ink-muted mb-3">当前宠物身份</h3>
         {pets.length > 0 ? (
-          <div className="flex items-center gap-3">
-            <Avatar src={currentPet?.avatar} size="lg" />
-            <div className="flex-1">
-              <div className="font-semibold">{currentPet?.name || '未选择'}</div>
-              <div className="text-xs text-gray-400">
-                {currentPet?.type === 'DOG' ? '🐶' : '🐱'} {currentPet?.breed || ''}
+          <>
+            {/* Current pet */}
+            <div className="flex items-center gap-3">
+              <Avatar src={currentPet?.avatar} size="lg" />
+              <div className="flex-1 min-w-0">
+                <div className="text-[15px] font-semibold text-ink">
+                  {currentPet?.name || '未选择'}
+                </div>
+                <div className="text-[13px] text-ink-muted">
+                  {currentPet?.type === 'DOG' ? '🐶' : currentPet?.type === 'CAT' ? '🐱' : '🐾'}{' '}
+                  {currentPet?.breed || ''}
+                </div>
               </div>
-            </div>
-            {pets.length > 1 && (
-              <select
-                className="text-sm border border-brand-200 rounded-lg px-2 py-1 bg-white"
-                value={currentPet?.id}
-                onChange={(e) => switchPet(Number(e.target.value))}
+              <Link
+                href="/pets/new"
+                className="flex items-center gap-1 text-[13px] text-coral-500 hover:text-coral-600 font-medium transition-colors"
               >
-                {pets.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+                <Plus className="w-4 h-4" />
+                添加宠物
+              </Link>
+            </div>
+
+            {/* Pet switcher — horizontal row of small avatars */}
+            {pets.length > 1 && (
+              <div className="flex gap-2 mt-3 pt-3 border-t border-coral-100">
+                {pets.map((p) => {
+                  const isCurrent = p.id === currentPet?.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => switchPet(p.id)}
+                      className={`relative flex flex-col items-center gap-1 transition-all ${
+                        isCurrent ? 'opacity-100' : 'opacity-50 hover:opacity-75'
+                      }`}
+                    >
+                      <Avatar
+                        src={p.avatar}
+                        size="md"
+                        className={isCurrent ? 'ring-2 ring-coral-500 ring-offset-1' : ''}
+                      />
+                      <span
+                        className={`text-[11px] truncate max-w-[48px] ${
+                          isCurrent ? 'text-coral-600 font-medium' : 'text-ink-muted'
+                        }`}
+                      >
+                        {p.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             )}
-          </div>
+          </>
         ) : (
-          <p className="text-sm text-gray-400">还没有添加宠物</p>
+          <div className="text-center py-2">
+            <p className="text-[14px] text-ink-faded mb-2">还没有添加宠物</p>
+            <Link
+              href="/pets/new"
+              className="inline-flex items-center gap-1 text-[14px] text-coral-500 hover:text-coral-600 font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              添加宠物
+            </Link>
+          </div>
         )}
       </div>
 
-      {/* Menu items */}
-      <div className="space-y-1 mb-4">
-        <Link href="/messages" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
-          <MessageCircle className="w-5 h-5 text-brand-500" aria-label="私信" />
-          <span className="flex-1 text-sm">私信</span>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
+      {/* ========== Menu list ========== */}
+      <div className="bg-surface-white rounded-[12px] shadow-card overflow-hidden divide-y divide-border-light">
+        <Link
+          href="/messages"
+          className="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-alt transition-colors"
+        >
+          <MessageCircle className="w-5 h-5 text-ink-muted flex-shrink-0" aria-label="私信" />
+          <span className="flex-1 text-[15px] text-ink">私信</span>
+          <ChevronRight className="w-4 h-4 text-ink-faded/30 flex-shrink-0" />
         </Link>
 
-        <Link href="/pets/new" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
-          <Plus className="w-5 h-5 text-brand-500" />
-          <span className="flex-1 text-sm">添加宠物</span>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
+        <Link
+          href="/pets/new"
+          className="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-alt transition-colors"
+        >
+          <Plus className="w-5 h-5 text-ink-muted flex-shrink-0" />
+          <span className="flex-1 text-[15px] text-ink">添加宠物</span>
+          <ChevronRight className="w-4 h-4 text-ink-faded/30 flex-shrink-0" />
         </Link>
 
-        <Link href="/legal/privacy" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
-          <Shield className="w-5 h-5 text-gray-400" />
-          <span className="flex-1 text-sm">隐私政策</span>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
+        <Link
+          href="/legal/privacy"
+          className="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-alt transition-colors"
+        >
+          <Shield className="w-5 h-5 text-ink-muted flex-shrink-0" />
+          <span className="flex-1 text-[15px] text-ink">隐私政策</span>
+          <ChevronRight className="w-4 h-4 text-ink-faded/30 flex-shrink-0" />
         </Link>
 
-        <Link href="/legal/terms" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
-          <Shield className="w-5 h-5 text-gray-400" />
-          <span className="flex-1 text-sm">用户协议</span>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
+        <Link
+          href="/legal/terms"
+          className="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-alt transition-colors"
+        >
+          <Shield className="w-5 h-5 text-ink-muted flex-shrink-0" />
+          <span className="flex-1 text-[15px] text-ink">用户协议</span>
+          <ChevronRight className="w-4 h-4 text-ink-faded/30 flex-shrink-0" />
         </Link>
       </div>
 
-      {/* Actions */}
-      <div className="space-y-2">
-        <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-          <LogOut className="w-4 h-4 mr-2" aria-label="退出" /> 退出登录
+      {/* ========== Footer actions ========== */}
+      <div className="mt-6 space-y-2">
+        <Button variant="ghost" className="w-full justify-center text-ink-muted" onClick={handleLogout}>
+          <LogOut className="w-4 h-4 mr-2" aria-label="退出" />
+          退出登录
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-red-400" onClick={() => setDeleteOpen(true)}>
-          <Trash2 className="w-4 h-4 mr-2" aria-label="删除" /> 注销账号
+        <Button
+          variant="ghost"
+          className="w-full justify-center text-danger-500 text-[13px]"
+          onClick={() => setDeleteOpen(true)}
+        >
+          <Trash2 className="w-3.5 h-3.5 mr-2" aria-label="删除" />
+          注销账号
         </Button>
       </div>
 
-      {/* Delete account modal */}
+      {/* ========== Delete account modal (two-step confirmation) ========== */}
       <Modal open={deleteOpen} onClose={handleCloseDelete} title="注销账号">
         {deleteStep === 1 ? (
           <div>
-            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4">
-              <p className="text-sm text-red-700 font-medium mb-2">
+            <div className="bg-danger-50 border border-danger-500/20 rounded-[10px] p-4 mb-4">
+              <p className="text-[14px] text-danger-600 font-medium mb-2">
                 确定要注销账号吗？
               </p>
-              <ul className="text-xs text-red-600 space-y-1 list-disc pl-4">
+              <ul className="text-[13px] text-danger-500 space-y-1 list-disc pl-4">
                 <li>所有宠物档案将被隐藏</li>
                 <li>手机号将被脱敏</li>
                 <li>数据无法恢复</li>
@@ -135,13 +201,15 @@ export default function MePage() {
             <div className="flex gap-2">
               <button
                 onClick={handleCloseDelete}
-                className="flex-1 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2.5 text-[14px] text-ink-muted border border-border rounded-[8px]
+                  hover:bg-surface-alt transition-colors"
               >
                 取消
               </button>
               <button
                 onClick={() => setDeleteStep(2)}
-                className="flex-1 py-2 text-sm bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+                className="flex-1 py-2.5 text-[14px] bg-danger-500 text-white rounded-[8px]
+                  hover:bg-danger-600 transition-colors"
               >
                 继续注销
               </button>
@@ -149,22 +217,24 @@ export default function MePage() {
           </div>
         ) : (
           <div>
-            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4">
-              <p className="text-sm text-red-700">
+            <div className="bg-danger-50 border border-danger-500/20 rounded-[10px] p-4 mb-4">
+              <p className="text-[14px] text-danger-600">
                 我已知晓，确认注销。此操作不可撤销。
               </p>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={handleCloseDelete}
-                className="flex-1 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2.5 text-[14px] text-ink-muted border border-border rounded-[8px]
+                  hover:bg-surface-alt transition-colors"
               >
                 取消
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleting}
-                className="flex-1 py-2 text-sm bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 py-2.5 text-[14px] bg-danger-500 text-white rounded-[8px]
+                  hover:bg-danger-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {deleting ? '注销中...' : '我已知晓，确认注销'}
               </button>

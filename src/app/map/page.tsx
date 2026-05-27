@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MapPin,
-  List,
-  Map,
   Star,
   Navigation,
   Stethoscope,
@@ -16,8 +14,11 @@ import {
   Scissors,
   Home,
   Search,
+  ChevronRight,
+  Clock,
+  Phone,
 } from 'lucide-react';
-import { Tabs, Modal } from '@/components/ui';
+import { Modal, FilterChip, Badge, SegmentedControl } from '@/components/ui';
 
 interface Place {
   id: number;
@@ -63,15 +64,7 @@ const TYPE_ICON_MAP: Record<string, React.ReactNode> = {
   BOARDING: <Home className="w-4 h-4" />,
 };
 
-const TYPE_COLOR_MAP: Record<string, string> = {
-  HOSPITAL: 'bg-red-50 text-red-500',
-  PARK: 'bg-green-50 text-green-500',
-  MALL: 'bg-purple-50 text-purple-500',
-  CAFE: 'bg-amber-50 text-amber-500',
-  RESTAURANT: 'bg-orange-50 text-orange-500',
-  GROOMING: 'bg-pink-50 text-pink-500',
-  BOARDING: 'bg-blue-50 text-blue-500',
-};
+// Updated color map: HOSPITAL=red, PARK=sage, CAFE/MALL/RESTAURANT=coral, GROOMING/BOARDING=mist
 
 const TYPE_LABEL_MAP: Record<string, string> = {
   HOSPITAL: '医院',
@@ -81,6 +74,17 @@ const TYPE_LABEL_MAP: Record<string, string> = {
   RESTAURANT: '餐厅',
   GROOMING: '洗护',
   BOARDING: '寄养',
+};
+
+// Circle color for type icon (solid bg used for the icon circle)
+const TYPE_CIRCLE_MAP: Record<string, string> = {
+  HOSPITAL: 'bg-red-50 text-red-500',
+  PARK: 'bg-sage-50 text-sage-500',
+  MALL: 'bg-coral-50 text-coral-500',
+  CAFE: 'bg-coral-50 text-coral-500',
+  RESTAURANT: 'bg-coral-50 text-coral-500',
+  GROOMING: 'bg-mist-50 text-mist-400',
+  BOARDING: 'bg-mist-50 text-mist-400',
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -94,11 +98,11 @@ function StarRating({ rating }: { rating: number }) {
               ? 'text-amber-400 fill-amber-400'
               : star - 0.5 <= rating
               ? 'text-amber-400 fill-amber-400'
-              : 'text-gray-200'
+              : 'text-ink-faded/30'
           }`}
         />
       ))}
-      <span className="text-xs text-gray-400 ml-1">{rating}</span>
+      <span className="text-[12px] text-ink-faded ml-1">{rating}</span>
     </div>
   );
 }
@@ -145,57 +149,43 @@ export default function MapPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-surface pb-24">
       {/* Header */}
-      <div className="sticky top-0 bg-cream z-20 px-4 pt-3 pb-2 border-b border-gray-50">
+      <div className="sticky top-0 bg-surface z-20 px-4 pt-3 pb-3 border-b border-border-light">
+        {/* Title + Segmented control on same line */}
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-lg font-semibold flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-brand-500" />
-            地图发现
-          </h1>
-          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 text-sm rounded-md transition flex items-center gap-1 ${
-                viewMode === 'list' ? 'bg-white text-brand-500 shadow-sm' : 'text-gray-400'
-              }`}
-            >
-              <List className="w-3.5 h-3.5" />
-              列表
-            </button>
-            <button
-              onClick={() => setViewMode('map')}
-              className={`px-3 py-1.5 text-sm rounded-md transition flex items-center gap-1 ${
-                viewMode === 'map' ? 'bg-white text-brand-500 shadow-sm' : 'text-gray-400'
-              }`}
-            >
-              <Map className="w-3.5 h-3.5" />
-              地图
-            </button>
-          </div>
+          <h1 className="text-[17px] font-semibold text-ink">发现周边</h1>
+          <SegmentedControl
+            options={[
+              { key: 'list', label: '列表' },
+              { key: 'map', label: '地图' },
+            ]}
+            activeKey={viewMode}
+            onChange={(key) => setViewMode(key as 'list' | 'map')}
+          />
         </div>
 
-        {/* City tabs */}
-        <Tabs
-          tabs={CITIES}
-          activeKey={activeCity}
-          onChange={setActiveCity}
-        />
+        {/* City selector: FilterChip row */}
+        <div className="flex gap-2 mb-2 overflow-x-auto">
+          {CITIES.map((city) => (
+            <FilterChip
+              key={city.key}
+              label={city.label}
+              active={activeCity === city.key}
+              onClick={() => setActiveCity(city.key)}
+            />
+          ))}
+        </div>
 
-        {/* Type filter chips */}
-        <div className="flex gap-2 mt-3 pb-1 overflow-x-auto">
+        {/* Type filter: horizontal scrollable FilterChip row */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
           {TYPE_FILTERS.map((t) => (
-            <button
+            <FilterChip
               key={t.key}
+              label={t.label}
+              active={activeType === t.key}
               onClick={() => setActiveType(t.key)}
-              className={`shrink-0 px-3 py-1.5 text-xs rounded-full transition ${
-                activeType === t.key
-                  ? 'bg-brand-500 text-white'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:border-brand-300'
-              }`}
-            >
-              {t.label}
-            </button>
+            />
           ))}
         </div>
       </div>
@@ -204,158 +194,147 @@ export default function MapPage() {
       <div className="px-4 pt-3">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-coral-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : viewMode === 'list' ? (
-          /* List view */
-          <div className="space-y-3">
+          /* ========== LIST VIEW ========== */
+          <div>
             {places.length === 0 ? (
               <div className="text-center py-20">
-                <Search className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-400 text-sm">该区域暂无收录地点</p>
-                <p className="text-gray-300 text-xs mt-1">换个城市或类型试试吧</p>
+                <Search className="w-10 h-10 text-ink-faded/30 mx-auto mb-3" />
+                <p className="text-[14px] text-ink-faded">该区域暂无收录地点</p>
+                <p className="text-[12px] text-ink-faded/60 mt-1">换个城市或类型试试吧</p>
               </div>
             ) : (
               places.map((place) => (
                 <div
                   key={place.id}
-                  onClick={() => handlePlaceClick(place)}
-                  className="bg-white rounded-2xl p-4 active:scale-[0.98] transition-transform cursor-pointer shadow-sm"
+                  onClick={() => router.push(`/map/${place.id}`)}
+                  className="bg-surface-white rounded-[10px] shadow-card mb-3 overflow-hidden active:scale-[0.98] transition-transform cursor-pointer"
                 >
-                  <div className="flex items-start gap-3">
-                    {/* Type icon */}
+                  {/* Top row: icon + info + distance */}
+                  <div className="flex items-start gap-3 p-3.5">
+                    {/* Left: type icon in colored circle */}
                     <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                        TYPE_COLOR_MAP[place.type] || 'bg-gray-50 text-gray-400'
+                      className={`w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0 ${
+                        TYPE_CIRCLE_MAP[place.type] || 'bg-surface-alt text-ink-faded'
                       }`}
                     >
                       {TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
                     </div>
 
+                    {/* Center: name, rating, address */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-sm truncate">{place.name}</h3>
-                        <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
-                          {TYPE_LABEL_MAP[place.type] || place.type}
-                        </span>
+                        <h3 className="text-[15px] font-medium text-ink truncate">{place.name}</h3>
+                        <Badge variant="default" size="sm">{TYPE_LABEL_MAP[place.type] || place.type}</Badge>
                       </div>
-                      <div className="mt-1">
+                      <div className="mt-1 flex items-center gap-2">
                         <StarRating rating={place.rating} />
+                        <span className="text-[12px] text-ink-faded">{place.reviewCount} 条评价</span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
+                      <p className="text-[12px] text-ink-faded mt-1.5 flex items-center gap-1 truncate">
+                        <MapPin className="w-3 h-3 shrink-0" />
                         {place.address}
                       </p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-xs text-brand-500">{mockDistance(place.id)}</span>
-                        {place.isOpen ? (
-                          <span className="text-xs text-green-500">营业中</span>
-                        ) : (
-                          <span className="text-xs text-gray-400">休息中</span>
-                        )}
-                        <span className="text-xs text-gray-400">{place.openHours}</span>
-                      </div>
-                      {/* Pet friendly tags */}
-                      {place.petFriendlyTags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {place.petFriendlyTags.slice(0, 3).map((tag, i) => (
-                            <span
-                              key={i}
-                              className="text-[10px] px-1.5 py-0.5 rounded bg-brand-50 text-brand-500"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {place.petFriendlyTags.length > 3 && (
-                            <span className="text-[10px] px-1.5 py-0.5 text-gray-400">
-                              +{place.petFriendlyTags.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      )}
                     </div>
 
-                    {/* Arrow */}
-                    <Navigation className="w-4 h-4 text-gray-300 shrink-0 mt-1" />
+                    {/* Right: distance + open status */}
+                    <div className="shrink-0 text-right">
+                      <p className="text-[12px] text-ink-faded">{mockDistance(place.id)}</p>
+                      <Badge
+                        variant={place.isOpen ? 'sage' : 'default'}
+                        size="sm"
+                        className="mt-1"
+                      >
+                        {place.isOpen ? '营业中' : '休息中'}
+                      </Badge>
+                    </div>
                   </div>
+
+                  {/* Bottom: pet-friendly tags */}
+                  {place.petFriendlyTags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 px-3.5 pb-3">
+                      {place.petFriendlyTags.slice(0, 3).map((tag, i) => (
+                        <Badge key={i} variant="coral" size="sm">{tag}</Badge>
+                      ))}
+                      {place.petFriendlyTags.length > 3 && (
+                        <span className="text-[11px] text-ink-faded self-center">
+                          +{place.petFriendlyTags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))
             )}
           </div>
         ) : (
-          /* Map placeholder view */
+          /* ========== MAP VIEW (placeholder) ========== */
           <div>
-            <div className="relative rounded-2xl overflow-hidden shadow-sm" style={{ height: '60vh' }}>
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-blue-50 to-green-50 flex flex-col items-center justify-center">
-                <Map className="w-16 h-16 text-brand-300 mb-4" />
-                <p className="text-brand-500 font-medium text-lg">接入高德地图后显示</p>
-                <p className="text-gray-400 text-sm mt-1">接入高德地图后显示</p>
-                <p className="text-gray-300 text-xs mt-3 max-w-xs text-center leading-relaxed">
-                  后续接入高德地图 JS API，即可展示地图标记、路线规划等功能
-                </p>
+            {/* Map placeholder */}
+            <div className="rounded-[12px] bg-gradient-to-br from-mist-50 to-surface-alt h-[400px] relative overflow-hidden">
+              {/* Center hint */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <MapPin className="w-12 h-12 text-ink-faded/20" />
+                <p className="text-[14px] text-ink-faded mt-3">地图区域</p>
               </div>
 
-              {/* Place markers on the placeholder */}
-              {places.slice(0, 6).map((place, i) => {
+              {/* Fake marker dots */}
+              {places.slice(0, 4).map((place, i) => {
                 const positions = [
-                  'top-[20%] left-[25%]',
-                  'top-[35%] left-[55%]',
-                  'top-[50%] left-[15%]',
-                  'top-[60%] left-[45%]',
-                  'top-[25%] left-[70%]',
-                  'top-[70%] left-[60%]',
+                  { top: '25%', left: '30%' },
+                  { top: '40%', left: '60%' },
+                  { top: '55%', left: '20%' },
+                  { top: '65%', left: '50%' },
                 ];
                 return (
                   <div
                     key={place.id}
-                    className={`absolute ${positions[i]} -translate-x-1/2 -translate-y-1/2 cursor-pointer`}
+                    className="absolute cursor-pointer"
+                    style={{ top: positions[i].top, left: positions[i].left }}
                     onClick={() => handlePlaceClick(place)}
+                    title={place.name}
                   >
-                    <div className="relative group">
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md ${
-                          TYPE_COLOR_MAP[place.type]?.replace('50', '500').replace('text-', 'bg-') || 'bg-brand-500'
-                        }`}
-                      >
-                        <span className="text-white">
-                          {TYPE_ICON_MAP[place.type] || <MapPin className="w-3.5 h-3.5" />}
-                        </span>
-                      </div>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition pointer-events-none">
-                        <div className="bg-white text-xs px-2 py-1 rounded-lg shadow-lg whitespace-nowrap text-gray-700 font-medium">
-                          {place.name}
-                        </div>
-                      </div>
+                    <div className="w-3.5 h-3.5 bg-coral-500 rounded-full shadow-[0_0_0_3px_rgba(255,107,107,0.2)]" />
+                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-surface-white text-[11px] px-2 py-0.5 rounded-[6px] shadow-md whitespace-nowrap text-ink font-medium opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
+                      {place.name}
                     </div>
                   </div>
                 );
               })}
+
+              {/* Bottom overlay bar */}
+              <div className="absolute bottom-0 left-0 right-0 bg-surface-white/80 backdrop-blur-sm py-2 text-center">
+                <p className="text-[12px] text-ink-muted">接入高德地图后显示完整地图</p>
+              </div>
             </div>
 
-            {/* Place list below the map placeholder */}
+            {/* Place list below the map */}
             <div className="mt-4 space-y-2">
-              <p className="text-xs text-gray-400 px-1">附近地点</p>
+              <p className="text-[12px] text-ink-faded px-1">附近地点</p>
               {places.slice(0, 5).map((place) => (
                 <div
                   key={place.id}
                   onClick={() => handlePlaceClick(place)}
-                  className="flex items-center gap-3 p-3 bg-white rounded-xl active:scale-[0.98] transition cursor-pointer"
+                  className="flex items-center gap-3 p-3 bg-surface-white rounded-[10px] active:scale-[0.98] transition cursor-pointer shadow-card"
                 >
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                      TYPE_COLOR_MAP[place.type] || 'bg-gray-50 text-gray-400'
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                      TYPE_CIRCLE_MAP[place.type] || 'bg-surface-alt text-ink-faded'
                     }`}
                   >
                     {TYPE_ICON_MAP[place.type] || <MapPin className="w-3.5 h-3.5" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{place.name}</p>
-                    <p className="text-xs text-gray-400 truncate">{place.address}</p>
+                    <p className="text-[14px] font-medium text-ink truncate">{place.name}</p>
+                    <p className="text-[12px] text-ink-faded truncate">{place.address}</p>
                   </div>
                   <div className="text-right shrink-0">
                     <StarRating rating={place.rating} />
-                    <span className="text-xs text-brand-500">{mockDistance(place.id)}</span>
+                    <span className="text-[12px] text-ink-faded">{mockDistance(place.id)}</span>
                   </div>
+                  <ChevronRight className="w-4 h-4 text-ink-faded/40 shrink-0" />
                 </div>
               ))}
             </div>
@@ -370,44 +349,46 @@ export default function MapPage() {
         title={selectedPlace?.name || ''}
       >
         {selectedPlace && (
-          <div className="-mx-6 -mb-6">
+          <div className="-mx-5 -mb-5">
             {/* Map placeholder in modal */}
-            <div className="h-40 bg-gradient-to-br from-brand-50 via-blue-50 to-green-50 flex items-center justify-center">
+            <div className="h-36 bg-gradient-to-br from-mist-50 to-surface-alt flex items-center justify-center">
               <div className="text-center">
-                <MapPin className="w-8 h-8 text-brand-400 mx-auto mb-1" />
-                <p className="text-xs text-brand-500 font-medium">接入高德地图后显示位置</p>
+                <MapPin className="w-8 h-8 text-ink-faded/30 mx-auto mb-1" />
+                <p className="text-[12px] text-ink-faded">接入高德地图后显示位置</p>
               </div>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-5 space-y-4">
               {/* Type badge + rating */}
               <div className="flex items-center gap-2">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-brand-50 text-brand-500 font-medium">
+                <Badge variant="coral" size="md">
                   {TYPE_LABEL_MAP[selectedPlace.type]}
-                </span>
+                </Badge>
                 <StarRating rating={selectedPlace.rating} />
-                <span className="text-xs text-gray-400">{selectedPlace.reviewCount} 条评价</span>
+                <span className="text-[12px] text-ink-faded">{selectedPlace.reviewCount} 条评价</span>
               </div>
 
               {/* Status */}
-              <div className="flex items-center gap-3 text-sm text-gray-500">
+              <div className="flex items-center gap-3 text-[13px]">
+                <Clock className="w-4 h-4 text-ink-faded" />
                 {selectedPlace.isOpen ? (
-                  <span className="text-green-500 font-medium">营业中</span>
+                  <Badge variant="sage" size="sm">营业中</Badge>
                 ) : (
-                  <span className="text-gray-400">休息中</span>
+                  <Badge variant="danger" size="sm">休息中</Badge>
                 )}
-                <span>{selectedPlace.openHours}</span>
+                <span className="text-ink-muted">{selectedPlace.openHours}</span>
               </div>
 
               {/* Address */}
-              <div className="flex items-start gap-2 text-sm text-gray-500">
-                <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-gray-400" />
+              <div className="flex items-start gap-2 text-[13px] text-ink-muted">
+                <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-ink-faded" />
                 <span>{selectedPlace.address}</span>
               </div>
 
               {/* Phone */}
               {selectedPlace.phone && (
-                <div className="flex items-start gap-2 text-sm text-brand-500">
+                <div className="flex items-start gap-2 text-[13px] text-coral-500">
+                  <Phone className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{selectedPlace.phone}</span>
                 </div>
               )}
@@ -416,12 +397,7 @@ export default function MapPage() {
               {selectedPlace.petFriendlyTags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {selectedPlace.petFriendlyTags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600"
-                    >
-                      {tag}
-                    </span>
+                    <Badge key={i} variant="coral" size="sm">{tag}</Badge>
                   ))}
                 </div>
               )}
@@ -433,7 +409,7 @@ export default function MapPage() {
                     e.stopPropagation();
                     alert('导航功能将在接入高德地图后启用');
                   }}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-brand-500 text-white text-sm rounded-xl font-medium"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-coral-500 text-white text-[14px] rounded-[8px] font-medium hover:bg-coral-600 transition"
                 >
                   <Navigation className="w-4 h-4" />
                   导航
@@ -444,7 +420,7 @@ export default function MapPage() {
                     setSelectedPlace(null);
                     router.push(`/map/${selectedPlace.id}`);
                   }}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-brand-500 text-brand-500 text-sm rounded-xl font-medium"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-border text-ink text-[14px] rounded-[8px] font-medium hover:bg-surface-alt transition"
                 >
                   查看详情
                 </button>

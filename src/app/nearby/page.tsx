@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { usePet } from '@/contexts/PetContext';
-import { Avatar } from '@/components/ui';
+import { Avatar, Button, EmptyState, FilterChip, Badge } from '@/components/ui';
 import { FollowButton } from '@/components/social/FollowButton';
 import { FriendRequestModal } from '@/components/social/FriendRequestModal';
 import { MapPin, Navigation, AlertTriangle } from 'lucide-react';
@@ -140,45 +140,49 @@ export default function NearbyPage() {
   if (!hasLocation) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6">
-        <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-4">
-          <Navigation className="w-10 h-10 text-brand-400" />
-        </div>
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">发现附近宠物</h2>
-        <p className="text-sm text-gray-400 text-center mb-4">
-          开启位置服务，发现身边的毛孩子<br />
-          你的精确位置不会被展示给其他用户
-        </p>
-
-        {locationError && (
-          <div className="w-full max-w-xs mb-4 bg-red-50 border border-red-200 rounded-xl p-3 flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-            <p className="text-sm text-red-600">{locationError}</p>
+        <div className="w-full max-w-[320px] bg-surface-white border border-border rounded-[12px] p-5 text-center">
+          <div className="flex justify-center mb-4">
+            <Navigation className="w-[36px] h-[36px] text-mist-400" />
           </div>
-        )}
+          <h2 className="text-[17px] font-semibold text-ink mb-1.5">发现附近宠物</h2>
+          <p className="text-[13px] text-ink-faded leading-relaxed mb-4">
+            开启位置服务，发现身边的毛孩子<br />
+            你的精确位置不会被展示给其他用户
+          </p>
 
-        <button
-          onClick={requestLocation}
-          disabled={locationLoading}
-          className="w-full max-w-xs px-6 py-3 bg-brand-500 text-white rounded-xl font-medium disabled:opacity-50 mb-6"
-        >
-          {locationLoading ? '获取位置中...' : '开启位置服务'}
-        </button>
+          {locationError && (
+            <div className="mb-4 bg-red-50 rounded-[8px] p-3 flex items-start gap-2 text-left">
+              <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+              <p className="text-[13px] text-red-600">{locationError}</p>
+            </div>
+          )}
 
-        <p className="text-xs text-gray-400 mb-3">或手动选择城市</p>
-        <div className="flex gap-2">
-          {Object.keys(CITIES).map((city) => (
-            <button
-              key={city}
-              onClick={() => selectCity(city)}
-              className={`px-5 py-2 text-sm rounded-xl border transition ${
-                manualCity === city
-                  ? 'border-brand-500 bg-brand-50 text-brand-600'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
-              }`}
-            >
-              {city}
-            </button>
-          ))}
+          <Button
+            onClick={requestLocation}
+            disabled={locationLoading}
+            loading={locationLoading}
+            variant="primary"
+            className="w-full mb-5"
+          >
+            {locationLoading ? '获取位置中...' : '开启位置服务'}
+          </Button>
+
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[12px] text-ink-faded shrink-0">或手动选择城市</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
+          <div className="flex justify-center gap-2">
+            {Object.keys(CITIES).map((city) => (
+              <FilterChip
+                key={city}
+                label={city}
+                active={manualCity === city}
+                onClick={() => selectCity(city)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -187,11 +191,11 @@ export default function NearbyPage() {
   // --- Main content ---
   const typeOptions = [
     { value: '', label: '全部' },
-    { value: 'DOG', label: '🐶 狗狗' },
-    { value: 'CAT', label: '🐱 猫猫' },
+    { value: 'DOG', label: '狗狗' },
+    { value: 'CAT', label: '猫猫' },
   ];
   const sizeOptions = [
-    { value: '', label: '全部体型' },
+    { value: '', label: '全部' },
     { value: 'SMALL', label: '小型' },
     { value: 'MEDIUM', label: '中型' },
     { value: 'LARGE', label: '大型' },
@@ -200,82 +204,94 @@ export default function NearbyPage() {
 
   return (
     <div className="p-4 pb-20">
-      <h1 className="text-lg font-semibold mb-3">附近宠物</h1>
+      <h1 className="text-[17px] font-semibold text-ink mb-4">附近宠物</h1>
 
+      {/* Filters */}
       <div className="space-y-2 mb-4">
-        <div className="flex gap-1.5 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1">
           {typeOptions.map((o) => (
-            <button key={o.value} onClick={() => setTypeFilter(o.value)}
-              className={`px-3 py-1.5 text-xs rounded-full whitespace-nowrap transition ${
-                typeFilter === o.value ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
-              {o.label}
-            </button>
+            <FilterChip
+              key={o.value}
+              label={o.value === 'DOG' ? '狗狗' : o.value === 'CAT' ? '猫猫' : '全部'}
+              active={typeFilter === o.value}
+              onClick={() => setTypeFilter(o.value)}
+            />
           ))}
         </div>
-        <div className="flex gap-1.5 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1">
           {sizeOptions.map((o) => (
-            <button key={o.value} onClick={() => setSizeFilter(o.value)}
-              className={`px-3 py-1.5 text-xs rounded-full whitespace-nowrap transition ${
-                sizeFilter === o.value ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
-              {o.label}
-            </button>
+            <FilterChip
+              key={o.value}
+              label={o.label}
+              active={sizeFilter === o.value}
+              onClick={() => setSizeFilter(o.value)}
+            />
           ))}
         </div>
-        <div className="flex gap-1.5 overflow-x-auto">
+        <div className="flex gap-2 overflow-x-auto">
           {commonTags.map((tag) => (
-            <button key={tag} onClick={() => setTagFilter(tagFilter === tag ? '' : tag)}
-              className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap transition ${
-                tagFilter === tag ? 'bg-brand-500 text-white' : 'bg-brand-50 text-brand-600'}`}>
-              {tag}
-            </button>
+            <FilterChip
+              key={tag}
+              label={tag}
+              active={tagFilter === tag}
+              onClick={() => setTagFilter(tagFilter === tag ? '' : tag)}
+            />
           ))}
         </div>
       </div>
 
+      {/* Content */}
       {loading ? (
         <div className="grid grid-cols-2 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-gray-50 rounded-2xl p-4 animate-pulse">
-              <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3" />
-              <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto mb-2" />
-              <div className="h-3 bg-gray-100 rounded w-1/2 mx-auto" />
+            <div key={i} className="bg-surface-white rounded-[10px] p-3.5 shadow-card animate-pulse">
+              <div className="w-12 h-12 bg-surface-alt rounded-full mx-auto mb-3" />
+              <div className="h-4 bg-surface-alt rounded w-2/3 mx-auto mb-2" />
+              <div className="h-3 bg-surface-alt rounded w-1/2 mx-auto" />
             </div>
           ))}
         </div>
       ) : pets.length === 0 ? (
-        <div className="text-center py-16">
-          <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-400 text-sm">附近还没有宠物，去别处看看？</p>
-        </div>
+        <EmptyState
+          icon={<MapPin className="w-10 h-10" />}
+          title="附近还没有宠物"
+          description="换个城市或筛选条件试试吧"
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {pets.map((pet) => (
-            <Link key={pet.id} href={`/pets/${pet.id}`}
-              className="bg-white rounded-2xl p-4 border border-gray-50 hover:shadow-md transition-shadow">
+            <Link
+              key={pet.id}
+              href={`/pets/${pet.id}`}
+              className="bg-surface-white rounded-[10px] p-3.5 shadow-card hover:shadow-md transition-shadow"
+            >
               <Avatar src={pet.avatar} size="lg" className="mx-auto mb-2" />
               <div className="text-center">
                 <div className="font-medium text-sm flex items-center justify-center gap-1">
-                  {pet.type === 'DOG' ? '🐶' : '🐱'} {pet.name}
+                  <span>{pet.type === 'DOG' ? '🐶' : '🐱'}</span>
+                  <span className="text-ink">{pet.name}</span>
                 </div>
-                <div className="text-xs text-gray-400">{pet.breed || ''}</div>
+                <div className="text-[12px] text-ink-faded mt-0.5">{pet.breed || ''}</div>
                 <div className="flex justify-center gap-1 mt-1.5 flex-wrap">
                   {pet.personalityTags.slice(0, 2).map((tag) => (
-                    <span key={tag} className="px-1.5 py-0.5 bg-brand-50 text-brand-500 text-[10px] rounded-full">{tag}</span>
+                    <Badge key={tag} variant="coral" size="sm">{tag}</Badge>
                   ))}
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-1 mt-2 text-xs text-gray-400">
+              <div className="flex items-center justify-center gap-1 mt-2 text-[12px] text-ink-faded">
                 <MapPin className="w-3 h-3" />
                 {pet.fuzzyDistance}
               </div>
               <div className="flex gap-1.5 mt-3" onClick={(e) => e.preventDefault()}>
                 <FollowButton petId={pet.id} initialFollowing={false} className="flex-1 justify-center text-[10px]" />
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={(e) => { e.preventDefault(); setFrTarget(pet); setFrOpen(true); }}
-                  className="flex-1 px-2 py-1.5 text-[10px] rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 transition"
+                  className="flex-1 text-[10px]"
                 >
                   打招呼
-                </button>
+                </Button>
               </div>
             </Link>
           ))}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Avatar } from '@/components/ui';
 import { ReportButton } from '@/components/social/ReportButton';
 import { Heart, MessageCircle, Share2, MapPin } from 'lucide-react';
@@ -54,7 +55,9 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(diffMonth / 12)}年前`;
 }
 
-export function PostCard({ post, onLike }: PostCardProps) {
+export function PostCard({ post, liked, onLike }: PostCardProps) {
+  const router = useRouter();
+
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -64,7 +67,6 @@ export function PostCard({ post, onLike }: PostCardProps) {
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Simple share - could be enhanced with Web Share API
     if (navigator.share) {
       navigator.share({
         title: `${post.author.name}的分享`,
@@ -72,42 +74,56 @@ export function PostCard({ post, onLike }: PostCardProps) {
         url: `${window.location.origin}/posts/${post.id}`,
       }).catch(() => {});
     } else {
-      alert('已复制链接');
       navigator.clipboard?.writeText(`${window.location.origin}/posts/${post.id}`).catch(() => {});
     }
   };
 
+  const handleAuthorClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/pets/${post.author.id}`);
+  };
+
   return (
-    <Link href={`/posts/${post.id}`} className="block">
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 hover:shadow-md transition-shadow">
-        {/* Author header */}
-        <div className="flex items-center gap-3 mb-3">
-          <Avatar src={post.author.avatar} size="md" />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-gray-800 truncate">
-              {post.author.name}
-            </div>
-            <div className="text-xs text-gray-400">
-              {post.author.breed || post.author.type} · {timeAgo(post.createdAt)}
+    <Link href={`/posts/${post.id}`} className="block mb-3">
+      <div className="bg-surface-white rounded-[10px] shadow-card overflow-hidden">
+        {/* Card header */}
+        <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
+          <div
+            className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
+            onClick={handleAuthorClick}
+          >
+            <Avatar src={post.author.avatar} size="md" />
+            <div className="min-w-0">
+              <div className="text-[14px] font-medium text-ink truncate">
+                {post.author.name}
+              </div>
+              <div className="text-[12px] text-ink-muted truncate">
+                {post.author.breed || post.author.type}
+              </div>
             </div>
           </div>
+          <span className="text-[12px] text-ink-faded flex-shrink-0 ml-2">
+            {timeAgo(post.createdAt)}
+          </span>
         </div>
 
-        {/* Content */}
-        <p className="text-sm text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap">
-          {post.content}
-        </p>
+        {/* Card body */}
+        <div className="px-4 pb-1">
+          <p className="text-[15px] text-ink leading-relaxed line-clamp-4 whitespace-pre-wrap">
+            {post.content}
+          </p>
+        </div>
 
         {/* Images */}
         {post.images && post.images.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-3 -mx-1 px-1 scrollbar-hide">
+          <div className="flex gap-2 overflow-x-auto px-4 mb-3 scrollbar-hide">
             {post.images.map((img) => (
               <img
                 key={img.id}
                 src={img.url}
                 alt=""
-                className="w-40 h-40 object-cover rounded-xl flex-shrink-0"
-                onClick={(e) => e.preventDefault()}
+                className="h-[200px] w-auto rounded-[8px] object-cover flex-shrink-0"
               />
             ))}
           </div>
@@ -115,33 +131,48 @@ export function PostCard({ post, onLike }: PostCardProps) {
 
         {/* Location badge */}
         {post.fuzzyLocation && (
-          <div className="flex items-center gap-1 text-xs text-brand-500 mb-3">
-            <MapPin className="w-3 h-3" />
-            <span>{post.fuzzyLocation}</span>
+          <div className="flex items-center gap-1 px-4 mb-2">
+            <MapPin className="w-3 h-3 text-ink-faded" />
+            <span className="text-[12px] text-ink-faded">{post.fuzzyLocation}</span>
           </div>
         )}
 
         {/* Action bar */}
-        <div className="flex items-center gap-6 pt-2 border-t border-gray-50">
+        <div className="flex items-center border-t border-border-light px-2 py-1.5">
           <button
+            type="button"
             onClick={handleLike}
-            className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-ink-faded hover:text-coral-500 transition-colors"
+            aria-label="点赞"
           >
-            <Heart className="w-4 h-4" />
-            <span className="text-xs">{post._count.likes}</span>
+            <Heart
+              className={`w-[18px] h-[18px] ${liked ? 'fill-coral-500 text-coral-500' : ''}`}
+            />
+            <span className="text-[13px]">{post._count.likes}</span>
           </button>
-          <div className="flex items-center gap-1.5 text-gray-400">
-            <MessageCircle className="w-4 h-4" aria-label="私信" />
-            <span className="text-xs">{post._count.comments}</span>
-          </div>
           <button
-            onClick={handleShare}
-            className="flex items-center gap-1.5 text-gray-400 hover:text-brand-500 transition-colors"
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-2 text-ink-faded hover:text-ink-muted transition-colors"
+            aria-label="评论"
           >
-            <Share2 className="w-4 h-4" aria-label="分享" />
-            <span className="text-xs">分享</span>
+            <MessageCircle className="w-[18px] h-[18px]" />
+            <span className="text-[13px]">{post._count.comments}</span>
           </button>
-          <ReportButton targetType="POST" targetId={post.id} />
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-3 py-2 text-ink-faded hover:text-ink-muted transition-colors"
+            aria-label="分享"
+          >
+            <Share2 className="w-[18px] h-[18px]" />
+          </button>
+          <div className="ml-auto">
+            <ReportButton
+              targetType="POST"
+              targetId={post.id}
+              className="text-ink-faded/40 hover:text-coral-500"
+            />
+          </div>
         </div>
       </div>
     </Link>

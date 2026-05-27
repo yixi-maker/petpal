@@ -63,71 +63,113 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-cream">
-      <div className="mb-10 text-center">
-        <div className="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <PawPrint className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-[400px]">
+        {/* Brand Hero */}
+        <div className="text-center mb-10">
+          <PawPrint className="w-12 h-12 text-coral-500 mx-auto mb-3" />
+          <h1 className="text-[28px] font-bold text-ink leading-tight">PetPal</h1>
+          <p className="text-[15px] text-ink-faded mt-1">毛孩子的社交乐园</p>
         </div>
-        <h1 className="text-2xl font-bold text-gray-800">欢迎来到 PetPal</h1>
-        <p className="text-gray-400 text-sm mt-1">毛孩子的社交乐园</p>
-      </div>
 
-      <div className="w-full max-w-sm space-y-4">
-        {step === 'phone' ? (
-          <>
-            <Input
-              label="手机号"
-              placeholder="请输入手机号"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              maxLength={11}
-              type="tel"
-            />
-            {error && <p className="text-xs text-red-500">{error}</p>}
-            <Button className="w-full" onClick={sendCode} loading={loading}>
-              获取验证码
-            </Button>
-          </>
-        ) : (
-          <>
-            <p className="text-sm text-gray-500">验证码已发送至 {phone}</p>
-            <Input
-              label="验证码"
-              placeholder="请输入 6 位验证码"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              maxLength={6}
-              type="text"
-            />
-            {error && <p className="text-xs text-red-500">{error}</p>}
+        {/* Form Area */}
+        <div className="bg-surface-white rounded-[14px] shadow-card p-6 space-y-4">
+          {step === 'phone' ? (
+            <>
+              <div>
+                <Input
+                  label="手机号"
+                  placeholder="请输入11位手机号"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  maxLength={11}
+                  type="tel"
+                  inputMode="numeric"
+                  error={error.includes('手机') ? error : undefined}
+                />
+                <p className="mt-1 text-[12px] text-ink-faded">中国大陆手机号（+86）</p>
+              </div>
+              {error && !error.includes('手机') && (
+                <p className="text-[12px] text-danger-500">{error}</p>
+              )}
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
+                onClick={sendCode}
+                loading={loading}
+              >
+                获取验证码
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-[14px] text-ink-muted text-center">
+                验证码已发送至{' '}
+                <span className="text-ink font-medium">{phone}</span>
+              </p>
 
-            <label className="flex items-start gap-2 text-xs text-gray-500 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-0.5 accent-brand-500"
+              <Input
+                label="验证码"
+                placeholder="请输入 6 位验证码"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                maxLength={6}
+                type="text"
+                inputMode="numeric"
               />
-              <span>
-                已阅读并同意
-                <Link href="/legal/terms" className="text-brand-500 mx-0.5">用户协议</Link>
-                和
-                <Link href="/legal/privacy" className="text-brand-500 mx-0.5">隐私政策</Link>
-              </span>
-            </label>
 
-            <Button className="w-full" onClick={handleLogin} loading={loading}>
-              登录
-            </Button>
-            <button
-              disabled={countdown > 0}
-              onClick={sendCode}
-              className="w-full text-center text-sm text-brand-500 disabled:text-gray-300 py-1"
-            >
-              {countdown > 0 ? `${countdown}s 后重新获取` : '重新获取验证码'}
-            </button>
-          </>
-        )}
+              {error && (
+                <p className="text-[12px] text-danger-500">{error}</p>
+              )}
+
+              <label className="flex items-start gap-2 text-[13px] text-ink-muted cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-coral-500"
+                />
+                <span>
+                  已阅读并同意
+                  <Link
+                    href="/legal/terms"
+                    className="text-coral-500 mx-0.5 hover:text-coral-600 transition-colors"
+                  >
+                    用户协议
+                  </Link>
+                  和
+                  <Link
+                    href="/legal/privacy"
+                    className="text-coral-500 mx-0.5 hover:text-coral-600 transition-colors"
+                  >
+                    隐私政策
+                  </Link>
+                </span>
+              </label>
+
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
+                onClick={handleLogin}
+                loading={loading}
+              >
+                登录
+              </Button>
+
+              <button
+                type="button"
+                disabled={countdown > 0}
+                onClick={sendCode}
+                className="w-full text-center text-[14px] text-coral-500 hover:text-coral-600
+                  disabled:text-ink-faded py-1 transition-colors"
+              >
+                {countdown > 0 ? `${countdown}s 后重新获取` : '重新获取验证码'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

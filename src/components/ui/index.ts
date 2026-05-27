@@ -3,3 +3,7 @@ export { Input } from './Input';
 export { Modal } from './Modal';
 export { Avatar } from './Avatar';
 export { Tabs } from './Tabs';
+export { Badge } from './Badge';
+export { EmptyState } from './EmptyState';
+export { FilterChip } from './FilterChip';
+export { SegmentedControl } from './SegmentedControl';
