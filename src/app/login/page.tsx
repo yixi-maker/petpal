@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Input } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,10 +18,11 @@ export default function LoginPage() {
   const { login, user } = useAuth();
   const router = useRouter();
 
-  if (user) {
-    router.replace('/');
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      router.replace('/');
+    }
+  }, [user, router]);
 
   const sendCode = async () => {
     if (!/^1\d{10}$/.test(phone)) {

@@ -30,7 +30,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">{title}</h3>
             <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-label="关闭" />
             </button>
           </div>
         )}

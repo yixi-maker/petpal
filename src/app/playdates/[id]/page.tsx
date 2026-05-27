@@ -138,7 +138,7 @@ export default function PlaydateDetailPage() {
     return (
       <div className="p-4">
         <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-full mb-4">
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" aria-label="返回" />
         </button>
         <div className="text-center text-gray-400 py-20">{error}</div>
       </div>
@@ -149,7 +149,7 @@ export default function PlaydateDetailPage() {
     return (
       <div className="p-4">
         <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-full mb-4">
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5" aria-label="返回" />
         </button>
         <div className="text-center text-gray-400 py-20">约玩不存在</div>
       </div>
@@ -165,7 +165,7 @@ export default function PlaydateDetailPage() {
         onClick={() => router.back()}
         className="p-2 -ml-2 hover:bg-gray-100 rounded-full mb-2"
       >
-        <ArrowLeft className="w-5 h-5" />
+        <ArrowLeft className="w-5 h-5" aria-label="返回" />
       </button>
 
       {/* Status banner */}

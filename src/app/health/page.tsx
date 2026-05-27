@@ -98,7 +98,7 @@ export default function HealthPage() {
     bowelMovement: '',
     isVomiting: false,
     hasInjury: false,
-    images: '',
+    images: [] as File[],
   });
 
   // Sync petId when currentPet changes
@@ -225,6 +225,20 @@ export default function HealthPage() {
     setTriageSubmitting(true);
     setTriageResult(null);
     try {
+      // Upload images first
+      const imageUrls: string[] = [];
+      if (triageForm.images.length > 0) {
+        for (const file of triageForm.images) {
+          const fd = new FormData();
+          fd.append('file', file);
+          const upRes = await fetch('/api/upload', { method: 'POST', body: fd });
+          if (upRes.ok) {
+            const upData = await upRes.json();
+            imageUrls.push(upData.url);
+          }
+        }
+      }
+
       const res = await fetch('/api/health/triage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -238,7 +252,7 @@ export default function HealthPage() {
           bowelMovement: triageForm.bowelMovement || undefined,
           isVomiting: triageForm.isVomiting,
           hasInjury: triageForm.hasInjury,
-          images: triageForm.images || undefined,
+          images: imageUrls.length > 0 ? imageUrls : undefined,
         }),
       });
       if (res.ok) {
@@ -474,14 +488,55 @@ export default function HealthPage() {
                 </label>
               </div>
 
-              {/* Images URLs */}
+              {/* Image upload */}
               <div>
-                <Input
-                  label="相关图片链接（选填，多个用逗号分隔）"
-                  placeholder="https://example.com/photo1.jpg, https://..."
-                  value={triageForm.images}
-                  onChange={(e) => setTriageForm({ ...triageForm, images: e.target.value })}
-                />
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  相关图片（选填，最多 3 张）
+                </label>
+                {triageForm.images.length > 0 && (
+                  <div className="flex gap-2 mb-2 flex-wrap">
+                    {triageForm.images.map((file, i) => (
+                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`上传图片 ${i + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          onClick={() => {
+                            const newFiles = triageForm.images.filter((_, j) => j !== i);
+                            setTriageForm({ ...triageForm, images: newFiles });
+                          }}
+                          className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-bl-lg flex items-center justify-center"
+                          aria-label={`删除第 ${i + 1} 张图片`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {triageForm.images.length < 3 && (
+                  <label className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-gray-300 rounded-xl text-sm text-gray-400 cursor-pointer hover:border-brand-400 hover:text-brand-500 transition">
+                    <Plus className="w-4 h-4" aria-label="添加" />
+                    选择图片
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setTriageForm({
+                            ...triageForm,
+                            images: [...triageForm.images, file],
+                          });
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                )}
               </div>
 
               {/* Submit */}

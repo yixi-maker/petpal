@@ -49,7 +49,7 @@ export default function MePage() {
           <div className="font-medium">{user?.nickname || '用户' + (user?.phone?.slice(-4) || '')}</div>
           <div className="text-xs text-gray-400">{user?.phone}</div>
         </div>
-        <Link href="/settings" className="p-2"><Settings className="w-5 h-5 text-gray-400" /></Link>
+        <Link href="/settings" className="p-2"><Settings className="w-5 h-5 text-gray-400" aria-label="设置" /></Link>
       </div>
 
       {/* Current pet switcher */}
@@ -84,7 +84,7 @@ export default function MePage() {
       {/* Menu items */}
       <div className="space-y-1 mb-4">
         <Link href="/messages" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
-          <MessageCircle className="w-5 h-5 text-brand-500" />
+          <MessageCircle className="w-5 h-5 text-brand-500" aria-label="私信" />
           <span className="flex-1 text-sm">私信</span>
           <ChevronRight className="w-4 h-4 text-gray-300" />
         </Link>
@@ -111,12 +111,67 @@ export default function MePage() {
       {/* Actions */}
       <div className="space-y-2">
         <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-          <LogOut className="w-4 h-4 mr-2" /> 退出登录
+          <LogOut className="w-4 h-4 mr-2" aria-label="退出" /> 退出登录
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-red-400" onClick={handleDeleteAccount}>
-          <Trash2 className="w-4 h-4 mr-2" /> 注销账号
+        <Button variant="ghost" className="w-full justify-start text-red-400" onClick={() => setDeleteOpen(true)}>
+          <Trash2 className="w-4 h-4 mr-2" aria-label="删除" /> 注销账号
         </Button>
       </div>
+
+      {/* Delete account modal */}
+      <Modal open={deleteOpen} onClose={handleCloseDelete} title="注销账号">
+        {deleteStep === 1 ? (
+          <div>
+            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4">
+              <p className="text-sm text-red-700 font-medium mb-2">
+                确定要注销账号吗？
+              </p>
+              <ul className="text-xs text-red-600 space-y-1 list-disc pl-4">
+                <li>所有宠物档案将被隐藏</li>
+                <li>手机号将被脱敏</li>
+                <li>数据无法恢复</li>
+              </ul>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCloseDelete}
+                className="flex-1 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={() => setDeleteStep(2)}
+                className="flex-1 py-2 text-sm bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+              >
+                继续注销
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4">
+              <p className="text-sm text-red-700">
+                我已知晓，确认注销。此操作不可撤销。
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCloseDelete}
+                className="flex-1 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="flex-1 py-2 text-sm bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {deleting ? '注销中...' : '我已知晓，确认注销'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

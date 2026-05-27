@@ -205,7 +205,7 @@ export default function PostDetailPage() {
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-50">
         <button onClick={() => router.back()} className="p-1 -ml-1">
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
         </button>
         <span className="text-sm font-medium text-gray-700">动态详情</span>
       </div>
@@ -261,14 +261,14 @@ export default function PostDetailPage() {
               <span className="text-sm">{post._count.likes}</span>
             </button>
             <div className="flex items-center gap-1.5 text-gray-500">
-              <MessageCircle className="w-5 h-5" />
+              <MessageCircle className="w-5 h-5" aria-label="私信" />
               <span className="text-sm">{post._count.comments}</span>
             </div>
             <button
               onClick={handleShare}
               className="flex items-center gap-1.5 text-gray-500 hover:text-brand-500 transition-colors"
             >
-              <Share2 className="w-5 h-5" />
+              <Share2 className="w-5 h-5" aria-label="分享" />
               <span className="text-sm">分享</span>
             </button>
           </div>

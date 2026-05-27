@@ -68,7 +68,7 @@ export default function MessagesPage() {
       {/* Header */}
       <div className="px-4 pt-4 pb-2">
         <h1 className="text-lg font-semibold flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-brand-500" />
+          <MessageCircle className="w-5 h-5 text-brand-500" aria-label="私信" />
           私信
         </h1>
       </div>
@@ -84,7 +84,7 @@ export default function MessagesPage() {
       ) : threads.length === 0 ? (
         <div className="text-center py-20">
           <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-8 h-8 text-brand-300" />
+            <MessageCircle className="w-8 h-8 text-brand-300" aria-label="私信" />
           </div>
           <p className="text-gray-400 text-sm mb-4">暂无私信，去附近页面交个朋友吧</p>
           <Link href="/nearby">

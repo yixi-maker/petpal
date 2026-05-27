@@ -74,7 +74,7 @@ export function ReportButton({ targetType, targetId, variant = 'icon', className
           className={`p-1 text-gray-300 hover:text-red-500 transition-colors ${className}`}
           title="举报"
         >
-          <Flag className="w-3.5 h-3.5" />
+          <Flag className="w-3.5 h-3.5" aria-label="举报" />
         </button>
       )}
 

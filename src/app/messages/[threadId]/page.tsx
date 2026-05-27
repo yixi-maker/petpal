@@ -149,7 +149,7 @@ export default function ChatPage() {
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
         <button onClick={() => router.back()} className="p-1 -ml-1">
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
         </button>
         {otherPet && (
           <Link href={`/pets/${otherPet.id}`} className="flex items-center gap-2 flex-1">
@@ -200,7 +200,7 @@ export default function ChatPage() {
             {sending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4" aria-label="发送" />
             )}
           </button>
         </div>

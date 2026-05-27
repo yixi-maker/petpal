@@ -68,7 +68,7 @@ export default function PetProfilePage() {
   return (
     <div className="p-4">
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/me"><ArrowLeft className="w-5 h-5" /></Link>
+        <Link href="/me"><ArrowLeft className="w-5 h-5" aria-label="返回" /></Link>
         <h1 className="text-lg font-semibold">{pet.name} 的主页</h1>
       </div>
 

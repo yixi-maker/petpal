@@ -130,7 +130,7 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
             disabled={!text.trim() || submitting}
             className="p-2.5 bg-brand-500 text-white rounded-xl hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4" aria-label="发送" />
           </button>
         </div>
       )}

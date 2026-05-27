@@ -168,7 +168,7 @@ export default function HomePage() {
         onClick={() => setShowPostForm(true)}
         className="fixed bottom-20 right-4 w-14 h-14 bg-brand-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-brand-600 active:bg-brand-700 transition-colors z-20"
       >
-        <Plus className="w-6 h-6" />
+        <Plus className="w-6 h-6" aria-label="发布动态" />
       </button>
 
       {/* Post Form Modal */}

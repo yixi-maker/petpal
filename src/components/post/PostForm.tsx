@@ -111,7 +111,7 @@ export function PostForm({ onSuccess, onClose }: PostFormProps) {
       {/* Image URLs input */}
       <div className="mb-3">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-          <Image className="w-4 h-4" />
+          <Image className="w-4 h-4" aria-label="图片" />
           <span>图片链接（用逗号分隔多个链接）</span>
         </div>
         <input
@@ -150,7 +150,7 @@ export function PostForm({ onSuccess, onClose }: PostFormProps) {
         disabled={!content.trim()}
         className="w-full"
       >
-        <Send className="w-4 h-4 mr-2" />
+        <Send className="w-4 h-4 mr-2" aria-label="发送" />
         发布
       </Button>
     </div>

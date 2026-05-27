@@ -236,7 +236,7 @@ export default function PlaceDetailPage() {
           onClick={() => router.back()}
           className="p-1.5 hover:bg-gray-100 rounded-lg transition"
         >
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
         </button>
         <div className="flex-1 min-w-0">
           <h1 className="text-base font-semibold truncate">{place.name}</h1>
@@ -443,7 +443,7 @@ export default function PlaceDetailPage() {
                 loading={submitting}
                 className="w-full"
               >
-                <Send className="w-4 h-4 mr-1.5" />
+                <Send className="w-4 h-4 mr-1.5" aria-label="发送" />
                 发布评价
               </Button>
             </div>

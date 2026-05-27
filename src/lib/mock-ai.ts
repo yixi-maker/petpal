@@ -1,4 +1,4 @@
-import { AITriageRequest, AITriageResult } from './ai-provider';
+import type { AITriageRequest, AITriageResult } from './ai-provider';
 
 const DISCLAIMER =
   'AI 健康助手结果仅供健康咨询和初步分诊参考，不能替代执业兽医诊断。\n如您的宠物出现以下情况，请立即前往宠物医院就诊：呼吸困难、严重外伤、持续呕吐/腹泻、意识模糊、中毒可能、超过 24 小时拒食。';
@@ -24,7 +24,7 @@ function detectRiskLevel(symptoms: string): 'LOW' | 'MEDIUM' | 'HIGH' {
   return 'LOW';
 }
 
-function buildHighResult(request: AITriageRequest): AITriageResult {
+function buildHighResult(): AITriageResult {
   return {
     id: `triage-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     riskLevel: 'HIGH',
@@ -172,7 +172,7 @@ export async function getMockAITriage(request: AITriageRequest): Promise<AITriag
 
   switch (riskLevel) {
     case 'HIGH':
-      return buildHighResult(request);
+      return buildHighResult();
     case 'MEDIUM':
       return buildMediumResult(request);
     case 'LOW':

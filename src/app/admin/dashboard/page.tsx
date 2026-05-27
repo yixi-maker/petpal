@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
           color="purple"
         />
         <StatCard
-          icon={<Flag className="w-5 h-5" />}
+          icon={<Flag className="w-5 h-5" aria-label="举报" />}
           value={data.pendingReportCount}
           label="待处理举报"
           color="red"

@@ -250,7 +250,7 @@ export default function AdminReportsPage() {
           {currentReport && (
             <div className="text-sm space-y-2">
               <div className="flex items-center gap-2">
-                <Flag className="w-4 h-4 text-orange-500" />
+                <Flag className="w-4 h-4 text-orange-500" aria-label="举报" />
                 <span>举报 #{currentReport.id}</span>
               </div>
               <p className="text-gray-600 bg-gray-50 p-2 rounded-lg">

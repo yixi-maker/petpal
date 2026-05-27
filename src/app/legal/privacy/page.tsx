@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-white">
       <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
         <button onClick={() => router.back()} className="p-1 -ml-1">
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
         </button>
         <h1 className="text-lg font-semibold">隐私政策</h1>
       </div>

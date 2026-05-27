@@ -131,14 +131,14 @@ export function PostCard({ post, onLike }: PostCardProps) {
             <span className="text-xs">{post._count.likes}</span>
           </button>
           <div className="flex items-center gap-1.5 text-gray-400">
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle className="w-4 h-4" aria-label="私信" />
             <span className="text-xs">{post._count.comments}</span>
           </div>
           <button
             onClick={handleShare}
             className="flex items-center gap-1.5 text-gray-400 hover:text-brand-500 transition-colors"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-4 h-4" aria-label="分享" />
             <span className="text-xs">分享</span>
           </button>
           <ReportButton targetType="POST" targetId={post.id} />
