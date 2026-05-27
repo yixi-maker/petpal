@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { PetForm } from '@/components/pet/PetForm';
+import { PetForm, PetFormData } from '@/components/pet/PetForm';
 import { usePet } from '@/contexts/PetContext';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ export default function NewPetPage() {
   const router = useRouter();
   const { refreshPets } = usePet();
 
-  const handleSubmit = async (data: Record<string, unknown>) => {
+  const handleSubmit = async (data: PetFormData) => {
     const res = await fetch('/api/pets', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -28,7 +28,7 @@ export default function PetProfilePage() {
   const { id } = useParams<{ id: string }>();
   const [pet, setPet] = useState<PetProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { currentPet, switchPet } = usePet();
+  const { currentPet, pets, switchPet } = usePet();
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function PetProfilePage() {
     return <div className="p-4 text-center text-gray-400 py-20">宠物不存在</div>;
   }
 
-  const isMine = currentPet && pet.userId === currentPet.userId;
+  const isMine = pets.some((p) => p.id === pet.id);
 
   return (
     <div className="p-4">

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button, Input, Avatar } from '@/components/ui';
 
-interface PetFormData {
+export interface PetFormData {
   name: string;
   type: string;
   breed?: string;
