@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { MobileShell } from '@/components/layout/MobileShell';
+import { Providers } from '@/components/layout/Providers';
 
 export const metadata: Metadata = {
   title: 'PetPal - 毛孩子的社交乐园',
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body>
-        <MobileShell>{children}</MobileShell>
+        <Providers>
+          <MobileShell>{children}</MobileShell>
+        </Providers>
       </body>
     </html>
   );
