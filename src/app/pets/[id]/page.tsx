@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { usePet } from '@/contexts/PetContext';
 import { Avatar, Button } from '@/components/ui';
-import { ArrowLeft, MapPin, Heart, Users } from 'lucide-react';
+import { FollowButton } from '@/components/social/FollowButton';
+import { FriendRequestModal } from '@/components/social/FriendRequestModal';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 interface PetProfile {
@@ -28,14 +30,29 @@ export default function PetProfilePage() {
   const { id } = useParams<{ id: string }>();
   const [pet, setPet] = useState<PetProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [following, setFollowing] = useState(false);
+  const [frOpen, setFrOpen] = useState(false);
   const { currentPet, pets, switchPet } = usePet();
-  const router = useRouter();
 
   useEffect(() => {
     fetch(`/api/pets/${id}`)
       .then(r => r.json())
       .then(data => { setPet(data.pet); setLoading(false); });
   }, [id]);
+
+  // Check follow status
+  useEffect(() => {
+    if (pet && currentPet) {
+      fetch(`/api/social/follow?petId=${currentPet.id}&type=following`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.list?.some((f: { id: number }) => f.id === pet.id)) {
+            setFollowing(true);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [pet, currentPet]);
 
   if (loading) {
     return <div className="p-4 text-center text-gray-400 py-20">加载中...</div>;
@@ -93,11 +110,31 @@ export default function PetProfilePage() {
           </Button>
         ) : (
           <>
-            <Button className="flex-1" variant="primary">关注</Button>
-            <Button className="flex-1" variant="outline">打招呼</Button>
+            <FollowButton
+              petId={pet.id}
+              initialFollowing={following}
+              onToggle={(v) => setFollowing(v)}
+              className="flex-1 py-2.5 text-sm"
+            />
+            <Button
+              className="flex-1"
+              variant="outline"
+              onClick={() => setFrOpen(true)}
+              disabled={!currentPet}
+            >
+              打招呼
+            </Button>
           </>
         )}
       </div>
+
+      <FriendRequestModal
+        open={frOpen}
+        onClose={() => setFrOpen(false)}
+        fromPetId={currentPet?.id || 0}
+        toPetId={pet.id}
+        toPetName={pet.name}
+      />
     </div>
   );
 }
