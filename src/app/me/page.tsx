@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { Avatar, Button } from '@/components/ui';
-import { ChevronRight, LogOut, Plus, Settings, Shield, Trash2 } from 'lucide-react';
+import { ChevronRight, LogOut, MessageCircle, Plus, Settings, Shield, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -66,6 +66,12 @@ export default function MePage() {
 
       {/* Menu items */}
       <div className="space-y-1 mb-4">
+        <Link href="/messages" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
+          <MessageCircle className="w-5 h-5 text-brand-500" />
+          <span className="flex-1 text-sm">私信</span>
+          <ChevronRight className="w-4 h-4 text-gray-300" />
+        </Link>
+
         <Link href="/pets/new" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl">
           <Plus className="w-5 h-5 text-brand-500" />
           <span className="flex-1 text-sm">添加宠物</span>
