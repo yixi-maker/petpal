@@ -1,0 +1,13 @@
+{
+  "name": "PetPal - 毛孩子的社交乐园",
+  "short_name": "PetPal",
+  "description": "面向猫狗主人的宠物社交与本地生活应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFBF5",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

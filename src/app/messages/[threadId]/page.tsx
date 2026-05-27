@@ -170,6 +170,7 @@ export default function ChatPage() {
               content={msg.content}
               time={formatTime(msg.createdAt)}
               isMine={msg.senderPetId === userPetId}
+              messageId={msg.id}
             />
           ))
         )}

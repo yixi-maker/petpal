@@ -1,12 +1,15 @@
 'use client';
 
+import { ReportButton } from '@/components/social/ReportButton';
+
 interface ChatBubbleProps {
   content: string;
   time: string;
   isMine: boolean;
+  messageId?: number;
 }
 
-export function ChatBubble({ content, time, isMine }: ChatBubbleProps) {
+export function ChatBubble({ content, time, isMine, messageId }: ChatBubbleProps) {
   return (
     <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} mb-3`}>
       <div className={`max-w-[75%] ${isMine ? 'items-end' : 'items-start'} flex flex-col`}>
@@ -19,7 +22,10 @@ export function ChatBubble({ content, time, isMine }: ChatBubbleProps) {
         >
           {content}
         </div>
-        <span className="text-[10px] text-gray-400 mt-1 px-1">{time}</span>
+        <div className="flex items-center gap-1 mt-1 px-1">
+          <span className="text-[10px] text-gray-400">{time}</span>
+          {messageId && <ReportButton targetType="MESSAGE" targetId={messageId} />}
+        </div>
       </div>
     </div>
   );

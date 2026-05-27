@@ -1,6 +1,7 @@
 'use client';
 
 import { Avatar } from '@/components/ui';
+import { ReportButton } from '@/components/social/ReportButton';
 import { Heart, MessageCircle, Share2, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
@@ -140,6 +141,7 @@ export function PostCard({ post, onLike }: PostCardProps) {
             <Share2 className="w-4 h-4" />
             <span className="text-xs">分享</span>
           </button>
+          <ReportButton targetType="POST" targetId={post.id} />
         </div>
       </div>
     </Link>

@@ -6,6 +6,7 @@ import { usePet } from '@/contexts/PetContext';
 import { Avatar, Button } from '@/components/ui';
 import { FollowButton } from '@/components/social/FollowButton';
 import { FriendRequestModal } from '@/components/social/FriendRequestModal';
+import { ReportButton } from '@/components/social/ReportButton';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -135,6 +136,18 @@ export default function PetProfilePage() {
         toPetId={pet.id}
         toPetName={pet.name}
       />
+
+      {/* Report button for non-own pets */}
+      {!isMine && (
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <ReportButton
+            targetType="PET"
+            targetId={pet.id}
+            variant="text"
+            className="text-red-400 hover:text-red-600"
+          />
+        </div>
+      )}
     </div>
   );
 }

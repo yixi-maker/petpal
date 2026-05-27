@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Avatar } from '@/components/ui';
+import { ReportButton } from '@/components/social/ReportButton';
 import { Send } from 'lucide-react';
 
 interface CommentAuthor {
@@ -98,6 +99,7 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
                   <span className="text-[10px] text-gray-300">
                     {timeAgo(comment.createdAt)}
                   </span>
+                  <ReportButton targetType="COMMENT" targetId={comment.id} />
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
               </div>

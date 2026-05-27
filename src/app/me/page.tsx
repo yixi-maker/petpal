@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
-import { Avatar, Button } from '@/components/ui';
+import { Avatar, Button, Modal } from '@/components/ui';
 import { ChevronRight, LogOut, MessageCircle, Plus, Settings, Shield, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,6 +12,9 @@ export default function MePage() {
   const { user, logout } = useAuth();
   const { pets, currentPet, switchPet } = usePet();
   const router = useRouter();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState(1);
+  const [deleting, setDeleting] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -18,9 +22,22 @@ export default function MePage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!confirm('确定要注销账号吗？此操作不可撤销，所有宠物档案将被隐藏。')) return;
-    await fetch('/api/auth/delete-account', { method: 'POST' });
-    router.push('/login');
+    setDeleting(true);
+    try {
+      await fetch('/api/auth/delete-account', { method: 'POST' });
+    } catch {
+      // ignore
+    } finally {
+      setDeleting(false);
+      setDeleteOpen(false);
+      setDeleteStep(1);
+      router.push('/login');
+    }
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteOpen(false);
+    setDeleteStep(1);
   };
 
   return (
