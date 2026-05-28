@@ -39,10 +39,10 @@ function timeAgo(date: string | Date): string {
 function SkeletonRow() {
   return (
     <div className="flex items-center gap-3 px-4 py-3 animate-pulse">
-      <div className="w-12 h-12 rounded-full bg-gray-200" />
+      <div className="w-12 h-12 rounded-full bg-surface-alt" />
       <div className="flex-1 space-y-2">
-        <div className="h-4 bg-gray-200 rounded w-20" />
-        <div className="h-3 bg-gray-100 rounded w-40" />
+        <div className="h-4 bg-surface-alt rounded w-20" />
+        <div className="h-3 bg-surface-alt rounded w-40" />
       </div>
     </div>
   );
@@ -68,14 +68,14 @@ export default function MessagesPage() {
       {/* Header */}
       <div className="px-4 pt-4 pb-2">
         <h1 className="text-lg font-semibold flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-brand-500" aria-label="私信" />
+          <MessageCircle className="w-5 h-5 text-teal-500" aria-label="私信" />
           私信
         </h1>
       </div>
 
       {/* Content */}
       {loading ? (
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-border-light">
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
@@ -83,23 +83,23 @@ export default function MessagesPage() {
         </div>
       ) : threads.length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-8 h-8 text-brand-300" aria-label="私信" />
+          <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <MessageCircle className="w-8 h-8 text-teal-300" aria-label="私信" />
           </div>
-          <p className="text-gray-400 text-sm mb-4">暂无私信，去附近页面交个朋友吧</p>
+          <p className="text-ink-faded text-sm mb-4">暂无私信，去附近页面交个朋友吧</p>
           <Link href="/nearby">
-            <span className="inline-block px-4 py-2 bg-brand-500 text-white text-sm rounded-xl">
+            <span className="inline-block px-4 py-2 bg-teal-500 text-white text-sm rounded-xl">
               去看看
             </span>
           </Link>
         </div>
       ) : (
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-border-light">
           {threads.map((thread) => (
             <Link
               key={thread.id}
               href={`/messages/${thread.id}`}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-surface-alt transition-colors"
             >
               <Avatar src={thread.otherPet.avatar} size="md" />
               <div className="flex-1 min-w-0">
@@ -107,11 +107,11 @@ export default function MessagesPage() {
                   <span className="font-medium text-sm truncate">
                     {thread.otherPet.name}
                   </span>
-                  <span className="text-[10px] text-gray-400 shrink-0 ml-2">
+                  <span className="text-[10px] text-ink-faded shrink-0 ml-2">
                     {timeAgo(thread.lastMessageAt)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400 truncate mt-0.5">
+                <p className="text-xs text-ink-faded truncate mt-0.5">
                   {thread.lastMessage ? (
                     <>
                       {thread.lastMessage.isMine ? '你: ' : ''}
@@ -124,7 +124,7 @@ export default function MessagesPage() {
                   )}
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
+              <ChevronRight className="w-4 h-4 text-ink-faded/60 shrink-0" />
             </Link>
           ))}
         </div>

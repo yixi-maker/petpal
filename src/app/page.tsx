@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { PawPrint, Plus } from 'lucide-react';
+import { PawPrint, Plus, Users, MapPin } from 'lucide-react';
 import { Tabs, Modal, Avatar, EmptyState, Button } from '@/components/ui';
 import { PostList } from '@/components/post/PostList';
 import { PostForm } from '@/components/post/PostForm';
@@ -109,6 +109,10 @@ export default function HomePage() {
 
   if (!user) return null;
 
+  const petType = (currentPet?.type === 'DOG' || currentPet?.type === 'CAT')
+    ? (currentPet.type as 'DOG' | 'CAT')
+    : undefined;
+
   return (
     <div className="relative bg-surface min-h-screen">
       {/* Header */}
@@ -118,17 +122,6 @@ export default function HomePage() {
           PetPal
         </h1>
         <div className="flex items-center gap-3">
-          {/* Current pet indicator */}
-          {currentPet && (
-            <Link href="/pets">
-              <div className="flex items-center gap-1.5 bg-surface-alt hover:bg-border-light rounded-full pl-1 pr-2.5 py-1 transition-colors cursor-pointer">
-                <Avatar src={currentPet.avatar} size="sm" />
-                <span className="text-[13px] text-ink-muted truncate max-w-[80px]">
-                  {currentPet.name}
-                </span>
-              </div>
-            </Link>
-          )}
           {/* Avatar button to /me */}
           <Link href="/me">
             <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center hover:bg-border-light transition-colors">
@@ -138,14 +131,57 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Pet identity strip */}
-      {currentPet && (
-        <div className="px-4 pb-2">
-          <div className="bg-teal-50 rounded-[10px] px-3 py-2 text-[13px] text-ink-muted text-center">
-            今天用 <span className="font-medium text-teal-600">{currentPet.name}</span> 的身份探索
+      {/* Pet Identity Header */}
+      <div className="px-4 mb-3">
+        {currentPet ? (
+          <div className="bg-teal-50/60 rounded-[10px] px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <Avatar
+                src={currentPet.avatar}
+                petType={petType}
+                size="md"
+                className="w-[40px] h-[40px] flex-shrink-0"
+              />
+              <span className="text-[13px] text-ink-muted truncate">
+                今天用 <span className="font-medium text-teal-600">{currentPet.name}</span> 的身份探索
+              </span>
+            </div>
+            <Link
+              href="/me"
+              className="text-[13px] text-teal-500 hover:text-teal-600 font-medium flex-shrink-0 ml-2 transition-colors"
+            >
+              切换
+            </Link>
           </div>
+        ) : (
+          <div className="bg-teal-50/60 rounded-[10px] px-4 py-3 text-center">
+            <Link
+              href="/pets/new"
+              className="text-[13px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
+            >
+              添加你的第一只宠物
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Discovery Row */}
+      <div className="px-4 mb-3">
+        <div className="flex gap-2.5">
+          <Link href="/nearby" className="flex-1">
+            <div className="bg-surface-white rounded-[10px] px-3 py-2.5 shadow-card flex items-center gap-2 hover:bg-surface-alt transition-colors">
+              <Users className="w-[18px] h-[18px] text-teal-500 flex-shrink-0" />
+              <span className="text-[12px] text-ink-muted leading-tight">附近新朋友</span>
+            </div>
+          </Link>
+          <Link href="/map" className="flex-1">
+            <div className="bg-surface-white rounded-[10px] px-3 py-2.5 shadow-card flex items-center gap-2 hover:bg-surface-alt transition-colors">
+              <MapPin className="w-[18px] h-[18px] text-teal-500 flex-shrink-0" />
+              <span className="text-[12px] text-ink-muted leading-tight">友好地点</span>
+            </div>
+          </Link>
         </div>
-      )}
+      </div>
 
       {/* Tabs */}
       <div className="sticky top-0 z-10 bg-surface">

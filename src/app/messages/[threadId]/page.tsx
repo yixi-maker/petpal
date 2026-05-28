@@ -139,7 +139,7 @@ export default function ChatPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="w-6 h-6 text-brand-300 animate-spin" />
+        <Loader2 className="w-6 h-6 text-teal-300 animate-spin" />
       </div>
     );
   }
@@ -147,9 +147,9 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border-light bg-white sticky top-0 z-10">
         <button onClick={() => router.back()} className="p-1 -ml-1">
-          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
+          <ArrowLeft className="w-5 h-5 text-ink-muted" aria-label="返回" />
         </button>
         {otherPet && (
           <Link href={`/pets/${otherPet.id}`} className="flex items-center gap-2 flex-1">
@@ -162,7 +162,7 @@ export default function ChatPage() {
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3">
         {messages.length === 0 ? (
-          <div className="text-center text-gray-400 text-sm mt-20">暂无消息，发送第一条私信吧</div>
+          <div className="text-center text-ink-faded text-sm mt-20">暂无消息，发送第一条私信吧</div>
         ) : (
           messages.map((msg) => (
             <ChatBubble
@@ -178,9 +178,9 @@ export default function ChatPage() {
       </div>
 
       {/* Input bar */}
-      <div className="border-t border-gray-100 bg-white px-3 py-2">
+      <div className="border-t border-border-light bg-white px-3 py-2">
         {error && (
-          <p className="text-xs text-red-500 mb-1 px-1">{error}</p>
+          <p className="text-xs text-rose-500 mb-1 px-1">{error}</p>
         )}
         <div className="flex items-center gap-2">
           <input
@@ -189,13 +189,13 @@ export default function ChatPage() {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="输入消息..."
-            className="flex-1 px-4 py-2.5 text-sm bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="flex-1 px-4 py-2.5 text-sm bg-surface-alt rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500"
             disabled={sending}
           />
           <button
             onClick={handleSend}
             disabled={!inputValue.trim() || sending}
-            className="w-10 h-10 flex items-center justify-center bg-brand-500 text-white rounded-full hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+            className="w-10 h-10 flex items-center justify-center bg-teal-500 text-white rounded-full hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
           >
             {sending ? (
               <Loader2 className="w-4 h-4 animate-spin" />

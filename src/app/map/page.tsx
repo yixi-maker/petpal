@@ -20,6 +20,7 @@ import {
   Phone,
 } from 'lucide-react';
 import { Modal, FilterChip, Badge, SegmentedControl } from '@/components/ui';
+import { MapPlaceholder } from '@/components/map/MapPlaceholder';
 
 interface Place {
   id: number;
@@ -65,8 +66,6 @@ const TYPE_ICON_MAP: Record<string, React.ReactNode> = {
   BOARDING: <Home className="w-4 h-4" />,
 };
 
-// Type icon colors: HOSPITAL=rose, PARK=sage, rest=teal, GROOMING/BOARDING=sea
-
 const TYPE_LABEL_MAP: Record<string, string> = {
   HOSPITAL: '医院',
   PARK: '公园',
@@ -77,7 +76,6 @@ const TYPE_LABEL_MAP: Record<string, string> = {
   BOARDING: '寄养',
 };
 
-// Circle color for type icon (solid bg used for the icon circle)
 const TYPE_CIRCLE_MAP: Record<string, string> = {
   HOSPITAL: 'bg-rose-50 text-rose-500',
   PARK: 'bg-sage-50 text-sage-500',
@@ -271,15 +269,11 @@ export default function MapPage() {
             )}
           </div>
         ) : (
-          /* ========== MAP VIEW (placeholder) ========== */
+          /* ========== MAP VIEW ========== */
           <div>
-            {/* Map placeholder */}
-            <div className="rounded-[12px] bg-gradient-to-br from-sea-50 to-surface-alt h-[400px] relative overflow-hidden">
-              {/* Center hint */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <MapPin className="w-12 h-12 text-ink-faded/20" />
-                <p className="text-[14px] text-ink-faded mt-3">地图区域</p>
-              </div>
+            {/* Map placeholder using MapPlaceholder component */}
+            <div className="rounded-[12px] h-[400px] relative overflow-hidden">
+              <MapPlaceholder />
 
               {/* Fake marker dots */}
               {places.slice(0, 4).map((place, i) => {
@@ -290,35 +284,31 @@ export default function MapPage() {
                   { top: '65%', left: '50%' },
                 ];
                 return (
-                  <div
+                  <button
                     key={place.id}
-                    className="absolute cursor-pointer"
+                    className="absolute cursor-pointer bg-transparent border-0 p-0"
                     style={{ top: positions[i].top, left: positions[i].left }}
                     onClick={() => handlePlaceClick(place)}
-                    title={place.name}
+                    aria-label={`查看 ${place.name} 详情`}
                   >
                     <div className="w-3.5 h-3.5 bg-teal-500 rounded-full shadow-[0_0_0_3px_rgba(29,138,128,0.2)]" />
                     <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-surface-white text-[11px] px-2 py-0.5 rounded-[6px] shadow-md whitespace-nowrap text-ink font-medium opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
                       {place.name}
                     </div>
-                  </div>
+                  </button>
                 );
               })}
-
-              {/* Bottom overlay bar */}
-              <div className="absolute bottom-0 left-0 right-0 bg-surface-white/80 backdrop-blur-sm py-2 text-center">
-                <p className="text-[12px] text-ink-muted">接入高德地图后显示完整地图</p>
-              </div>
             </div>
 
             {/* Place list below the map */}
             <div className="mt-4 space-y-2">
               <p className="text-[12px] text-ink-faded px-1">附近地点</p>
               {places.slice(0, 5).map((place) => (
-                <div
+                <button
                   key={place.id}
                   onClick={() => handlePlaceClick(place)}
-                  className="flex items-center gap-3 p-3 bg-surface-white rounded-[10px] active:scale-[0.98] transition cursor-pointer shadow-card"
+                  className="w-full text-left flex items-center gap-3 p-3 bg-surface-white rounded-[10px] active:scale-[0.98] transition cursor-pointer shadow-card border-0"
+                  aria-label={`查看 ${place.name} 详情`}
                 >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
@@ -336,7 +326,7 @@ export default function MapPage() {
                     <span className="text-[12px] text-ink-faded">{mockDistance(place.id)}</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-ink-faded/40 shrink-0" />
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -352,11 +342,8 @@ export default function MapPage() {
         {selectedPlace && (
           <div className="-mx-5 -mb-5">
             {/* Map placeholder in modal */}
-            <div className="h-36 bg-gradient-to-br from-sea-50 to-surface-alt flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-8 h-8 text-ink-faded/30 mx-auto mb-1" />
-                <p className="text-[12px] text-ink-faded">接入高德地图后显示位置</p>
-              </div>
+            <div className="h-36">
+              <MapPlaceholder />
             </div>
 
             <div className="p-5 space-y-4">

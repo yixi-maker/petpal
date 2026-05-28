@@ -12,7 +12,7 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  const protectedPaths = ['/nearby', '/map', '/health', '/me', '/pets', '/posts', '/messages', '/playdates'];
+  const protectedPaths = ['/nearby', '/map', '/health', '/me', '/settings', '/pets', '/posts', '/messages', '/playdates'];
   const isProtected = protectedPaths.some((p) => pathname === p || pathname.startsWith(p + '/'));
   if (isProtected && !userToken) {
     return NextResponse.redirect(new URL('/login', request.url));
@@ -30,6 +30,7 @@ export const config = {
     '/map',
     '/health',
     '/me',
+    '/settings',
     '/pets/:path*',
     '/posts/:path*',
     '/messages/:path*',

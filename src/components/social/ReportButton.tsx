@@ -64,14 +64,14 @@ export function ReportButton({ targetType, targetId, variant = 'icon', className
       {variant === 'text' ? (
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
-          className={`text-xs text-gray-400 hover:text-red-500 transition-colors ${className}`}
+          className={`text-xs text-ink-faded hover:text-rose-500 transition-colors ${className}`}
         >
           举报
         </button>
       ) : (
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
-          className={`p-1 text-gray-300 hover:text-red-500 transition-colors ${className}`}
+          className={`p-1 text-ink-faded/60 hover:text-rose-500 transition-colors ${className}`}
           title="举报"
         >
           <Flag className="w-3.5 h-3.5" aria-label="举报" />
@@ -82,23 +82,23 @@ export function ReportButton({ targetType, targetId, variant = 'icon', className
       <Modal open={open} onClose={handleClose} title={done ? '举报已提交' : '举报'}>
         {done ? (
           <div className="text-center py-4">
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-ink-muted mb-4">
               感谢您的举报，我们会尽快审核处理。
             </p>
             <button
               onClick={handleClose}
-              className="px-4 py-2 text-sm bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors"
+              className="px-4 py-2 text-sm bg-teal-500 text-white rounded-xl hover:bg-teal-600 transition-colors"
             >
               关闭
             </button>
           </div>
         ) : (
           <div>
-            <p className="text-sm text-gray-500 mb-3">
+            <p className="text-sm text-ink-muted mb-3">
               请描述您举报的原因，我们会尽快处理。
             </p>
             <textarea
-              className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition resize-none"
+              className="w-full px-3 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition resize-none"
               rows={4}
               maxLength={500}
               placeholder="请填写举报原因（必填，最多500字）"
@@ -106,20 +106,20 @@ export function ReportButton({ targetType, targetId, variant = 'icon', className
               onChange={(e) => { setReason(e.target.value); setError(''); }}
             />
             <div className="flex items-center justify-between mt-2 mb-4">
-              {error && <p className="text-xs text-red-500">{error}</p>}
-              <span className="text-xs text-gray-400 ml-auto">{reason.length}/500</span>
+              {error && <p className="text-xs text-rose-500">{error}</p>}
+              <span className="text-xs text-ink-faded ml-auto">{reason.length}/500</span>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={handleClose}
-                className="flex-1 py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2 text-sm text-ink-muted border border-border rounded-xl hover:bg-surface-alt transition-colors"
               >
                 取消
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={!reason.trim() || submitting}
-                className="flex-1 py-2 text-sm bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1.5"
+                className="flex-1 py-2 text-sm bg-rose-500 text-white rounded-xl hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1.5"
               >
                 {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 提交举报

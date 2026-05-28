@@ -19,6 +19,7 @@ import {
   Send,
 } from 'lucide-react';
 import { Avatar, Button, Badge } from '@/components/ui';
+import { MapPlaceholder } from '@/components/map/MapPlaceholder';
 
 interface ReviewPet {
   id: number;
@@ -245,12 +246,8 @@ export default function PlaceDetailPage() {
       </div>
 
       {/* Map placeholder */}
-      <div className="h-[200px] bg-gradient-to-br from-sea-50 to-surface-alt flex items-center justify-center relative">
-        <div className="text-center">
-          <MapPin className="w-10 h-10 text-ink-faded/30 mx-auto mb-2" />
-          <p className="text-[14px] text-ink-faded">接入高德地图后显示位置</p>
-        </div>
-        {/* AMAP integration point: replace the above div with an actual map component */}
+      <div className="h-[200px]">
+        <MapPlaceholder />
       </div>
 
       <div className="px-4 py-4 space-y-4 max-w-mobile mx-auto">

@@ -79,7 +79,7 @@ export function PostForm({ onSuccess, onClose }: PostFormProps) {
 
   if (!currentPet) {
     return (
-      <div className="text-center py-8 text-gray-400 text-sm">
+      <div className="text-center py-8 text-ink-faded text-sm">
         请先创建宠物后再发布动态
       </div>
     );
@@ -91,32 +91,32 @@ export function PostForm({ onSuccess, onClose }: PostFormProps) {
       <div className="flex items-center gap-3 mb-4">
         <Avatar src={currentPet.avatar} size="md" />
         <div>
-          <div className="text-sm font-medium text-gray-800">{currentPet.name}</div>
-          <div className="text-xs text-gray-400">{currentPet.breed || currentPet.type}</div>
+          <div className="text-sm font-medium text-ink">{currentPet.name}</div>
+          <div className="text-xs text-ink-faded">{currentPet.breed || currentPet.type}</div>
         </div>
       </div>
 
       {/* Content textarea */}
       <textarea
-        className="w-full min-h-[120px] p-3 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:border-brand-300 placeholder-gray-300"
+        className="w-full min-h-[120px] p-3 text-sm border border-border rounded-xl resize-none focus:outline-none focus:border-teal-400 placeholder:text-ink-faded/60"
         placeholder="分享毛孩子的日常..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
         maxLength={maxLength}
       />
-      <div className={`text-right text-xs mb-3 ${charCount > maxLength ? 'text-red-500' : 'text-gray-400'}`}>
+      <div className={`text-right text-xs mb-3 ${charCount > maxLength ? 'text-rose-500' : 'text-ink-faded'}`}>
         {charCount}/{maxLength}
       </div>
 
       {/* Image URLs input */}
       <div className="mb-3">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+        <div className="flex items-center gap-2 text-sm text-ink-muted mb-1">
           <Image className="w-4 h-4" aria-label="图片" />
           <span>图片链接（用逗号分隔多个链接）</span>
         </div>
         <input
           type="text"
-          className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-300 placeholder-gray-300"
+          className="w-full p-2 text-sm border border-border rounded-lg focus:outline-none focus:border-teal-400 placeholder:text-ink-faded/60"
           placeholder="https://..."
           value={imageUrls}
           onChange={(e) => setImageUrls(e.target.value)}
@@ -125,13 +125,13 @@ export function PostForm({ onSuccess, onClose }: PostFormProps) {
 
       {/* Fuzzy location input */}
       <div className="mb-4">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+        <div className="flex items-center gap-2 text-sm text-ink-muted mb-1">
           <MapPin className="w-4 h-4" />
           <span>模糊位置（如：朝阳区 / 家附近）</span>
         </div>
         <input
           type="text"
-          className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-brand-300 placeholder-gray-300"
+          className="w-full p-2 text-sm border border-border rounded-lg focus:outline-none focus:border-teal-400 placeholder:text-ink-faded/60"
           placeholder="可选"
           value={fuzzyLocation}
           onChange={(e) => setFuzzyLocation(e.target.value)}
@@ -140,7 +140,7 @@ export function PostForm({ onSuccess, onClose }: PostFormProps) {
 
       {/* Error */}
       {error && (
-        <div className="text-sm text-red-500 mb-3">{error}</div>
+        <div className="text-sm text-rose-500 mb-3">{error}</div>
       )}
 
       {/* Submit */}

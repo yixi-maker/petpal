@@ -16,14 +16,14 @@ export function ChatBubble({ content, time, isMine, messageId }: ChatBubbleProps
         <div
           className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
             isMine
-              ? 'bg-brand-500 text-white rounded-2xl rounded-br-md'
-              : 'bg-gray-100 text-gray-800 rounded-2xl rounded-bl-md'
+              ? 'bg-teal-500 text-white rounded-2xl rounded-br-md'
+              : 'bg-surface-alt text-ink rounded-2xl rounded-bl-md'
           }`}
         >
           {content}
         </div>
         <div className="flex items-center gap-1 mt-1 px-1">
-          <span className="text-[10px] text-gray-400">{time}</span>
+          <span className="text-[10px] text-ink-faded">{time}</span>
           {messageId && <ReportButton targetType="MESSAGE" targetId={messageId} />}
         </div>
       </div>

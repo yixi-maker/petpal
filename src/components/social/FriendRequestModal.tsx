@@ -51,21 +51,21 @@ export function FriendRequestModal({ open, onClose, fromPetId, toPetId, toPetNam
       {done ? (
         <div className="text-center py-4">
           <div className="text-4xl mb-2">🐾</div>
-          <p className="text-sm text-gray-500">打招呼已发送，等待对方回应</p>
+          <p className="text-sm text-ink-muted">打招呼已发送，等待对方回应</p>
           <Button className="mt-4 w-full" onClick={handleClose}>知道了</Button>
         </div>
       ) : (
         <div className="space-y-3">
           <textarea
-            className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+            className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
             rows={3}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             maxLength={100}
             placeholder="说点什么吧..."
           />
-          <div className="text-xs text-gray-400 text-right">{message.length}/100</div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          <div className="text-xs text-ink-faded text-right">{message.length}/100</div>
+          {error && <p className="text-xs text-rose-500">{error}</p>}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={handleClose}>取消</Button>
             <Button className="flex-1" onClick={handleSubmit} loading={loading}>发送</Button>

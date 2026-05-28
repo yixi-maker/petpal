@@ -194,7 +194,7 @@ export default function PlaydatesPage() {
 
   if (!currentPet) {
     return (
-      <div className="p-4 text-center text-gray-400 mt-20">
+      <div className="p-4 text-center text-ink-faded mt-20">
         请先添加宠物
       </div>
     );
@@ -220,9 +220,9 @@ export default function PlaydatesPage() {
       {/* Playdate list */}
       <div className="mt-4 space-y-3">
         {loading ? (
-          <div className="text-center text-gray-400 py-10">加载中...</div>
+          <div className="text-center text-ink-faded py-10">加载中...</div>
         ) : playdates.length === 0 ? (
-          <div className="text-center text-gray-400 py-10">
+          <div className="text-center text-ink-faded py-10">
             {activeTab === 'public' ? '暂无公开活动' : '暂无约玩记录'}
             <p className="text-xs mt-1">点击右下角 + 发起约玩</p>
           </div>
@@ -231,7 +231,7 @@ export default function PlaydatesPage() {
             <div
               key={pd.id}
               onClick={() => router.push(`/playdates/${pd.id}`)}
-              className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 cursor-pointer hover:shadow-md transition active:scale-[0.98]"
+              className="bg-white rounded-2xl p-4 shadow-sm border border-border-light cursor-pointer hover:shadow-md transition active:scale-[0.98]"
             >
               <div className="flex items-start gap-3">
                 <Avatar src={pd.creator.avatar} alt={pd.creator.name} size="md" />
@@ -239,7 +239,7 @@ export default function PlaydatesPage() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-sm truncate">{pd.title}</h3>
                     {pd.type === 'INVITE' && (
-                      <span className="text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded-full shrink-0">
+                      <span className="text-xs bg-teal-100 text-teal-600 px-1.5 py-0.5 rounded-full shrink-0">
                         一对一
                       </span>
                     )}
@@ -249,16 +249,16 @@ export default function PlaydatesPage() {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
+                  <div className="flex items-center gap-1 mt-1 text-xs text-ink-faded">
                     <span>{pd.creator.name}</span>
                     {pd.target && (
                       <>
-                        <span className="mx-1">→</span>
+                        <span className="mx-1">&rarr;</span>
                         <span>{pd.target.name}</span>
                       </>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-3 mt-2 text-xs text-ink-muted">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {formatTime(pd.time)}
@@ -273,7 +273,7 @@ export default function PlaydatesPage() {
                   {(pd.suitableTypes.length > 0 || pd.suitableSizes.length > 0) && (
                     <div className="flex items-center gap-1 mt-2 flex-wrap">
                       {pd.suitableTypes.map((t) => (
-                        <span key={t} className="text-xs bg-brand-50 text-brand-600 px-1.5 py-0.5 rounded-full">
+                        <span key={t} className="text-xs bg-teal-50 text-teal-600 px-1.5 py-0.5 rounded-full">
                           {t === 'DOG' ? '狗狗' : '猫猫'}
                         </span>
                       ))}
@@ -286,7 +286,7 @@ export default function PlaydatesPage() {
                   )}
 
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <span className="text-xs text-ink-faded flex items-center gap-1">
                       <Users className="w-3 h-3" />
                       {pd.participantCount}{pd.sizeLimit ? `/${pd.sizeLimit}` : ''} 人
                     </span>
@@ -304,7 +304,7 @@ export default function PlaydatesPage() {
                       </Button>
                     )}
                     {pd.status === 'ACTIVE' && pd.creatorPetId === currentPet.id && (
-                      <span className="text-xs text-brand-500 font-medium">我的活动</span>
+                      <span className="text-xs text-teal-500 font-medium">我的活动</span>
                     )}
                   </div>
                 </div>
@@ -317,7 +317,7 @@ export default function PlaydatesPage() {
       {/* Float create button */}
       <button
         onClick={openCreateModal}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-brand-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-brand-600 active:scale-95 transition z-30"
+        className="fixed bottom-20 right-4 w-14 h-14 bg-teal-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-teal-600 active:scale-95 transition z-30"
       >
         <Plus className="w-6 h-6" aria-label="发布动态" />
       </button>
@@ -327,14 +327,14 @@ export default function PlaydatesPage() {
         <div className="space-y-4">
           {/* Type selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">约玩类型</label>
+            <label className="block text-sm font-medium text-ink mb-2">约玩类型</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setCreateType('PUBLIC')}
                 className={`flex-1 py-2 text-sm rounded-xl border transition ${
                   createType === 'PUBLIC'
-                    ? 'border-brand-500 bg-brand-50 text-brand-600'
-                    : 'border-gray-200 text-gray-500'
+                    ? 'border-teal-500 bg-teal-50 text-teal-600'
+                    : 'border-border text-ink-muted'
                 }`}
               >
                 公开活动
@@ -346,8 +346,8 @@ export default function PlaydatesPage() {
                 }}
                 className={`flex-1 py-2 text-sm rounded-xl border transition ${
                   createType === 'INVITE'
-                    ? 'border-brand-500 bg-brand-50 text-brand-600'
-                    : 'border-gray-200 text-gray-500'
+                    ? 'border-teal-500 bg-teal-50 text-teal-600'
+                    : 'border-border text-ink-muted'
                 }`}
               >
                 一对一邀请
@@ -358,11 +358,11 @@ export default function PlaydatesPage() {
           {/* Friend selector (INVITE only) */}
           {createType === 'INVITE' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">邀请好友</label>
+              <label className="block text-sm font-medium text-ink mb-2">邀请好友</label>
               {friendsLoading ? (
-                <div className="text-sm text-gray-400">加载好友列表...</div>
+                <div className="text-sm text-ink-faded">加载好友列表...</div>
               ) : friends.length === 0 ? (
-                <div className="text-sm text-gray-400">暂无好友，请先添加好友</div>
+                <div className="text-sm text-ink-faded">暂无好友，请先添加好友</div>
               ) : (
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {friends.map((friend) => (
@@ -370,8 +370,8 @@ export default function PlaydatesPage() {
                       key={friend.id}
                       className={`flex items-center gap-3 p-2 rounded-xl cursor-pointer border transition ${
                         selectedFriendId === friend.id
-                          ? 'border-brand-500 bg-brand-50'
-                          : 'border-gray-100'
+                          ? 'border-teal-500 bg-teal-50'
+                          : 'border-border-light'
                       }`}
                     >
                       <input
@@ -385,7 +385,7 @@ export default function PlaydatesPage() {
                       <Avatar src={friend.avatar} alt={friend.name} size="sm" />
                       <div>
                         <div className="text-sm font-medium">{friend.name}</div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-ink-faded">
                           {friend.type === 'DOG' ? '狗狗' : '猫猫'}
                           {friend.breed ? ` · ${friend.breed}` : ''}
                         </div>
@@ -399,61 +399,61 @@ export default function PlaydatesPage() {
 
           {/* Common fields */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">活动标题</label>
+            <label className="block text-sm font-medium text-ink mb-1">活动标题</label>
             <input
               value={createTitle}
               onChange={(e) => setCreateTitle(e.target.value)}
               placeholder={createType === 'PUBLIC' ? '例如：周六一起去公园' : '例如：一起散步'}
-              className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">时间</label>
+            <label className="block text-sm font-medium text-ink mb-1">时间</label>
             <input
               type="datetime-local"
               value={createTime}
               onChange={(e) => setCreateTime(e.target.value)}
-              className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">地点</label>
+            <label className="block text-sm font-medium text-ink mb-1">地点</label>
             <input
               value={createPlace}
               onChange={(e) => setCreatePlace(e.target.value)}
               placeholder="例如：朝阳公园"
-              className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">描述（选填）</label>
+            <label className="block text-sm font-medium text-ink mb-1">描述（选填）</label>
             <textarea
               value={createDescription}
               onChange={(e) => setCreateDescription(e.target.value)}
               placeholder="简单介绍一下活动内容..."
               rows={2}
-              className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+              className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">人数限制（选填）</label>
+            <label className="block text-sm font-medium text-ink mb-1">人数限制（选填）</label>
             <input
               type="number"
               value={createSizeLimit}
               onChange={(e) => setCreateSizeLimit(e.target.value ? Number(e.target.value) : '')}
               placeholder="不限"
               min={1}
-              className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           {/* Suitable types */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">适合物种</label>
+            <label className="block text-sm font-medium text-ink mb-2">适合物种</label>
             <div className="flex gap-2">
               {['DOG', 'CAT'].map((t) => (
                 <button
@@ -461,8 +461,8 @@ export default function PlaydatesPage() {
                   onClick={() => toggleSuitableType(t)}
                   className={`px-4 py-1.5 text-sm rounded-full border transition ${
                     createSuitableTypes.includes(t)
-                      ? 'border-brand-500 bg-brand-50 text-brand-600'
-                      : 'border-gray-200 text-gray-500'
+                      ? 'border-teal-500 bg-teal-50 text-teal-600'
+                      : 'border-border text-ink-muted'
                   }`}
                 >
                   {t === 'DOG' ? '狗狗' : '猫猫'}
@@ -473,7 +473,7 @@ export default function PlaydatesPage() {
 
           {/* Suitable sizes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">适合体型</label>
+            <label className="block text-sm font-medium text-ink mb-2">适合体型</label>
             <div className="flex gap-2">
               {[
                 { key: 'SMALL', label: '小型' },
@@ -485,8 +485,8 @@ export default function PlaydatesPage() {
                   onClick={() => toggleSuitableSize(s.key)}
                   className={`px-4 py-1.5 text-sm rounded-full border transition ${
                     createSuitableSizes.includes(s.key)
-                      ? 'border-brand-500 bg-brand-50 text-brand-600'
-                      : 'border-gray-200 text-gray-500'
+                      ? 'border-teal-500 bg-teal-50 text-teal-600'
+                      : 'border-border text-ink-muted'
                   }`}
                 >
                   {s.label}
@@ -495,7 +495,7 @@ export default function PlaydatesPage() {
             </div>
           </div>
 
-          {error && <div className="text-sm text-red-500">{error}</div>}
+          {error && <div className="text-sm text-rose-500">{error}</div>}
 
           <Button
             className="w-full"

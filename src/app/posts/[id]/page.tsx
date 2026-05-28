@@ -181,7 +181,7 @@ export default function PostDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -189,10 +189,10 @@ export default function PostDetailPage() {
   if (!post) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <p className="text-gray-400 text-sm mb-4">动态不存在或已删除</p>
+        <p className="text-ink-faded text-sm mb-4">动态不存在或已删除</p>
         <button
           onClick={() => router.back()}
-          className="text-brand-500 text-sm"
+          className="text-teal-500 text-sm"
         >
           返回
         </button>
@@ -201,30 +201,30 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream pb-8">
+    <div className="min-h-screen bg-surface pb-8">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-50">
+      <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-border-light">
         <button onClick={() => router.back()} className="p-1 -ml-1">
-          <ArrowLeft className="w-5 h-5 text-gray-600" aria-label="返回" />
+          <ArrowLeft className="w-5 h-5 text-ink-muted" aria-label="返回" />
         </button>
-        <span className="text-sm font-medium text-gray-700">动态详情</span>
+        <span className="text-sm font-medium text-ink">动态详情</span>
       </div>
 
       <div className="p-4">
         {/* Author info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-border-light">
           <div className="flex items-center gap-3 mb-4">
             <Avatar src={post.author.avatar} size="lg" />
             <div>
-              <div className="text-base font-medium text-gray-800">{post.author.name}</div>
-              <div className="text-sm text-gray-400">
+              <div className="text-base font-medium text-ink">{post.author.name}</div>
+              <div className="text-sm text-ink-faded">
                 {post.author.breed || post.author.type} · {timeAgo(post.createdAt)}
               </div>
             </div>
           </div>
 
           {/* Content */}
-          <p className="text-sm text-gray-700 leading-relaxed mb-4 whitespace-pre-wrap">
+          <p className="text-sm text-ink leading-relaxed mb-4 whitespace-pre-wrap">
             {post.content}
           </p>
 
@@ -244,29 +244,29 @@ export default function PostDetailPage() {
 
           {/* Location */}
           {post.fuzzyLocation && (
-            <div className="flex items-center gap-1 text-sm text-brand-500 mb-3">
+            <div className="flex items-center gap-1 text-sm text-teal-500 mb-3">
               <MapPin className="w-4 h-4" />
               <span>{post.fuzzyLocation}</span>
             </div>
           )}
 
           {/* Action bar */}
-          <div className="flex items-center gap-8 pt-3 border-t border-gray-50">
+          <div className="flex items-center gap-8 pt-3 border-t border-border-light">
             <button
               onClick={handleLike}
               disabled={!currentPet}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 text-ink-muted hover:text-rose-500 transition-colors disabled:opacity-50"
             >
               <Heart className="w-5 h-5" />
               <span className="text-sm">{post._count.likes}</span>
             </button>
-            <div className="flex items-center gap-1.5 text-gray-500">
+            <div className="flex items-center gap-1.5 text-ink-muted">
               <MessageCircle className="w-5 h-5" aria-label="私信" />
               <span className="text-sm">{post._count.comments}</span>
             </div>
             <button
               onClick={handleShare}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-brand-500 transition-colors"
+              className="flex items-center gap-1.5 text-ink-muted hover:text-teal-500 transition-colors"
             >
               <Share2 className="w-5 h-5" aria-label="分享" />
               <span className="text-sm">分享</span>
@@ -275,8 +275,8 @@ export default function PostDetailPage() {
         </div>
 
         {/* Comments section */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 mt-3">
-          <h3 className="text-sm font-medium text-gray-700 mb-4">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-border-light mt-3">
+          <h3 className="text-sm font-medium text-ink mb-4">
             评论 ({post._count.comments})
           </h3>
           <CommentList

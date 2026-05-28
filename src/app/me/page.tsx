@@ -8,6 +8,11 @@ import { ChevronRight, LogOut, MessageCircle, Plus, Settings, Shield, Trash2 } f
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+function petTypeFromString(t: string): 'DOG' | 'CAT' | undefined {
+  if (t === 'DOG' || t === 'CAT') return t;
+  return undefined;
+}
+
 export default function MePage() {
   const { user, logout } = useAuth();
   const { pets, currentPet, switchPet } = usePet();
@@ -65,7 +70,11 @@ export default function MePage() {
           <>
             {/* Current pet */}
             <div className="flex items-center gap-3">
-              <Avatar src={currentPet?.avatar} size="lg" />
+              <Avatar
+                src={currentPet?.avatar}
+                petType={currentPet ? petTypeFromString(currentPet.type) : undefined}
+                size="lg"
+              />
               <div className="flex-1 min-w-0">
                 <div className="text-[15px] font-semibold text-ink">
                   {currentPet?.name || '未选择'}
@@ -99,6 +108,7 @@ export default function MePage() {
                     >
                       <Avatar
                         src={p.avatar}
+                        petType={petTypeFromString(p.type)}
                         size="md"
                         className={isCurrent ? 'ring-2 ring-teal-500 ring-offset-1' : ''}
                       />

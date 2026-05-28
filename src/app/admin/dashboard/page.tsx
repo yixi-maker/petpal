@@ -40,14 +40,14 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-gray-400 text-sm">加载中...</div>
+        <div className="text-ink-faded text-sm">加载中...</div>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl">
+      <div className="bg-rose-50 text-rose-600 text-sm px-4 py-3 rounded-xl">
         {error || '数据加载失败'}
       </div>
     );
@@ -75,37 +75,37 @@ export default function AdminDashboardPage() {
           icon={<MessageSquareText className="w-5 h-5" />}
           value={data.postCount}
           label="动态总数"
-          color="purple"
+          color="teal"
         />
         <StatCard
           icon={<Flag className="w-5 h-5" aria-label="举报" />}
           value={data.pendingReportCount}
           label="待处理举报"
-          color="red"
+          color="rose"
         />
         <StatCard
           icon={<TrendingUp className="w-5 h-5" />}
           value={data.todayPostCount}
           label="今日新增动态"
-          color="orange"
+          color="teal"
         />
       </div>
 
       {/* Recent users chart */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">近7天新增用户</h3>
+      <div className="bg-white rounded-2xl border border-border p-6">
+        <h3 className="text-sm font-semibold text-ink mb-4">近7天新增用户</h3>
         <div className="flex items-end gap-2 h-32">
           {data.recentUsers.map((item) => {
             const maxCount = Math.max(...data.recentUsers.map((d) => d.count), 1);
             const height = (item.count / maxCount) * 100;
             return (
               <div key={item.date} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-xs font-medium text-gray-600">{item.count}</span>
+                <span className="text-xs font-medium text-ink-muted">{item.count}</span>
                 <div
-                  className="w-full bg-brand-200 rounded-t"
+                  className="w-full bg-teal-200 rounded-t"
                   style={{ height: `${Math.max(height, 2)}%` }}
                 />
-                <span className="text-[10px] text-gray-400">
+                <span className="text-[10px] text-ink-faded">
                   {item.date.slice(5)}
                 </span>
               </div>

@@ -56,11 +56,11 @@ export default function PetProfilePage() {
   }, [pet, currentPet]);
 
   if (loading) {
-    return <div className="p-4 text-center text-gray-400 py-20">加载中...</div>;
+    return <div className="p-4 text-center text-ink-faded py-20">加载中...</div>;
   }
 
   if (!pet) {
-    return <div className="p-4 text-center text-gray-400 py-20">宠物不存在</div>;
+    return <div className="p-4 text-center text-ink-faded py-20">宠物不存在</div>;
   }
 
   const isMine = pets.some((p) => p.id === pet.id);
@@ -75,32 +75,32 @@ export default function PetProfilePage() {
       <div className="text-center mb-6">
         <Avatar src={pet.avatar} size="xl" className="mx-auto mb-3" />
         <h2 className="text-xl font-bold">{pet.name}</h2>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-ink-faded">
           {pet.type === 'DOG' ? '🐶' : '🐱'} {pet.breed || '未知品种'} · {pet.gender === 'MALE' ? '♂' : pet.gender === 'FEMALE' ? '♀' : ''} {pet.size === 'SMALL' ? '小型' : pet.size === 'MEDIUM' ? '中型' : '大型'}
         </p>
         {pet.personalityTags.length > 0 && (
           <div className="flex justify-center gap-1.5 mt-2 flex-wrap">
             {pet.personalityTags.map((tag: string) => (
-              <span key={tag} className="px-2 py-0.5 bg-brand-50 text-brand-600 text-xs rounded-full">{tag}</span>
+              <span key={tag} className="px-2 py-0.5 bg-teal-50 text-teal-600 text-xs rounded-full">{tag}</span>
             ))}
           </div>
         )}
       </div>
 
-      {pet.bio && <p className="text-sm text-gray-500 text-center mb-4">{pet.bio}</p>}
+      {pet.bio && <p className="text-sm text-ink-muted text-center mb-4">{pet.bio}</p>}
 
       <div className="flex justify-center gap-8 mb-6">
         <div className="text-center">
           <div className="text-lg font-bold">{pet.followerCount}</div>
-          <div className="text-xs text-gray-400">关注者</div>
+          <div className="text-xs text-ink-faded">关注者</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-bold">{pet.followingCount}</div>
-          <div className="text-xs text-gray-400">关注中</div>
+          <div className="text-xs text-ink-faded">关注中</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-bold">{pet.friendCount}</div>
-          <div className="text-xs text-gray-400">好友</div>
+          <div className="text-xs text-ink-faded">好友</div>
         </div>
       </div>
 
@@ -139,12 +139,12 @@ export default function PetProfilePage() {
 
       {/* Report button for non-own pets */}
       {!isMine && (
-        <div className="mt-6 pt-4 border-t border-gray-100">
+        <div className="mt-6 pt-4 border-t border-border-light">
           <ReportButton
             targetType="PET"
             targetId={pet.id}
             variant="text"
-            className="text-red-400 hover:text-red-600"
+            className="text-rose-400 hover:text-rose-600"
           />
         </div>
       )}

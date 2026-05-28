@@ -78,9 +78,9 @@ export default function AdminCommentsPage() {
       case 'ACTIVE':
         return <span className="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">正常</span>;
       case 'HIDDEN':
-        return <span className="px-2 py-0.5 text-xs bg-orange-100 text-orange-700 rounded-full">已隐藏</span>;
+        return <span className="px-2 py-0.5 text-xs bg-teal-100 text-teal-700 rounded-full">已隐藏</span>;
       default:
-        return <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">{status}</span>;
+        return <span className="px-2 py-0.5 text-xs bg-surface-alt text-ink-muted rounded-full">{status}</span>;
     }
   };
 
@@ -90,60 +90,60 @@ export default function AdminCommentsPage() {
 
       <form onSubmit={handleSearch} className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faded" />
           <input
             type="text"
             placeholder="搜索评论内容..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full pl-9 pr-4 py-2 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
         <Button type="submit" size="sm">搜索</Button>
       </form>
 
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg">{error}</div>
+        <div className="bg-rose-50 text-rose-600 text-sm px-3 py-2 rounded-lg">{error}</div>
       )}
 
       {loading ? (
-        <div className="text-center py-10 text-gray-400 text-sm">加载中...</div>
+        <div className="text-center py-10 text-ink-faded text-sm">加载中...</div>
       ) : (
         <>
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-surface-alt border-b border-border">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">内容</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">评论者</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">所属动态</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">状态</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">时间</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">操作</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">内容</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">评论者</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">所属动态</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">状态</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">时间</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">操作</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border-light">
                   {comments.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-10 text-gray-400">
+                      <td colSpan={6} className="text-center py-10 text-ink-faded">
                         暂无数据
                       </td>
                     </tr>
                   ) : (
                     comments.map((comment) => (
-                      <tr key={comment.id} className="hover:bg-gray-50">
+                      <tr key={comment.id} className="hover:bg-surface-alt">
                         <td className="px-4 py-3 max-w-xs truncate">
                           {comment.content}
                         </td>
-                        <td className="px-4 py-3 text-gray-500">
+                        <td className="px-4 py-3 text-ink-muted">
                           {comment.author?.name || '未知'}
                         </td>
-                        <td className="px-4 py-3 text-gray-500 max-w-[150px] truncate">
+                        <td className="px-4 py-3 text-ink-muted max-w-[150px] truncate">
                           {comment.post?.content ? comment.post.content.slice(0, 30) + '...' : '动态 #' + comment.postId}
                         </td>
                         <td className="px-4 py-3">{statusBadge(comment.status)}</td>
-                        <td className="px-4 py-3 text-gray-500">
+                        <td className="px-4 py-3 text-ink-muted">
                           {new Date(comment.createdAt).toLocaleDateString('zh-CN')}
                         </td>
                         <td className="px-4 py-3">
@@ -183,7 +183,7 @@ export default function AdminCommentsPage() {
               >
                 上一页
               </Button>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-ink-muted">
                 {page} / {totalPages}
               </span>
               <Button

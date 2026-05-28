@@ -103,13 +103,13 @@ export default function AdminReportsPage() {
   const statusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <span className="px-2 py-0.5 text-xs bg-orange-100 text-orange-700 rounded-full">待处理</span>;
+        return <span className="px-2 py-0.5 text-xs bg-teal-100 text-teal-700 rounded-full">待处理</span>;
       case 'RESOLVED':
         return <span className="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">已处理</span>;
       case 'DISMISSED':
-        return <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">已驳回</span>;
+        return <span className="px-2 py-0.5 text-xs bg-surface-alt text-ink-muted rounded-full">已驳回</span>;
       default:
-        return <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">{status}</span>;
+        return <span className="px-2 py-0.5 text-xs bg-surface-alt text-ink-muted rounded-full">{status}</span>;
     }
   };
 
@@ -125,8 +125,8 @@ export default function AdminReportsPage() {
             onClick={() => { setStatusFilter(s); setPage(1); }}
             className={`px-3 py-1.5 text-xs rounded-full font-medium transition-colors ${
               statusFilter === s
-                ? 'bg-brand-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-teal-500 text-white'
+                : 'bg-surface-alt text-ink-muted hover:bg-surface-alt'
             }`}
           >
             {s === '' ? '全部' : s === 'PENDING' ? '待处理' : s === 'RESOLVED' ? '已处理' : '已驳回'}
@@ -135,51 +135,51 @@ export default function AdminReportsPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg">{error}</div>
+        <div className="bg-rose-50 text-rose-600 text-sm px-3 py-2 rounded-lg">{error}</div>
       )}
 
       {loading ? (
-        <div className="text-center py-10 text-gray-400 text-sm">加载中...</div>
+        <div className="text-center py-10 text-ink-faded text-sm">加载中...</div>
       ) : (
         <>
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-surface-alt border-b border-border">
                   <tr>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">举报人</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">目标类型</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">目标ID</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">原因</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">状态</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">处理人</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">时间</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500">操作</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">举报人</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">目标类型</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">目标ID</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">原因</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">状态</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">处理人</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">时间</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">操作</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border-light">
                   {reports.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-10 text-gray-400">
+                      <td colSpan={8} className="text-center py-10 text-ink-faded">
                         暂无数据
                       </td>
                     </tr>
                   ) : (
                     reports.map((report) => (
-                      <tr key={report.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-gray-500">
+                      <tr key={report.id} className="hover:bg-surface-alt">
+                        <td className="px-4 py-3 text-ink-muted">
                           {report.reporter?.nickname || report.reporter?.phone || '未知'}
                         </td>
                         <td className="px-4 py-3">{targetTypeLabel(report.targetType)}</td>
-                        <td className="px-4 py-3 text-gray-500">#{report.targetId}</td>
-                        <td className="px-4 py-3 max-w-[150px] truncate text-gray-500">
+                        <td className="px-4 py-3 text-ink-muted">#{report.targetId}</td>
+                        <td className="px-4 py-3 max-w-[150px] truncate text-ink-muted">
                           {report.reason}
                         </td>
                         <td className="px-4 py-3">{statusBadge(report.status)}</td>
-                        <td className="px-4 py-3 text-gray-500">
+                        <td className="px-4 py-3 text-ink-muted">
                           {report.handler?.username || '-'}
                         </td>
-                        <td className="px-4 py-3 text-gray-500">
+                        <td className="px-4 py-3 text-ink-muted">
                           {new Date(report.createdAt).toLocaleDateString('zh-CN')}
                         </td>
                         <td className="px-4 py-3">
@@ -201,7 +201,7 @@ export default function AdminReportsPage() {
                               </Button>
                             </div>
                           ) : (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-ink-faded">
                               {report.resolution ? report.resolution.slice(0, 20) : '无'}
                             </span>
                           )}
@@ -224,7 +224,7 @@ export default function AdminReportsPage() {
               >
                 上一页
               </Button>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-ink-muted">
                 {page} / {totalPages}
               </span>
               <Button
@@ -250,10 +250,10 @@ export default function AdminReportsPage() {
           {currentReport && (
             <div className="text-sm space-y-2">
               <div className="flex items-center gap-2">
-                <Flag className="w-4 h-4 text-orange-500" aria-label="举报" />
+                <Flag className="w-4 h-4 text-teal-500" aria-label="举报" />
                 <span>举报 #{currentReport.id}</span>
               </div>
-              <p className="text-gray-600 bg-gray-50 p-2 rounded-lg">
+              <p className="text-ink-muted bg-surface-alt p-2 rounded-lg">
                 {currentReport.reason}
               </p>
             </div>
@@ -261,11 +261,11 @@ export default function AdminReportsPage() {
 
           {currentAction === 'RESOLVE' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-ink mb-1">
                 处理意见
               </label>
               <textarea
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+                className="w-full px-3 py-2 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                 rows={3}
                 placeholder="请输入处理意见（选填）"
                 value={resolution}

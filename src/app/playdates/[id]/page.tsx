@@ -129,7 +129,7 @@ export default function PlaydateDetailPage() {
   if (loading) {
     return (
       <div className="p-4">
-        <div className="text-center text-gray-400 py-20">加载中...</div>
+        <div className="text-center text-ink-faded py-20">加载中...</div>
       </div>
     );
   }
@@ -137,10 +137,10 @@ export default function PlaydateDetailPage() {
   if (error && !playdate) {
     return (
       <div className="p-4">
-        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-full mb-4">
+        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-surface-alt rounded-full mb-4">
           <ArrowLeft className="w-5 h-5" aria-label="返回" />
         </button>
-        <div className="text-center text-gray-400 py-20">{error}</div>
+        <div className="text-center text-ink-faded py-20">{error}</div>
       </div>
     );
   }
@@ -148,10 +148,10 @@ export default function PlaydateDetailPage() {
   if (!playdate) {
     return (
       <div className="p-4">
-        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-full mb-4">
+        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-surface-alt rounded-full mb-4">
           <ArrowLeft className="w-5 h-5" aria-label="返回" />
         </button>
-        <div className="text-center text-gray-400 py-20">约玩不存在</div>
+        <div className="text-center text-ink-faded py-20">约玩不存在</div>
       </div>
     );
   }
@@ -163,14 +163,14 @@ export default function PlaydateDetailPage() {
       {/* Back button */}
       <button
         onClick={() => router.back()}
-        className="p-2 -ml-2 hover:bg-gray-100 rounded-full mb-2"
+        className="p-2 -ml-2 hover:bg-surface-alt rounded-full mb-2"
       >
         <ArrowLeft className="w-5 h-5" aria-label="返回" />
       </button>
 
       {/* Status banner */}
       {isCancelled && (
-        <div className="bg-gray-100 text-gray-500 text-sm text-center py-2 rounded-xl mb-4">
+        <div className="bg-surface-alt text-ink-muted text-sm text-center py-2 rounded-xl mb-4">
           该约玩已取消
         </div>
       )}
@@ -183,13 +183,13 @@ export default function PlaydateDetailPage() {
         <Avatar src={playdate.creator.avatar} alt={playdate.creator.name} size="md" />
         <div>
           <div className="text-sm font-medium">{playdate.creator.name}</div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-ink-faded">
             {playdate.creator.type === 'DOG' ? '狗狗' : '猫猫'}
             {playdate.creator.breed ? ` · ${playdate.creator.breed}` : ''}
           </div>
         </div>
         {playdate.type === 'INVITE' && (
-          <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+          <span className="ml-auto text-xs bg-teal-100 text-teal-600 px-2 py-1 rounded-full">
             一对一邀请
           </span>
         )}
@@ -202,7 +202,7 @@ export default function PlaydateDetailPage() {
 
       {/* Target pet (INVITE) */}
       {playdate.target && (
-        <div className="flex items-center gap-2 mb-4 text-sm text-gray-500">
+        <div className="flex items-center gap-2 mb-4 text-sm text-ink-muted">
           <span>邀请对象：</span>
           <Avatar src={playdate.target.avatar} alt={playdate.target.name} size="sm" />
           <span className="font-medium">{playdate.target.name}</span>
@@ -210,17 +210,17 @@ export default function PlaydateDetailPage() {
       )}
 
       {/* Time & place */}
-      <div className="bg-brand-50 rounded-2xl p-4 mb-4 space-y-2">
+      <div className="bg-teal-50 rounded-2xl p-4 mb-4 space-y-2">
         <div className="flex items-center gap-2 text-sm">
-          <Calendar className="w-4 h-4 text-brand-500 shrink-0" />
+          <Calendar className="w-4 h-4 text-teal-500 shrink-0" />
           <span>{formatFullTime(playdate.time)}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <MapPin className="w-4 h-4 text-brand-500 shrink-0" />
+          <MapPin className="w-4 h-4 text-teal-500 shrink-0" />
           <span>{playdate.place}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <Users className="w-4 h-4 text-brand-500 shrink-0" />
+          <Users className="w-4 h-4 text-teal-500 shrink-0" />
           <span>
             {playdate.participantCount}{playdate.sizeLimit ? `/${playdate.sizeLimit}` : ''} 人已报名
           </span>
@@ -230,18 +230,18 @@ export default function PlaydateDetailPage() {
       {/* Description */}
       {playdate.description && (
         <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">活动介绍</h3>
-          <p className="text-sm text-gray-600 leading-relaxed">{playdate.description}</p>
+          <h3 className="text-sm font-medium text-ink mb-2">活动介绍</h3>
+          <p className="text-sm text-ink-muted leading-relaxed">{playdate.description}</p>
         </div>
       )}
 
       {/* Suitable tags */}
       {(playdate.suitableTypes.length > 0 || playdate.suitableSizes.length > 0) && (
         <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">适合条件</h3>
+          <h3 className="text-sm font-medium text-ink mb-2">适合条件</h3>
           <div className="flex gap-1.5 flex-wrap">
             {playdate.suitableTypes.map((t) => (
-              <span key={t} className="text-xs bg-brand-50 text-brand-600 px-2 py-1 rounded-full">
+              <span key={t} className="text-xs bg-teal-50 text-teal-600 px-2 py-1 rounded-full">
                 {t === 'DOG' ? '狗狗' : '猫猫'}
               </span>
             ))}
@@ -256,11 +256,11 @@ export default function PlaydateDetailPage() {
 
       {/* Participants */}
       <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">
+        <h3 className="text-sm font-medium text-ink mb-3">
           报名列表 ({playdate.participantCount}人)
         </h3>
         {playdate.participants.length === 0 ? (
-          <p className="text-sm text-gray-400">暂无报名</p>
+          <p className="text-sm text-ink-faded">暂无报名</p>
         ) : (
           <div className="space-y-2">
             {playdate.participants.map((p) => (
@@ -268,13 +268,13 @@ export default function PlaydateDetailPage() {
                 <Avatar src={p.avatar} alt={p.name} size="sm" />
                 <div className="flex-1">
                   <div className="text-sm">{p.name}</div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-ink-faded">
                     {p.type === 'DOG' ? '狗狗' : '猫猫'}
                     {p.breed ? ` · ${p.breed}` : ''}
                   </div>
                 </div>
                 {p.id === playdate.creatorPetId && (
-                  <span className="text-xs bg-brand-100 text-brand-600 px-1.5 py-0.5 rounded-full">
+                  <span className="text-xs bg-teal-100 text-teal-600 px-1.5 py-0.5 rounded-full">
                     发起者
                   </span>
                 )}
@@ -284,11 +284,11 @@ export default function PlaydateDetailPage() {
         )}
       </div>
 
-      {error && <div className="text-sm text-red-500 mb-2">{error}</div>}
+      {error && <div className="text-sm text-rose-500 mb-2">{error}</div>}
 
       {/* Action buttons */}
       {!isCancelled && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-[env(safe-area-inset-bottom)] z-30">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border-light p-4 pb-[env(safe-area-inset-bottom)] z-30">
           <div className="max-w-mobile mx-auto">
             {playdate.isCreator ? (
               <Button

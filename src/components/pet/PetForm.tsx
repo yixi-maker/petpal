@@ -55,7 +55,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
       <Input label="昵称 *" placeholder="给毛孩子取个名字" value={name} onChange={(e) => setName(e.target.value)} maxLength={20} />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">类型 *</label>
+        <label className="block text-sm font-medium text-ink mb-2">类型 *</label>
         <div className="flex gap-3">
           {[
             { key: 'DOG', label: '🐶 狗狗', emoji: '🐶' },
@@ -66,7 +66,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
               type="button"
               onClick={() => setType(key)}
               className={`flex-1 py-3 text-sm rounded-xl border-2 transition ${
-                type === key ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-gray-100 text-gray-400'
+                type === key ? 'border-teal-500 bg-teal-50 text-teal-600' : 'border-border-light text-ink-faded'
               }`}
             >
               {label}
@@ -80,7 +80,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
       <Input label="生日" type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">性别</label>
+        <label className="block text-sm font-medium text-ink mb-2">性别</label>
         <div className="flex gap-2">
           {[
             { key: 'MALE', label: '♂ 男生' },
@@ -92,7 +92,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
               type="button"
               onClick={() => setGender(key)}
               className={`flex-1 py-2.5 text-sm rounded-xl border transition ${
-                gender === key ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-gray-100 text-gray-400'
+                gender === key ? 'border-teal-500 bg-teal-50 text-teal-600' : 'border-border-light text-ink-faded'
               }`}
             >
               {label}
@@ -102,7 +102,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">体型</label>
+        <label className="block text-sm font-medium text-ink mb-2">体型</label>
         <div className="flex gap-2">
           {[
             { key: 'SMALL', label: '小型' },
@@ -114,7 +114,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
               type="button"
               onClick={() => setSize(key)}
               className={`flex-1 py-2.5 text-sm rounded-xl border transition ${
-                size === key ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-gray-100 text-gray-400'
+                size === key ? 'border-teal-500 bg-teal-50 text-teal-600' : 'border-border-light text-ink-faded'
               }`}
             >
               {label}
@@ -126,9 +126,9 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
       <Input label="性格标签" placeholder="如 活泼、亲人、贪吃（用逗号分隔）" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">简介</label>
+        <label className="block text-sm font-medium text-ink mb-1">简介</label>
         <textarea
-          className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+          className="w-full px-4 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
           rows={3}
           placeholder="介绍一下你的毛孩子..."
           value={bio}
@@ -137,7 +137,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
         />
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-rose-500">{error}</p>}
 
       <Button type="submit" className="w-full" loading={loading}>{submitLabel}</Button>
     </form>

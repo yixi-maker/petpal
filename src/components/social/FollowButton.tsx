@@ -44,8 +44,8 @@ export function FollowButton({ petId, initialFollowing, onToggle, className = ''
       disabled={loading}
       className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-full transition ${
         following
-          ? 'bg-brand-50 text-brand-500 border border-brand-200'
-          : 'bg-brand-500 text-white border border-brand-500'
+          ? 'bg-teal-50 text-teal-500 border border-teal-200'
+          : 'bg-teal-500 text-white border border-teal-500'
       } ${className}`}
     >
       <Heart className="w-3 h-3" fill={following ? 'currentColor' : 'none'} />

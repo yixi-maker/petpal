@@ -45,11 +45,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-surface-alt flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-border p-8">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <PawPrint className="w-8 h-8 text-brand-500" />
+            <PawPrint className="w-8 h-8 text-teal-500" />
             <h1 className="text-xl font-bold">PetPal 管理</h1>
           </div>
 
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
             />
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg">
+              <div className="bg-rose-50 text-rose-600 text-sm px-3 py-2 rounded-lg">
                 {error}
               </div>
             )}

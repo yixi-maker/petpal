@@ -68,10 +68,10 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex-shrink-0" />
+            <div className="w-8 h-8 bg-surface-alt rounded-full flex-shrink-0" />
             <div className="flex-1">
-              <div className="h-3 bg-gray-100 rounded w-16 mb-1" />
-              <div className="h-4 bg-gray-50 rounded w-full" />
+              <div className="h-3 bg-surface-alt rounded w-16 mb-1" />
+              <div className="h-4 bg-surface-alt rounded w-full" />
             </div>
           </div>
         ))}
@@ -83,7 +83,7 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
     <div>
       {/* Comments list */}
       {comments.length === 0 ? (
-        <div className="text-center py-8 text-gray-400 text-sm">
+        <div className="text-center py-8 text-ink-faded text-sm">
           暂无评论，来抢沙发吧
         </div>
       ) : (
@@ -93,15 +93,15 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
               <Avatar src={comment.author.avatar} size="sm" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xs font-medium text-gray-700">
+                  <span className="text-xs font-medium text-ink">
                     {comment.author.name}
                   </span>
-                  <span className="text-[10px] text-gray-300">
+                  <span className="text-[10px] text-ink-faded/60">
                     {timeAgo(comment.createdAt)}
                   </span>
                   <ReportButton targetType="COMMENT" targetId={comment.id} />
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
+                <p className="text-sm text-ink-muted leading-relaxed">{comment.content}</p>
               </div>
             </div>
           ))}
@@ -110,10 +110,10 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
 
       {/* Comment input */}
       {currentPetId && onAddComment && (
-        <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+        <div className="flex items-center gap-2 pt-3 border-t border-border-light">
           <input
             type="text"
-            className="flex-1 p-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-brand-300 placeholder-gray-300"
+            className="flex-1 p-2.5 text-sm border border-border rounded-xl focus:outline-none focus:border-teal-400 placeholder:text-ink-faded/60"
             placeholder="写评论..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -128,7 +128,7 @@ export function CommentList({ comments, currentPetId, loading, onAddComment }: C
           <button
             onClick={handleSubmit}
             disabled={!text.trim() || submitting}
-            className="p-2.5 bg-brand-500 text-white rounded-xl hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            className="p-2.5 bg-teal-500 text-white rounded-xl hover:bg-teal-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
             <Send className="w-4 h-4" aria-label="发送" />
           </button>
