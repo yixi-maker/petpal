@@ -29,7 +29,7 @@ export function Avatar({ src, alt = '', size = 'md', className = '' }: AvatarPro
   return (
     <div className={`${sizes[size]} rounded-full bg-surface-alt flex items-center justify-center
       border border-border-light ${className}`}>
-      <PawPrint className="text-ink-faded" size={iconSizes[size]} />
+      <PawPrint className="text-teal-500" size={iconSizes[size]} />
     </div>
   );
 }

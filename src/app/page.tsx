@@ -102,7 +102,7 @@ export default function HomePage() {
   if (authLoading || petLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
-        <PawPrint className="w-8 h-8 text-coral-500/40 animate-pulse" />
+        <PawPrint className="w-8 h-8 text-teal-500/40 animate-pulse" />
       </div>
     );
   }
@@ -114,7 +114,7 @@ export default function HomePage() {
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
         <h1 className="text-lg font-semibold flex items-center gap-2 text-ink">
-          <PawPrint className="w-5 h-5 text-coral-500" />
+          <PawPrint className="w-5 h-5 text-teal-500" />
           PetPal
         </h1>
         <div className="flex items-center gap-3">
@@ -137,6 +137,15 @@ export default function HomePage() {
           </Link>
         </div>
       </div>
+
+      {/* Pet identity strip */}
+      {currentPet && (
+        <div className="px-4 pb-2">
+          <div className="bg-teal-50 rounded-[10px] px-3 py-2 text-[13px] text-ink-muted text-center">
+            今天用 <span className="font-medium text-teal-600">{currentPet.name}</span> 的身份探索
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="sticky top-0 z-10 bg-surface">
@@ -172,10 +181,10 @@ export default function HomePage() {
         type="button"
         onClick={() => setShowPostForm(true)}
         aria-label="发布动态"
-        className="fixed bottom-20 right-4 w-[52px] h-[52px] bg-coral-500 text-white rounded-full
-          shadow-[0_4px_16px_rgba(242,104,42,0.25)]
+        className="fixed bottom-20 right-4 w-[52px] h-[52px] bg-teal-500 text-white rounded-full
+          shadow-[0_4px_16px_rgba(29,138,128,0.25)]
           flex items-center justify-center
-          hover:bg-coral-600 active:bg-coral-600 transition-colors z-20"
+          hover:bg-teal-600 active:bg-teal-600 transition-colors z-20"
       >
         <Plus className="w-[22px] h-[22px]" />
       </button>

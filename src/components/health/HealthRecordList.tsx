@@ -16,12 +16,12 @@ interface HealthRecordListProps {
   records: HealthRecord[];
 }
 
-const typeConfig: Record<string, { label: string; variant: 'coral' | 'sage' | 'mist' | 'warning' | 'danger' | 'default' }> = {
-  VACCINE: { label: '疫苗接种', variant: 'mist' },
+const typeConfig: Record<string, { label: string; variant: 'teal' | 'sage' | 'sea' | 'amber' | 'rose' | 'default' }> = {
+  VACCINE: { label: '疫苗接种', variant: 'sea' },
   DEWORM: { label: '驱虫', variant: 'sage' },
-  CHECKUP: { label: '体检', variant: 'coral' },
-  SURGERY: { label: '手术', variant: 'danger' },
-  MEDICATION: { label: '用药', variant: 'warning' },
+  CHECKUP: { label: '体检', variant: 'teal' },
+  SURGERY: { label: '手术', variant: 'rose' },
+  MEDICATION: { label: '用药', variant: 'amber' },
   OTHER: { label: '其他', variant: 'default' },
 };
 

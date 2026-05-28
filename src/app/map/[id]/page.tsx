@@ -72,13 +72,13 @@ const TYPE_ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 const TYPE_CIRCLE_MAP: Record<string, string> = {
-  HOSPITAL: 'bg-red-50 text-red-500',
+  HOSPITAL: 'bg-rose-50 text-rose-500',
   PARK: 'bg-sage-50 text-sage-500',
-  MALL: 'bg-coral-50 text-coral-500',
-  CAFE: 'bg-coral-50 text-coral-500',
-  RESTAURANT: 'bg-coral-50 text-coral-500',
-  GROOMING: 'bg-mist-50 text-mist-400',
-  BOARDING: 'bg-mist-50 text-mist-400',
+  MALL: 'bg-teal-50 text-teal-500',
+  CAFE: 'bg-teal-50 text-teal-500',
+  RESTAURANT: 'bg-teal-50 text-teal-500',
+  GROOMING: 'bg-sea-50 text-sea-500',
+  BOARDING: 'bg-sea-50 text-sea-500',
 };
 
 const TYPE_LABEL_MAP: Record<string, string> = {
@@ -100,7 +100,7 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md
           key={star}
           className={`${iconSize} ${
             star <= rating
-              ? 'text-amber-400 fill-amber-400'
+              ? 'text-amber-500 fill-amber-500'
               : 'text-ink-faded/30'
           }`}
         />
@@ -208,7 +208,7 @@ export default function PlaceDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-coral-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export default function PlaceDetailPage() {
         <p className="text-[15px] text-ink-faded font-medium">地点不存在</p>
         <button
           onClick={() => router.back()}
-          className="mt-4 text-coral-500 text-[14px]"
+          className="mt-4 text-teal-500 text-[14px]"
         >
           返回上页
         </button>
@@ -245,7 +245,7 @@ export default function PlaceDetailPage() {
       </div>
 
       {/* Map placeholder */}
-      <div className="h-[200px] bg-gradient-to-br from-mist-50 to-surface-alt flex items-center justify-center relative">
+      <div className="h-[200px] bg-gradient-to-br from-sea-50 to-surface-alt flex items-center justify-center relative">
         <div className="text-center">
           <MapPin className="w-10 h-10 text-ink-faded/30 mx-auto mb-2" />
           <p className="text-[14px] text-ink-faded">接入高德地图后显示位置</p>
@@ -266,7 +266,7 @@ export default function PlaceDetailPage() {
               {TYPE_ICON_MAP[place.type] || <MapPin className="w-3.5 h-3.5" />}
             </div>
             <h2 className="text-[20px] font-semibold text-ink truncate">{place.name}</h2>
-            <Badge variant="coral" size="sm">{TYPE_LABEL_MAP[place.type]}</Badge>
+            <Badge variant="teal" size="sm">{TYPE_LABEL_MAP[place.type]}</Badge>
           </div>
 
           {/* Rating */}
@@ -281,7 +281,7 @@ export default function PlaceDetailPage() {
             {place.isOpen ? (
               <Badge variant="sage" size="sm">营业中</Badge>
             ) : (
-              <Badge variant="danger" size="sm">休息中</Badge>
+              <Badge variant="default" size="sm">休息中</Badge>
             )}
             {place.openHours && <span>{place.openHours}</span>}
           </div>
@@ -304,7 +304,7 @@ export default function PlaceDetailPage() {
           {place.petFriendlyTags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {place.petFriendlyTags.map((tag, i) => (
-                <Badge key={i} variant="coral" size="sm">{tag}</Badge>
+                <Badge key={i} variant="teal" size="sm">{tag}</Badge>
               ))}
             </div>
           )}
@@ -367,7 +367,7 @@ export default function PlaceDetailPage() {
               <p className="text-[14px] text-ink-faded">请先创建宠物后发表评价</p>
               <button
                 onClick={() => router.push('/pets/new')}
-                className="mt-2 text-[14px] text-coral-500 font-medium"
+                className="mt-2 text-[14px] text-teal-500 font-medium"
               >
                 去创建宠物
               </button>
@@ -384,7 +384,7 @@ export default function PlaceDetailPage() {
                       onClick={() => setSelectedPetId(pet.id)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-[8px] border transition-colors ${
                         selectedPetId === pet.id
-                          ? 'border-coral-500 bg-coral-50 text-coral-500'
+                          ? 'border-teal-500 bg-teal-50 text-teal-500'
                           : 'border-border text-ink-muted hover:border-ink-faded/30 hover:text-ink'
                       }`}
                     >
@@ -409,7 +409,7 @@ export default function PlaceDetailPage() {
                       <Star
                         className={`w-6 h-6 transition-colors ${
                           star <= reviewRating
-                            ? 'text-amber-400 fill-amber-400'
+                            ? 'text-amber-500 fill-amber-500'
                             : 'text-ink-faded/25'
                         }`}
                       />
@@ -429,12 +429,12 @@ export default function PlaceDetailPage() {
                   placeholder="分享一下你的体验吧..."
                   className="w-full px-3.5 py-2.5 text-[14px] text-ink bg-surface-white border border-border
                     rounded-[8px] placeholder:text-ink-faded/50
-                    focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+                    focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400
                     transition duration-150 resize-none"
                 />
                 <div className="flex items-center justify-between mt-1.5">
                   <span className="text-[12px] text-ink-faded">{reviewContent.length}/500</span>
-                  {error && <span className="text-[12px] text-red-500">{error}</span>}
+                  {error && <span className="text-[12px] text-rose-500">{error}</span>}
                 </div>
               </div>
 

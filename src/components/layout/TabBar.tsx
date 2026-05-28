@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MapPin, Map, Stethoscope, User } from 'lucide-react';
+import { PawPrint, MapPin, Map, Stethoscope, User } from 'lucide-react';
 
 const tabs = [
-  { key: '/', label: '动态', icon: Home },
+  { key: '/', label: '动态', icon: PawPrint },
   { key: '/nearby', label: '附近', icon: MapPin },
   { key: '/map', label: '地图', icon: Map },
   { key: '/health', label: '健康', icon: Stethoscope },
@@ -22,7 +22,7 @@ export function TabBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-white border-t border-border-light
-      pb-[env(safe-area-inset-bottom,0px)]">
+      pb-[env(safe-area-inset-bottom)]">
       <div className="max-w-mobile mx-auto flex">
         {tabs.map(({ key, label, icon: Icon }) => {
           const isActive = key === '/' ? pathname === '/' : pathname.startsWith(key);
@@ -30,18 +30,16 @@ export function TabBar() {
             <Link
               key={key}
               href={key}
-              className={`flex-1 flex flex-col items-center py-2 transition-colors duration-150
-                ${isActive ? 'text-coral-500' : 'text-ink-faded'}`}
+              className={`flex-1 flex flex-col items-center py-2 transition-colors duration-200
+                ${isActive ? 'text-teal-500' : 'text-ink-faded'}`}
             >
-              {/* Active indicator dot */}
-              {isActive && (
-                <span className="w-[3px] h-[3px] rounded-full bg-coral-500 mb-[3px]" />
+              {isActive ? (
+                <span className="rounded-full bg-teal-50 px-3 py-0.5">
+                  <Icon className="w-[22px] h-[22px]" strokeWidth={2} />
+                </span>
+              ) : (
+                <Icon className="w-[22px] h-[22px]" strokeWidth={1.5} />
               )}
-              {!isActive && <span className="h-[6px]" />}
-              <Icon
-                className="w-[22px] h-[22px]"
-                strokeWidth={isActive ? 2 : 1.5}
-              />
               <span
                 className={`text-[10px] mt-[3px] ${
                   isActive ? 'font-medium' : ''

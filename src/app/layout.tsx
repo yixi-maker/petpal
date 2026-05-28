@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import { MobileShell } from '@/components/layout/MobileShell';
 import { Providers } from '@/components/layout/Providers';
 
 export const metadata: Metadata = {
@@ -38,22 +37,10 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#f97316" />
         <link rel="apple-touch-icon" href="/icon.svg" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function() {});
-                });
-              }
-            `,
-          }}
-        />
+        {/* SW disabled for V1 stability */}
       </head>
       <body>
-        <Providers>
-          <MobileShell>{children}</MobileShell>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

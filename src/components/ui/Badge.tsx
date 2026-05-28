@@ -1,17 +1,17 @@
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'coral' | 'sage' | 'mist' | 'warning' | 'danger';
+  variant?: 'default' | 'teal' | 'sage' | 'sea' | 'amber' | 'rose';
   size?: 'sm' | 'md';
   className?: string;
 }
 
 const variants: Record<string, string> = {
   default: 'bg-surface-alt text-ink-muted',
-  coral: 'bg-coral-50 text-coral-600',
+  teal: 'bg-teal-50 text-teal-600',
   sage: 'bg-sage-50 text-sage-600',
-  mist: 'bg-mist-50 text-mist-600',
-  warning: 'bg-warning-50 text-warning-500',
-  danger: 'bg-danger-50 text-danger-500',
+  sea: 'bg-sea-50 text-sea-500',
+  amber: 'bg-amber-50 text-amber-500',
+  rose: 'bg-rose-50 text-rose-500',
 };
 
 const sizes: Record<string, string> = {

@@ -19,21 +19,21 @@ const riskConfig = {
   },
   MEDIUM: {
     label: '中风险',
-    bg: 'bg-warning-50',
-    border: 'border-warning-500/20',
-    badgeBg: 'bg-warning-50',
-    badgeText: 'text-warning-500',
+    bg: 'bg-amber-50',
+    border: 'border-amber-500/20',
+    badgeBg: 'bg-amber-50',
+    badgeText: 'text-amber-500',
     icon: AlertTriangle,
-    iconColor: 'text-warning-500',
+    iconColor: 'text-amber-500',
   },
   HIGH: {
     label: '高风险',
-    bg: 'bg-danger-50',
-    border: 'border-danger-500/20',
-    badgeBg: 'bg-danger-50',
-    badgeText: 'text-danger-500',
+    bg: 'bg-rose-50',
+    border: 'border-rose-500/20',
+    badgeBg: 'bg-rose-50',
+    badgeText: 'text-rose-500',
     icon: AlertTriangle,
-    iconColor: 'text-danger-500',
+    iconColor: 'text-rose-500',
   },
 };
 
@@ -52,7 +52,7 @@ export function AIResultCard({ result }: AIResultCardProps) {
       </div>
 
       {/* Possible conditions */}
-      <Section icon={AlertTriangle} color="text-warning-500" title="可能相关的情况">
+      <Section icon={AlertTriangle} color="text-amber-500" title="可能相关的情况">
         <ol className="list-decimal pl-5 space-y-1">
           {result.possibleConditions.map((c, i) => (
             <li key={i} className="text-[14px] text-ink-muted">{c}</li>
@@ -70,8 +70,8 @@ export function AIResultCard({ result }: AIResultCardProps) {
       </Section>
 
       {/* Should see vet */}
-      <Section icon={AlertTriangle} color={result.shouldSeeVet ? 'text-danger-500' : 'text-ink-faded'} title="是否建议就医">
-        <p className={`text-[14px] font-medium ${result.shouldSeeVet ? 'text-danger-500' : 'text-ink-muted'}`}>
+      <Section icon={AlertTriangle} color={result.shouldSeeVet ? 'text-rose-500' : 'text-ink-faded'} title="是否建议就医">
+        <p className={`text-[14px] font-medium ${result.shouldSeeVet ? 'text-rose-500' : 'text-ink-muted'}`}>
           {result.shouldSeeVet ? '建议前往宠物医院就诊' : '暂不建议紧急就医'}
         </p>
         {result.urgencyNote && (
@@ -80,7 +80,7 @@ export function AIResultCard({ result }: AIResultCardProps) {
       </Section>
 
       {/* Precautions */}
-      <Section icon={Info} color="text-mist-500" title="注意事项">
+      <Section icon={Info} color="text-sea-500" title="注意事项">
         <ul className="list-disc pl-5 space-y-1">
           {result.precautions.map((p, i) => (
             <li key={i} className="text-[14px] text-ink-muted">{p}</li>

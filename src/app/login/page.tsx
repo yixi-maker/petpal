@@ -67,7 +67,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[400px]">
         {/* Brand Hero */}
         <div className="text-center mb-10">
-          <PawPrint className="w-12 h-12 text-coral-500 mx-auto mb-3" />
+          <PawPrint className="w-12 h-12 text-teal-500 mx-auto mb-3" />
           <h1 className="text-[28px] font-bold text-ink leading-tight">PetPal</h1>
           <p className="text-[15px] text-ink-faded mt-1">毛孩子的社交乐园</p>
         </div>
@@ -90,7 +90,7 @@ export default function LoginPage() {
                 <p className="mt-1 text-[12px] text-ink-faded">中国大陆手机号（+86）</p>
               </div>
               {error && !error.includes('手机') && (
-                <p className="text-[12px] text-danger-500">{error}</p>
+                <p className="text-[12px] text-rose-500">{error}</p>
               )}
               <Button
                 variant="primary"
@@ -120,7 +120,7 @@ export default function LoginPage() {
               />
 
               {error && (
-                <p className="text-[12px] text-danger-500">{error}</p>
+                <p className="text-[12px] text-rose-500">{error}</p>
               )}
 
               <label className="flex items-start gap-2 text-[13px] text-ink-muted cursor-pointer">
@@ -128,20 +128,20 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={agreed}
                   onChange={(e) => setAgreed(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 accent-coral-500"
+                  className="mt-0.5 w-4 h-4 accent-teal-500"
                 />
                 <span>
                   已阅读并同意
                   <Link
                     href="/legal/terms"
-                    className="text-coral-500 mx-0.5 hover:text-coral-600 transition-colors"
+                    className="text-teal-500 mx-0.5 hover:text-teal-600 transition-colors"
                   >
                     用户协议
                   </Link>
                   和
                   <Link
                     href="/legal/privacy"
-                    className="text-coral-500 mx-0.5 hover:text-coral-600 transition-colors"
+                    className="text-teal-500 mx-0.5 hover:text-teal-600 transition-colors"
                   >
                     隐私政策
                   </Link>
@@ -162,7 +162,7 @@ export default function LoginPage() {
                 type="button"
                 disabled={countdown > 0}
                 onClick={sendCode}
-                className="w-full text-center text-[14px] text-coral-500 hover:text-coral-600
+                className="w-full text-center text-[14px] text-teal-500 hover:text-teal-600
                   disabled:text-ink-faded py-1 transition-colors"
               >
                 {countdown > 0 ? `${countdown}s 后重新获取` : '重新获取验证码'}

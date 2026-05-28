@@ -59,7 +59,7 @@ export default function MePage() {
       </div>
 
       {/* ========== Current pet identity card ========== */}
-      <div className="bg-coral-50/50 border border-coral-100 rounded-[12px] p-4 mb-4">
+      <div className="bg-teal-50/50 border border-teal-100 rounded-[12px] p-4 mb-4">
         <h3 className="text-[13px] font-medium text-ink-muted mb-3">当前宠物身份</h3>
         {pets.length > 0 ? (
           <>
@@ -77,7 +77,7 @@ export default function MePage() {
               </div>
               <Link
                 href="/pets/new"
-                className="flex items-center gap-1 text-[13px] text-coral-500 hover:text-coral-600 font-medium transition-colors"
+                className="flex items-center gap-1 text-[13px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 添加宠物
@@ -86,7 +86,7 @@ export default function MePage() {
 
             {/* Pet switcher — horizontal row of small avatars */}
             {pets.length > 1 && (
-              <div className="flex gap-2 mt-3 pt-3 border-t border-coral-100">
+              <div className="flex gap-2 mt-3 pt-3 border-t border-teal-100">
                 {pets.map((p) => {
                   const isCurrent = p.id === currentPet?.id;
                   return (
@@ -100,11 +100,11 @@ export default function MePage() {
                       <Avatar
                         src={p.avatar}
                         size="md"
-                        className={isCurrent ? 'ring-2 ring-coral-500 ring-offset-1' : ''}
+                        className={isCurrent ? 'ring-2 ring-teal-500 ring-offset-1' : ''}
                       />
                       <span
                         className={`text-[11px] truncate max-w-[48px] ${
-                          isCurrent ? 'text-coral-600 font-medium' : 'text-ink-muted'
+                          isCurrent ? 'text-teal-600 font-medium' : 'text-ink-muted'
                         }`}
                       >
                         {p.name}
@@ -120,7 +120,7 @@ export default function MePage() {
             <p className="text-[14px] text-ink-faded mb-2">还没有添加宠物</p>
             <Link
               href="/pets/new"
-              className="inline-flex items-center gap-1 text-[14px] text-coral-500 hover:text-coral-600 font-medium transition-colors"
+              className="inline-flex items-center gap-1 text-[14px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               添加宠物
@@ -176,7 +176,7 @@ export default function MePage() {
         </Button>
         <Button
           variant="ghost"
-          className="w-full justify-center text-danger-500 text-[13px]"
+          className="w-full justify-center text-rose-500 text-[13px]"
           onClick={() => setDeleteOpen(true)}
         >
           <Trash2 className="w-3.5 h-3.5 mr-2" aria-label="删除" />
@@ -188,11 +188,11 @@ export default function MePage() {
       <Modal open={deleteOpen} onClose={handleCloseDelete} title="注销账号">
         {deleteStep === 1 ? (
           <div>
-            <div className="bg-danger-50 border border-danger-500/20 rounded-[10px] p-4 mb-4">
-              <p className="text-[14px] text-danger-600 font-medium mb-2">
+            <div className="bg-rose-50 border border-rose-500/20 rounded-[10px] p-4 mb-4">
+              <p className="text-[14px] text-rose-600 font-medium mb-2">
                 确定要注销账号吗？
               </p>
-              <ul className="text-[13px] text-danger-500 space-y-1 list-disc pl-4">
+              <ul className="text-[13px] text-rose-500 space-y-1 list-disc pl-4">
                 <li>所有宠物档案将被隐藏</li>
                 <li>手机号将被脱敏</li>
                 <li>数据无法恢复</li>
@@ -208,8 +208,8 @@ export default function MePage() {
               </button>
               <button
                 onClick={() => setDeleteStep(2)}
-                className="flex-1 py-2.5 text-[14px] bg-danger-500 text-white rounded-[8px]
-                  hover:bg-danger-600 transition-colors"
+                className="flex-1 py-2.5 text-[14px] bg-rose-500 text-white rounded-[8px]
+                  hover:bg-rose-600 transition-colors"
               >
                 继续注销
               </button>
@@ -217,8 +217,8 @@ export default function MePage() {
           </div>
         ) : (
           <div>
-            <div className="bg-danger-50 border border-danger-500/20 rounded-[10px] p-4 mb-4">
-              <p className="text-[14px] text-danger-600">
+            <div className="bg-rose-50 border border-rose-500/20 rounded-[10px] p-4 mb-4">
+              <p className="text-[14px] text-rose-600">
                 我已知晓，确认注销。此操作不可撤销。
               </p>
             </div>
@@ -233,8 +233,8 @@ export default function MePage() {
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleting}
-                className="flex-1 py-2.5 text-[14px] bg-danger-500 text-white rounded-[8px]
-                  hover:bg-danger-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 py-2.5 text-[14px] bg-rose-500 text-white rounded-[8px]
+                  hover:bg-rose-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {deleting ? '注销中...' : '我已知晓，确认注销'}
               </button>

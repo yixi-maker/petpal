@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   MapPin,
   Star,
@@ -64,7 +65,7 @@ const TYPE_ICON_MAP: Record<string, React.ReactNode> = {
   BOARDING: <Home className="w-4 h-4" />,
 };
 
-// Updated color map: HOSPITAL=red, PARK=sage, CAFE/MALL/RESTAURANT=coral, GROOMING/BOARDING=mist
+// Type icon colors: HOSPITAL=rose, PARK=sage, rest=teal, GROOMING/BOARDING=sea
 
 const TYPE_LABEL_MAP: Record<string, string> = {
   HOSPITAL: '医院',
@@ -78,13 +79,13 @@ const TYPE_LABEL_MAP: Record<string, string> = {
 
 // Circle color for type icon (solid bg used for the icon circle)
 const TYPE_CIRCLE_MAP: Record<string, string> = {
-  HOSPITAL: 'bg-red-50 text-red-500',
+  HOSPITAL: 'bg-rose-50 text-rose-500',
   PARK: 'bg-sage-50 text-sage-500',
-  MALL: 'bg-coral-50 text-coral-500',
-  CAFE: 'bg-coral-50 text-coral-500',
-  RESTAURANT: 'bg-coral-50 text-coral-500',
-  GROOMING: 'bg-mist-50 text-mist-400',
-  BOARDING: 'bg-mist-50 text-mist-400',
+  MALL: 'bg-teal-50 text-teal-500',
+  CAFE: 'bg-teal-50 text-teal-500',
+  RESTAURANT: 'bg-teal-50 text-teal-500',
+  GROOMING: 'bg-sea-50 text-sea-500',
+  BOARDING: 'bg-sea-50 text-sea-500',
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -95,9 +96,9 @@ function StarRating({ rating }: { rating: number }) {
           key={star}
           className={`w-3.5 h-3.5 ${
             star <= rating
-              ? 'text-amber-400 fill-amber-400'
+              ? 'text-amber-500 fill-amber-500'
               : star - 0.5 <= rating
-              ? 'text-amber-400 fill-amber-400'
+              ? 'text-amber-500 fill-amber-500'
               : 'text-ink-faded/30'
           }`}
         />
@@ -194,7 +195,7 @@ export default function MapPage() {
       <div className="px-4 pt-3">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-6 h-6 border-2 border-coral-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : viewMode === 'list' ? (
           /* ========== LIST VIEW ========== */
@@ -207,10 +208,10 @@ export default function MapPage() {
               </div>
             ) : (
               places.map((place) => (
-                <div
+                <Link
                   key={place.id}
-                  onClick={() => router.push(`/map/${place.id}`)}
-                  className="bg-surface-white rounded-[10px] shadow-card mb-3 overflow-hidden active:scale-[0.98] transition-transform cursor-pointer"
+                  href={`/map/${place.id}`}
+                  className="block bg-surface-white rounded-[10px] shadow-card mb-3 overflow-hidden active:scale-[0.98] transition-transform"
                 >
                   {/* Top row: icon + info + distance */}
                   <div className="flex items-start gap-3 p-3.5">
@@ -256,7 +257,7 @@ export default function MapPage() {
                   {place.petFriendlyTags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 px-3.5 pb-3">
                       {place.petFriendlyTags.slice(0, 3).map((tag, i) => (
-                        <Badge key={i} variant="coral" size="sm">{tag}</Badge>
+                        <Badge key={i} variant="teal" size="sm">{tag}</Badge>
                       ))}
                       {place.petFriendlyTags.length > 3 && (
                         <span className="text-[11px] text-ink-faded self-center">
@@ -265,7 +266,7 @@ export default function MapPage() {
                       )}
                     </div>
                   )}
-                </div>
+                </Link>
               ))
             )}
           </div>
@@ -273,7 +274,7 @@ export default function MapPage() {
           /* ========== MAP VIEW (placeholder) ========== */
           <div>
             {/* Map placeholder */}
-            <div className="rounded-[12px] bg-gradient-to-br from-mist-50 to-surface-alt h-[400px] relative overflow-hidden">
+            <div className="rounded-[12px] bg-gradient-to-br from-sea-50 to-surface-alt h-[400px] relative overflow-hidden">
               {/* Center hint */}
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <MapPin className="w-12 h-12 text-ink-faded/20" />
@@ -296,7 +297,7 @@ export default function MapPage() {
                     onClick={() => handlePlaceClick(place)}
                     title={place.name}
                   >
-                    <div className="w-3.5 h-3.5 bg-coral-500 rounded-full shadow-[0_0_0_3px_rgba(255,107,107,0.2)]" />
+                    <div className="w-3.5 h-3.5 bg-teal-500 rounded-full shadow-[0_0_0_3px_rgba(29,138,128,0.2)]" />
                     <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-surface-white text-[11px] px-2 py-0.5 rounded-[6px] shadow-md whitespace-nowrap text-ink font-medium opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
                       {place.name}
                     </div>
@@ -351,7 +352,7 @@ export default function MapPage() {
         {selectedPlace && (
           <div className="-mx-5 -mb-5">
             {/* Map placeholder in modal */}
-            <div className="h-36 bg-gradient-to-br from-mist-50 to-surface-alt flex items-center justify-center">
+            <div className="h-36 bg-gradient-to-br from-sea-50 to-surface-alt flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="w-8 h-8 text-ink-faded/30 mx-auto mb-1" />
                 <p className="text-[12px] text-ink-faded">接入高德地图后显示位置</p>
@@ -361,7 +362,7 @@ export default function MapPage() {
             <div className="p-5 space-y-4">
               {/* Type badge + rating */}
               <div className="flex items-center gap-2">
-                <Badge variant="coral" size="md">
+                <Badge variant="teal" size="md">
                   {TYPE_LABEL_MAP[selectedPlace.type]}
                 </Badge>
                 <StarRating rating={selectedPlace.rating} />
@@ -374,7 +375,7 @@ export default function MapPage() {
                 {selectedPlace.isOpen ? (
                   <Badge variant="sage" size="sm">营业中</Badge>
                 ) : (
-                  <Badge variant="danger" size="sm">休息中</Badge>
+                  <Badge variant="default" size="sm">休息中</Badge>
                 )}
                 <span className="text-ink-muted">{selectedPlace.openHours}</span>
               </div>
@@ -387,7 +388,7 @@ export default function MapPage() {
 
               {/* Phone */}
               {selectedPlace.phone && (
-                <div className="flex items-start gap-2 text-[13px] text-coral-500">
+                <div className="flex items-start gap-2 text-[13px] text-teal-500">
                   <Phone className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{selectedPlace.phone}</span>
                 </div>
@@ -397,7 +398,7 @@ export default function MapPage() {
               {selectedPlace.petFriendlyTags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {selectedPlace.petFriendlyTags.map((tag, i) => (
-                    <Badge key={i} variant="coral" size="sm">{tag}</Badge>
+                    <Badge key={i} variant="teal" size="sm">{tag}</Badge>
                   ))}
                 </div>
               )}
@@ -409,7 +410,7 @@ export default function MapPage() {
                     e.stopPropagation();
                     alert('导航功能将在接入高德地图后启用');
                   }}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-coral-500 text-white text-[14px] rounded-[8px] font-medium hover:bg-coral-600 transition"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-teal-500 text-white text-[14px] rounded-[8px] font-medium hover:bg-teal-600 transition"
                 >
                   <Navigation className="w-4 h-4" />
                   导航

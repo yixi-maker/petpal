@@ -302,7 +302,7 @@ export default function HealthPage() {
         <div className="mb-4">
           <select
             className="w-full px-4 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-              focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
             value={currentPet.id}
             onChange={(e) => switchPet(Number(e.target.value))}
           >
@@ -329,7 +329,7 @@ export default function HealthPage() {
             {/* Profile card */}
             {profileLoading ? (
               <div className="flex justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-coral-500" />
+                <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
               </div>
             ) : profile ? (
               <div className="bg-surface-white rounded-[12px] p-4 shadow-card">
@@ -377,7 +377,7 @@ export default function HealthPage() {
               </div>
             ) : (
               <div className="flex justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-coral-500" />
+                <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
               </div>
             )}
 
@@ -393,7 +393,7 @@ export default function HealthPage() {
             {/* Records list */}
             {recordsLoading ? (
               <div className="flex justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-coral-500" />
+                <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
               </div>
             ) : (
               <HealthRecordList records={records} />
@@ -405,8 +405,8 @@ export default function HealthPage() {
         {activeTab === 'ai' && (
           <div className="space-y-4">
             {/* Warning banner */}
-            <div className="bg-warning-50 border border-warning-500/20 rounded-[10px] p-3 flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-warning-500 flex-shrink-0 mt-[1px]" />
+            <div className="bg-amber-50 border border-amber-500/20 rounded-[10px] p-3 flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-[1px]" />
               <p className="text-[12px] text-ink-muted leading-relaxed">
                 AI 结果仅供初步分诊参考，不能替代执业兽医诊断。如宠物出现紧急症状，请立即前往宠物医院就诊。
               </p>
@@ -415,7 +415,7 @@ export default function HealthPage() {
             {/* Triage form */}
             <div className="bg-surface-white rounded-[12px] border border-border p-4 shadow-card">
               <h3 className="text-[15px] font-semibold text-ink flex items-center gap-2 mb-4">
-                <Stethoscope className="w-5 h-5 text-coral-500" />
+                <Stethoscope className="w-5 h-5 text-teal-500" />
                 分诊表
               </h3>
 
@@ -423,11 +423,11 @@ export default function HealthPage() {
                 {/* a. 就诊宠物 */}
                 <div>
                   <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
-                    就诊宠物 <span className="text-danger-500">*</span>
+                    就诊宠物 <span className="text-rose-500">*</span>
                   </label>
                   <select
                     className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                      focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                      focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
                     value={triageForm.petId}
                     onChange={(e) => setTriageForm({ ...triageForm, petId: e.target.value })}
                   >
@@ -441,11 +441,11 @@ export default function HealthPage() {
                 {/* b. 症状描述 */}
                 <div>
                   <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
-                    症状描述 <span className="text-danger-500">*</span>
+                    症状描述 <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                      placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+                      placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400
                       min-h-[100px] resize-none transition"
                     placeholder="请详细描述宠物的症状，例如：猫咪从昨天开始呕吐、不吃东西、精神萎靡..."
                     value={triageForm.symptoms}
@@ -457,11 +457,11 @@ export default function HealthPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
-                      持续时间 <span className="text-danger-500">*</span>
+                      持续时间 <span className="text-rose-500">*</span>
                     </label>
                     <select
                       className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                        focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
                       value={triageForm.duration}
                       onChange={(e) => setTriageForm({ ...triageForm, duration: e.target.value })}
                     >
@@ -472,11 +472,11 @@ export default function HealthPage() {
                   </div>
                   <div>
                     <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
-                      食欲状况 <span className="text-danger-500">*</span>
+                      食欲状况 <span className="text-rose-500">*</span>
                     </label>
                     <select
                       className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                        focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
                       value={triageForm.appetite}
                       onChange={(e) => setTriageForm({ ...triageForm, appetite: e.target.value })}
                     >
@@ -487,11 +487,11 @@ export default function HealthPage() {
                   </div>
                   <div>
                     <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
-                      饮水状况 <span className="text-danger-500">*</span>
+                      饮水状况 <span className="text-rose-500">*</span>
                     </label>
                     <select
                       className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                        focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
                       value={triageForm.drinking}
                       onChange={(e) => setTriageForm({ ...triageForm, drinking: e.target.value })}
                     >
@@ -502,11 +502,11 @@ export default function HealthPage() {
                   </div>
                   <div>
                     <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
-                      精神状态 <span className="text-danger-500">*</span>
+                      精神状态 <span className="text-rose-500">*</span>
                     </label>
                     <select
                       className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                        focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+                        focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
                       value={triageForm.energy}
                       onChange={(e) => setTriageForm({ ...triageForm, energy: e.target.value })}
                     >
@@ -530,7 +530,7 @@ export default function HealthPage() {
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-border text-coral-500 focus:ring-coral-500/20"
+                      className="w-4 h-4 rounded border-border text-teal-500 focus:ring-teal-500/20"
                       checked={triageForm.isVomiting}
                       onChange={(e) => setTriageForm({ ...triageForm, isVomiting: e.target.checked })}
                     />
@@ -539,7 +539,7 @@ export default function HealthPage() {
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-border text-coral-500 focus:ring-coral-500/20"
+                      className="w-4 h-4 rounded border-border text-teal-500 focus:ring-teal-500/20"
                       checked={triageForm.hasInjury}
                       onChange={(e) => setTriageForm({ ...triageForm, hasInjury: e.target.checked })}
                     />
@@ -566,8 +566,8 @@ export default function HealthPage() {
                               const newFiles = triageForm.images.filter((_, j) => j !== i);
                               setTriageForm({ ...triageForm, images: newFiles });
                             }}
-                            className="absolute top-0 right-0 w-5 h-5 bg-danger-500 text-white text-[11px] rounded-bl-[6px] flex items-center justify-center
-                              hover:bg-danger-600 transition-colors"
+                            className="absolute top-0 right-0 w-5 h-5 bg-rose-500 text-white text-[11px] rounded-bl-[6px] flex items-center justify-center
+                              hover:bg-rose-600 transition-colors"
                             aria-label={`删除第 ${i + 1} 张图片`}
                           >
                             &times;
@@ -578,7 +578,7 @@ export default function HealthPage() {
                   )}
                   {triageForm.images.length < 3 && (
                     <label className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-border rounded-[8px]
-                      text-[14px] text-ink-faded cursor-pointer hover:border-coral-400 hover:text-coral-500 transition">
+                      text-[14px] text-ink-faded cursor-pointer hover:border-teal-400 hover:text-teal-500 transition">
                       <Plus className="w-4 h-4" aria-label="添加" />
                       选择图片
                       <input
@@ -628,7 +628,7 @@ export default function HealthPage() {
           <div>
             <label className="block text-[13px] font-medium text-ink-muted mb-1.5">是否绝育</label>
             <select className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-              focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
               value={editForm.isNeutered || ''}
               onChange={(e) => setEditForm({ ...editForm, isNeutered: e.target.value })}>
               <option value="">未选择</option>
@@ -658,7 +658,7 @@ export default function HealthPage() {
           <div>
             <label className="block text-[13px] font-medium text-ink-muted mb-1.5">记录类型</label>
             <select className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-              focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400 transition"
+              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
               value={addRecordForm.type}
               onChange={(e) => setAddRecordForm({ ...addRecordForm, type: e.target.value })}>
               {RECORD_TYPE_OPTIONS.map((o) => (
@@ -671,7 +671,7 @@ export default function HealthPage() {
           <div>
             <label className="block text-[13px] font-medium text-ink-muted mb-1.5">描述</label>
             <textarea className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-              placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+              placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400
               min-h-[80px] resize-none transition"
               placeholder="记录详情..."
               value={addRecordForm.description}

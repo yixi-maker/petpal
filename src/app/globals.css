@@ -1,69 +1,66 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* === Primary: Warm Coral === */
-  --color-coral-50: #FFF5F0;
-  --color-coral-100: #FFE8DB;
-  --color-coral-200: #FFCCB0;
-  --color-coral-300: #FFA87A;
-  --color-coral-400: #FF8547;
-  --color-coral-500: #F2682A;
-  --color-coral-600: #D45018;
-  --color-coral-700: #A83C0E;
-  --color-coral-800: #812C08;
-  --color-coral-900: #5C1E04;
+  /* === Primary: Teal / Green-Blue === */
+  --color-teal-50: #F0F7F7;
+  --color-teal-100: #D4EDEB;
+  --color-teal-200: #A8DBD7;
+  --color-teal-300: #6EC4BD;
+  --color-teal-400: #3DA89D;
+  --color-teal-500: #1D8A80;
+  --color-teal-600: #166B64;
+  --color-teal-700: #10504B;
+  --color-teal-800: #0B3835;
+  --color-teal-900: #072422;
 
-  /* === Text: Deep Ink === */
-  --color-ink: #1A1D23;
-  --color-ink-muted: #5B5F67;
-  --color-ink-faded: #969BA3;
+  /* === Accent: Sea Glass === */
+  --color-sea-50: #F2F6F8;
+  --color-sea-100: #DFEBF0;
+  --color-sea-200: #BED6E0;
+  --color-sea-400: #7AAEC6;
+  --color-sea-500: #5090AD;
 
-  /* === Accent: Sage Green (health, success) === */
-  --color-sage-50: #F4F8F4;
-  --color-sage-100: #E2EDE2;
-  --color-sage-200: #B9D5B9;
-  --color-sage-400: #6AA86A;
-  --color-sage-500: #4D8C4D;
-  --color-sage-600: #3A703A;
+  /* === Accent: Sage (health) === */
+  --color-sage-50: #F4F7F4;
+  --color-sage-100: #E2EDE3;
+  --color-sage-200: #B9D5BB;
+  --color-sage-400: #6AA86E;
+  --color-sage-500: #4D8C51;
+  --color-sage-600: #3A7040;
 
-  /* === Accent: Mist Blue (info, map, nearby) === */
-  --color-mist-50: #F4F7FA;
-  --color-mist-100: #E3EBF3;
-  --color-mist-200: #C0D3E6;
-  --color-mist-400: #5C8DB5;
-  --color-mist-500: #3D709C;
-  --color-mist-600: #2C567A;
+  /* === Text: Warm Ink === */
+  --color-ink: #1C1D20;
+  --color-ink-muted: #5F6268;
+  --color-ink-faded: #979A9F;
 
-  /* === Surfaces & Borders === */
-  --color-surface: #F7F6F4;
+  /* === Surfaces: Warm off-white === */
+  --color-surface: #F8F7F5;
   --color-surface-alt: #F0EFEC;
   --color-surface-white: #FFFFFF;
-  --color-border: #E8E6E1;
+  --color-border: #E8E6E2;
   --color-border-light: #F0EEEA;
 
-  /* === Semantic === */
-  --color-danger-50: #FEF5F5;
-  --color-danger-500: #DC4A4A;
-  --color-danger-600: #BA3333;
-  --color-warning-50: #FFF9F0;
-  --color-warning-500: #E8952D;
-  --color-success-500: #4D8C4D;
-
-  /* === Layout === */
-  --max-width-mobile: 430px;
-  --animate-slide-up: slide-up 0.25s ease-out;
+  /* === Semantic (warm accents, kept minimal) === */
+  --color-amber-50: #FFF8F0;
+  --color-amber-500: #E8952D;
+  --color-rose-50: #FEF5F5;
+  --color-rose-500: #DC4A4A;
 
   /* === Shadows === */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.12);
-  --shadow-tab: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.10);
+  --shadow-tab: 0 -1px 3px rgba(0,0,0,0.04);
 
   /* === Border Radius === */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+
+  /* === Layout === */
+  --max-width-mobile: 430px;
+  --animate-slide-up: slide-up 0.25s ease-out;
 }
 
 @keyframes slide-up {

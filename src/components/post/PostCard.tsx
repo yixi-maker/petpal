@@ -123,7 +123,7 @@ export function PostCard({ post, liked, onLike }: PostCardProps) {
                 key={img.id}
                 src={img.url}
                 alt=""
-                className="h-[200px] w-auto rounded-[8px] object-cover flex-shrink-0"
+                className="h-[220px] w-auto rounded-[8px] object-cover flex-shrink-0"
               />
             ))}
           </div>
@@ -142,11 +142,11 @@ export function PostCard({ post, liked, onLike }: PostCardProps) {
           <button
             type="button"
             onClick={handleLike}
-            className="flex items-center gap-1.5 px-3 py-2 text-ink-faded hover:text-coral-500 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-ink-faded hover:text-amber-500 transition-colors"
             aria-label="点赞"
           >
             <Heart
-              className={`w-[18px] h-[18px] ${liked ? 'fill-coral-500 text-coral-500' : ''}`}
+              className={`w-[18px] h-[18px] ${liked ? 'fill-amber-500 text-amber-500' : ''}`}
             />
             <span className="text-[13px]">{post._count.likes}</span>
           </button>
@@ -170,7 +170,7 @@ export function PostCard({ post, liked, onLike }: PostCardProps) {
             <ReportButton
               targetType="POST"
               targetId={post.id}
-              className="text-ink-faded/40 hover:text-coral-500"
+              className="text-ink-faded/30 hover:text-rose-500"
             />
           </div>
         </div>

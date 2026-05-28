@@ -142,7 +142,7 @@ export default function NearbyPage() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-[320px] bg-surface-white border border-border rounded-[12px] p-5 text-center">
           <div className="flex justify-center mb-4">
-            <Navigation className="w-[36px] h-[36px] text-mist-400" />
+            <Navigation className="w-[36px] h-[36px] text-sea-500" />
           </div>
           <h2 className="text-[17px] font-semibold text-ink mb-1.5">发现附近宠物</h2>
           <p className="text-[13px] text-ink-faded leading-relaxed mb-4">
@@ -151,9 +151,9 @@ export default function NearbyPage() {
           </p>
 
           {locationError && (
-            <div className="mb-4 bg-red-50 rounded-[8px] p-3 flex items-start gap-2 text-left">
-              <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-              <p className="text-[13px] text-red-600">{locationError}</p>
+            <div className="mb-4 bg-rose-50 rounded-[8px] p-3 flex items-start gap-2 text-left">
+              <AlertTriangle className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
+              <p className="text-[13px] text-rose-600">{locationError}</p>
             </div>
           )}
 
@@ -274,7 +274,7 @@ export default function NearbyPage() {
                 <div className="text-[12px] text-ink-faded mt-0.5">{pet.breed || ''}</div>
                 <div className="flex justify-center gap-1 mt-1.5 flex-wrap">
                   {pet.personalityTags.slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="coral" size="sm">{tag}</Badge>
+                    <Badge key={tag} variant="teal" size="sm">{tag}</Badge>
                   ))}
                 </div>
               </div>

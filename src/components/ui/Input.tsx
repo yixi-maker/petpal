@@ -12,13 +12,13 @@ export function Input({ label, error, className = '', ...props }: InputProps) {
       <input
         className={`w-full px-3.5 py-2.5 text-[15px] text-ink bg-surface-white border border-border
           rounded-[8px] placeholder:text-ink-faded/60
-          focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-400
+          focus:outline-none focus:ring-2 focus:ring-teal-500/15 focus:border-teal-400
           transition duration-150
-          ${error ? 'border-danger-500 focus:ring-danger-500/20 focus:border-danger-500' : ''}
+          ${error ? 'border-rose-500 focus:ring-rose-500/20 focus:border-rose-500' : ''}
           ${className}`}
         {...props}
       />
-      {error && <p className="mt-1.5 text-[12px] text-danger-500">{error}</p>}
+      {error && <p className="mt-1.5 text-[12px] text-rose-500">{error}</p>}
     </div>
   );
 }
