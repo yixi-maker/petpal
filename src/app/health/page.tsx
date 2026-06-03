@@ -314,7 +314,7 @@ export default function HealthPage() {
           <div className="flex-1 min-w-0">
             <h2 className="text-[16px] font-semibold text-ink">{currentPet.name}</h2>
             <p className="text-[13px] text-ink-muted truncate">
-              {currentPet.breed || petType === 'DOG' ? '狗狗' : petType === 'CAT' ? '猫咪' : '宠物'}
+              {petType === 'DOG' ? '狗狗' : petType === 'CAT' ? '猫咪' : '宠物'}
               {currentPet.breed ? ` · ${currentPet.breed}` : ''}
             </p>
           </div>

@@ -93,7 +93,7 @@ export function PostCard({ post, liked, onLike }: PostCardProps) {
             className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
             onClick={handleAuthorClick}
           >
-            <Avatar src={post.author.avatar} size="md" />
+            <Avatar src={post.author.avatar} size="md" petType={post.author.type as 'DOG' | 'CAT'} />
             <div className="min-w-0">
               <div className="text-[14px] font-medium text-ink truncate">
                 {post.author.name}

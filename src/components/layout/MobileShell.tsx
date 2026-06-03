@@ -8,7 +8,7 @@ import { PawPrint } from 'lucide-react';
 
 export function MobileShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { loading: petLoading } = usePet();
 
   const isFullPage =
@@ -20,19 +20,8 @@ export function MobileShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Show loading while auth/pet contexts initialize
-  const isProtected =
-    pathname === '/' ||
-    pathname.startsWith('/nearby') ||
-    pathname.startsWith('/map') ||
-    pathname.startsWith('/health') ||
-    pathname.startsWith('/me') ||
-    pathname.startsWith('/pets') ||
-    pathname.startsWith('/posts') ||
-    pathname.startsWith('/messages') ||
-    pathname.startsWith('/playdates');
-
-  if (isProtected && (authLoading || petLoading)) {
+  // Show loading while auth/pet contexts initialize OR when user is null after auth loaded
+  if (authLoading || petLoading || (!user && !authLoading)) {
     return (
       <div className="max-w-mobile mx-auto min-h-screen bg-surface flex items-center justify-center">
         <div className="text-center">
