@@ -12,6 +12,11 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  // Root path requires auth — redirect to login if no token
+  if (pathname === '/' && !userToken) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
   const protectedPaths = ['/nearby', '/map', '/health', '/me', '/settings', '/pets', '/posts', '/messages', '/playdates'];
   const isProtected = protectedPaths.some((p) => pathname === p || pathname.startsWith(p + '/'));
   if (isProtected && !userToken) {

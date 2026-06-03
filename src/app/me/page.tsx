@@ -15,7 +15,7 @@ function petTypeFromString(t: string): 'DOG' | 'CAT' | undefined {
 
 export default function MePage() {
   const { user, logout } = useAuth();
-  const { pets, currentPet, switchPet } = usePet();
+  const { pets, currentPet, loading: petLoading, switchPet } = usePet();
   const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteStep, setDeleteStep] = useState(1);
@@ -66,7 +66,15 @@ export default function MePage() {
       {/* ========== Current pet identity card ========== */}
       <div className="bg-teal-50/50 border border-teal-100 rounded-[12px] p-4 mb-4">
         <h3 className="text-[13px] font-medium text-ink-muted mb-3">当前宠物身份</h3>
-        {pets.length > 0 ? (
+        {petLoading ? (
+          <div className="flex items-center gap-3 animate-pulse">
+            <div className="w-12 h-12 rounded-full bg-surface-alt" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-surface-alt rounded w-20" />
+              <div className="h-3 bg-surface-alt rounded w-16" />
+            </div>
+          </div>
+        ) : pets.length > 0 ? (
           <>
             {/* Current pet */}
             <div className="flex items-center gap-3">
