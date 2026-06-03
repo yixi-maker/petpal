@@ -4,10 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { PawPrint, Plus, Users, MapPin } from 'lucide-react';
+import { PawPrint, Plus, Users, MapPin, Calendar, Stethoscope } from 'lucide-react';
 import { Tabs, Modal, Avatar, EmptyState, Button, IconBadge } from '@/components/ui';
 import { PostList } from '@/components/post/PostList';
 import { PostForm } from '@/components/post/PostForm';
+import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import Link from 'next/link';
 
 interface PostAuthor {
@@ -43,12 +44,47 @@ const tabs = [
 
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
-  const { currentPet, loading: petLoading } = usePet();
+  const { currentPet, pets, loading: petLoading } = usePet();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('RECOMMENDED');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
+
+  // Onboarding state
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  // Today Status module state
+  const [statusReminder, setStatusReminder] = useState<string | null>(null);
+  const [statusReminderLoading, setStatusReminderLoading] = useState(false);
+  const [statusHospitalCount, setStatusHospitalCount] = useState<number | null>(null);
+
+  // Check if onboarding has been completed
+  useEffect(() => {
+    const done = localStorage.getItem('petpal-onboarding-done');
+    if (done === 'true') {
+      setOnboardingChecked(true);
+    } else {
+      setOnboardingChecked(true);
+    }
+  }, []);
+
+  // Show onboarding when: not loading, no pets, not already done
+  useEffect(() => {
+    if (!petLoading && onboardingChecked && pets.length === 0) {
+      const done = localStorage.getItem('petpal-onboarding-done');
+      if (done !== 'true') {
+        setShowOnboarding(true);
+      }
+    }
+  }, [petLoading, pets.length, onboardingChecked]);
+
+  // Handle onboarding complete
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('petpal-onboarding-done', 'true');
+    setShowOnboarding(false);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -77,6 +113,49 @@ export default function HomePage() {
     }
   }, [user, fetchPosts]);
 
+  // Fetch today status data when currentPet changes
+  useEffect(() => {
+    if (!currentPet) return;
+
+    // Fetch health profile for next reminder
+    setStatusReminderLoading(true);
+    fetch(`/api/health/profile?petId=${currentPet.id}`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.profile?.nextReminder) {
+          const d = new Date(data.profile.nextReminder);
+          const now = new Date();
+          const diffDays = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays <= 0) {
+            setStatusReminder('今天');
+          } else if (diffDays === 1) {
+            setStatusReminder('明天');
+          } else if (diffDays <= 7) {
+            setStatusReminder(`${diffDays}天后`);
+          } else {
+            setStatusReminder(data.profile.nextReminder.slice(0, 10));
+          }
+        } else {
+          setStatusReminder(null);
+        }
+      })
+      .catch(() => setStatusReminder(null))
+      .finally(() => setStatusReminderLoading(false));
+
+    // Fetch hospital count (mock: try API, fallback to mock)
+    // We need city from pet location; since we don't have it directly, try the API
+    fetch(`/api/places?type=HOSPITAL`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.places) {
+          setStatusHospitalCount(data.places.length);
+        } else {
+          setStatusHospitalCount(0);
+        }
+      })
+      .catch(() => setStatusHospitalCount(0));
+  }, [currentPet]);
+
   const handleLike = async (postId: number) => {
     if (!currentPet) return;
 
@@ -99,7 +178,8 @@ export default function HomePage() {
     }
   };
 
-  if (authLoading || petLoading) {
+  // Loading state
+  if (authLoading || petLoading || !onboardingChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <PawPrint className="w-8 h-8 text-teal-500/40 animate-pulse" />
@@ -108,6 +188,11 @@ export default function HomePage() {
   }
 
   if (!user) return null;
+
+  // Show onboarding for new users with no pets
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
 
   const petType = (currentPet?.type === 'DOG' || currentPet?.type === 'CAT')
     ? (currentPet.type as 'DOG' | 'CAT')
@@ -132,7 +217,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Pet Identity Header — proper card */}
+        {/* Pet Identity Header -- proper card */}
         <div className="px-4 mb-3">
           {currentPet ? (
             <div className="bg-surface-white rounded-[12px] shadow-sm px-4 py-3 flex items-center justify-between">
@@ -165,6 +250,58 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
+        {/* Today Status Mini Pills -- shown when currentPet exists */}
+        {currentPet && (
+          <div className="px-4 mb-3">
+            <div className="flex gap-2.5">
+              {/* Pill 1: Health Reminder */}
+              <div className="bg-surface-white/80 rounded-[10px] px-3 py-2 shadow-xs text-center flex-1">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <Calendar className="w-3 h-3 text-teal-500" />
+                  <span className="text-[10px] text-ink-faded leading-none">下次提醒</span>
+                </div>
+                {statusReminderLoading ? (
+                  <span className="text-[12px] text-ink-faded">加载中</span>
+                ) : statusReminder ? (
+                  <span className="text-[13px] font-medium text-ink block">{statusReminder}</span>
+                ) : (
+                  <Link
+                    href="/health"
+                    className="text-[12px] text-teal-500 hover:text-teal-600 font-medium transition-colors block"
+                  >
+                    完善健康档案
+                  </Link>
+                )}
+              </div>
+
+              {/* Pill 2: Nearby Hospitals */}
+              <div className="bg-surface-white/80 rounded-[10px] px-3 py-2 shadow-xs text-center flex-1">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <Stethoscope className="w-3 h-3 text-teal-500" />
+                  <span className="text-[10px] text-ink-faded leading-none">附近医院</span>
+                </div>
+                <span className="text-[13px] font-medium text-ink block">
+                  {statusHospitalCount !== null ? `${statusHospitalCount}家` : '--'}
+                </span>
+              </div>
+
+              {/* Pill 3: New Friends */}
+              <div className="bg-surface-white/80 rounded-[10px] px-3 py-2 shadow-xs text-center flex-1">
+                <div className="flex items-center justify-center gap-1 mb-0.5">
+                  <Users className="w-3 h-3 text-teal-500" />
+                  <span className="text-[10px] text-ink-faded leading-none">新朋友</span>
+                </div>
+                <Link
+                  href="/nearby"
+                  className="text-[12px] text-teal-500 hover:text-teal-600 font-medium transition-colors block"
+                >
+                  去发现
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Discovery Row */}

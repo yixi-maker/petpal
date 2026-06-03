@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { usePet } from '@/contexts/PetContext';
 import { Tabs, Button, Modal, Input, EmptyState, Avatar } from '@/components/ui';
 import { AIResultCard } from '@/components/health/AIResultCard';
+import { EmergencyGuide } from '@/components/health/EmergencyGuide';
+import { VetChecklist } from '@/components/health/VetChecklist';
 import { HealthRecordList } from '@/components/health/HealthRecordList';
 import { Loader2, Heart, Edit3, Plus, Stethoscope, AlertTriangle } from 'lucide-react';
 import type { AITriageResult } from '@/lib/ai-provider';
@@ -444,7 +446,7 @@ export default function HealthPage() {
               </div>
             ) : (
               <div className="bg-surface-white rounded-[12px] p-8 shadow-sm text-center">
-                <p className="text-[14px] text-ink-muted mb-3">尚未创建健康档案</p>
+                <p className="text-[14px] text-ink-muted mb-3">还没有健康记录，先为它建立第一条档案</p>
                 <Button variant="outline" size="sm" onClick={openEditModal}>
                   <Plus className="w-3.5 h-3.5 mr-1" />
                   创建档案
@@ -475,6 +477,9 @@ export default function HealthPage() {
         {/* ========== Tab 2: AI 健康助手 ========== */}
         {activeTab === 'ai' && (
           <div className="space-y-4">
+            {/* Emergency guide */}
+            <EmergencyGuide />
+
             {/* Warning banner — subtle */}
             <div className="bg-amber-50/60 border border-amber-500/10 rounded-[8px] p-3 flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-amber-500/70 flex-shrink-0 mt-[1px]" />
@@ -717,6 +722,9 @@ export default function HealthPage() {
 
             {/* Result display */}
             {triageResult && <AIResultCard result={triageResult} />}
+
+            {/* Vet checklist — always visible in AI tab */}
+            <VetChecklist />
           </div>
         )}
       </div>

@@ -4,8 +4,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { usePet } from '@/contexts/PetContext';
 import { Avatar, Button, EmptyState, FilterChip, Badge } from '@/components/ui';
 import { FollowButton } from '@/components/social/FollowButton';
-import { FriendRequestModal } from '@/components/social/FriendRequestModal';
-import { MapPin, Navigation, AlertTriangle } from 'lucide-react';
+import { IcebreakerModal } from '@/components/social/IcebreakerModal';
+import { MapPin, Navigation, AlertTriangle, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 interface NearbyPet {
@@ -204,7 +204,11 @@ export default function NearbyPage() {
 
   return (
     <div className="p-4 pb-20">
-      <h1 className="text-[17px] font-semibold text-ink mb-4">附近宠物</h1>
+      <h1 className="text-[17px] font-semibold text-ink mb-1">附近宠物</h1>
+      <p className="text-[11px] text-ink-faded/60 flex items-center gap-1 mb-4">
+        <Shield className="w-3 h-3" />
+        位置仅展示模糊距离，不暴露精确坐标
+      </p>
 
       {/* Filters */}
       <div className="space-y-2 mb-4">
@@ -253,9 +257,9 @@ export default function NearbyPage() {
         </div>
       ) : pets.length === 0 ? (
         <EmptyState
-          icon={<MapPin className="w-10 h-10" />}
-          title="附近还没有宠物"
-          description="换个城市或筛选条件试试吧"
+          icon={<MapPin className="w-10 h-10 text-teal-500/40" />}
+          title="附近暂时没有小伙伴出现"
+          description="换个区域或筛选条件试试？"
         />
       ) : (
         <div className="grid grid-cols-2 gap-3">
@@ -298,7 +302,7 @@ export default function NearbyPage() {
         </div>
       )}
 
-      <FriendRequestModal open={frOpen} onClose={() => setFrOpen(false)}
+      <IcebreakerModal open={frOpen} onClose={() => setFrOpen(false)}
         fromPetId={currentPet?.id || 0} toPetId={frTarget?.id || 0} toPetName={frTarget?.name || ''} />
     </div>
   );

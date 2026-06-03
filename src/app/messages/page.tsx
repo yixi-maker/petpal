@@ -86,7 +86,8 @@ export default function MessagesPage() {
           <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <MessageCircle className="w-8 h-8 text-teal-300" aria-label="私信" />
           </div>
-          <p className="text-ink-faded text-sm mb-4">暂无私信，去附近页面交个朋友吧</p>
+          <p className="text-ink-faded text-sm mb-2">暂无私信，去附近页面交个朋友吧</p>
+          <p className="text-ink-faded/60 text-[11px] mb-4">私信需要对方同意后才能开始对话</p>
           <Link href="/nearby">
             <span className="inline-block px-4 py-2 bg-teal-500 text-white text-sm rounded-xl">
               去看看

@@ -87,9 +87,11 @@ export default function MePage() {
                 <div className="text-[15px] font-semibold text-ink">
                   {currentPet?.name || '未选择'}
                 </div>
-                <div className="text-[13px] text-ink-muted">
-                  {currentPet?.type === 'DOG' ? '🐶' : currentPet?.type === 'CAT' ? '🐱' : '🐾'}{' '}
-                  {currentPet?.breed || ''}
+                <div className="text-[13px] text-ink-muted flex items-center gap-1.5">
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] bg-teal-50 text-teal-600 text-[11px] font-medium">
+                    {currentPet?.type === 'DOG' ? '狗狗' : currentPet?.type === 'CAT' ? '猫咪' : '宠物'}
+                  </span>
+                  {currentPet?.breed ? <span>{currentPet.breed}</span> : null}
                 </div>
               </div>
               <Link

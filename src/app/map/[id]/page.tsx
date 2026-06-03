@@ -92,6 +92,26 @@ const TYPE_LABEL_MAP: Record<string, string> = {
   BOARDING: '寄养',
 };
 
+function getAllPlaceTags(place: PlaceDetail): { label: string; variant: 'sage' | 'sea' | 'teal' | 'amber' | 'rose' }[] {
+  const tags: { label: string; variant: 'sage' | 'sea' | 'teal' | 'amber' | 'rose' }[] = [];
+  if (place.petFriendlyTags?.includes('可带宠入内')) tags.push({ label: '可入内', variant: 'sage' });
+  if (place.petFriendlyTags?.includes('提供饮水')) tags.push({ label: '有饮水', variant: 'sea' });
+  if (place.petFriendlyTags?.includes('超大草坪')) tags.push({ label: '有草坪', variant: 'sage' });
+  if (place.petFriendlyTags?.includes('24小时急诊')) tags.push({ label: '24h急诊', variant: 'rose' });
+  if (place.petFriendlyTags?.includes('SPA护理')) tags.push({ label: 'SPA', variant: 'sea' });
+  if (place.petFriendlyTags?.includes('有草坪')) tags.push({ label: '有草坪', variant: 'sage' });
+  // Type-based tags
+  if (place.type === 'HOSPITAL') tags.push({ label: '专业医疗', variant: 'teal' });
+  if (place.type === 'PARK') tags.push({ label: '户外空间', variant: 'sage' });
+  if (place.type === 'CAFE' || place.type === 'RESTAURANT') tags.push({ label: '餐饮', variant: 'amber' });
+  return tags;
+}
+
+function hasRecentReview(reviews: Review[]): boolean {
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  return reviews.some((r) => new Date(r.createdAt).getTime() >= thirtyDaysAgo);
+}
+
 function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' }) {
   const iconSize = size === 'md' ? 'w-5 h-5' : 'w-3.5 h-3.5';
   return (
@@ -229,6 +249,9 @@ export default function PlaceDetailPage() {
     );
   }
 
+  const allTags = getAllPlaceTags(place);
+  const showRecentConfirmation = hasRecentReview(place.reviews);
+
   return (
     <div className="min-h-screen bg-surface">
       {/* Header with back button */}
@@ -297,12 +320,20 @@ export default function PlaceDetailPage() {
             </div>
           )}
 
-          {/* Pet friendly tags */}
-          {place.petFriendlyTags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {place.petFriendlyTags.map((tag, i) => (
-                <Badge key={i} variant="teal" size="sm">{tag}</Badge>
-              ))}
+          {/* Pet friendly trust tags — show ALL */}
+          {allTags.length > 0 && (
+            <div className="mb-3">
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {allTags.map((tag, i) => (
+                  <Badge key={i} variant={tag.variant} size="sm">{tag.label}</Badge>
+                ))}
+              </div>
+              {/* Recent confirmation hint */}
+              {showRecentConfirmation && (
+                <p className="text-[12px] text-sage-500">
+                  最近 30 天内有用户确认
+                </p>
+              )}
             </div>
           )}
 

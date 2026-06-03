@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { usePet } from '@/contexts/PetContext';
-import { Avatar, Button } from '@/components/ui';
-import { FollowButton } from '@/components/social/FollowButton';
-import { FriendRequestModal } from '@/components/social/FriendRequestModal';
+import { IcebreakerModal } from '@/components/social/IcebreakerModal';
 import { ReportButton } from '@/components/social/ReportButton';
-import { ArrowLeft } from 'lucide-react';
+import { PetProfileCard } from '@/components/pet/PetProfileCard';
+import { ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 interface PetProfile {
@@ -72,64 +71,27 @@ export default function PetProfilePage() {
         <h1 className="text-lg font-semibold">{pet.name} 的主页</h1>
       </div>
 
-      <div className="text-center mb-6">
-        <Avatar src={pet.avatar} size="xl" className="mx-auto mb-3" />
-        <h2 className="text-xl font-bold">{pet.name}</h2>
-        <p className="text-sm text-ink-faded">
-          {pet.type === 'DOG' ? '🐶' : '🐱'} {pet.breed || '未知品种'} · {pet.gender === 'MALE' ? '♂' : pet.gender === 'FEMALE' ? '♀' : ''} {pet.size === 'SMALL' ? '小型' : pet.size === 'MEDIUM' ? '中型' : '大型'}
-        </p>
-        {pet.personalityTags.length > 0 && (
-          <div className="flex justify-center gap-1.5 mt-2 flex-wrap">
-            {pet.personalityTags.map((tag: string) => (
-              <span key={tag} className="px-2 py-0.5 bg-teal-50 text-teal-600 text-xs rounded-full">{tag}</span>
-            ))}
-          </div>
-        )}
-      </div>
+      <PetProfileCard
+        pet={pet}
+        stats={{
+          followerCount: pet.followerCount,
+          followingCount: pet.followingCount,
+          friendCount: pet.friendCount,
+        }}
+        isOwn={isMine}
+        initialFollowing={following}
+        onFollowToggle={(v) => setFollowing(v)}
+        onGreet={() => setFrOpen(true)}
+        onSwitchPet={() => switchPet(pet.id)}
+      />
 
-      {pet.bio && <p className="text-sm text-ink-muted text-center mb-4">{pet.bio}</p>}
+      {/* Safety hint */}
+      <p className="text-[11px] text-ink-faded/60 flex items-center gap-1 mt-2">
+        <Shield className="w-3 h-3" />
+        对方仅能看到宠物的公开信息
+      </p>
 
-      <div className="flex justify-center gap-8 mb-6">
-        <div className="text-center">
-          <div className="text-lg font-bold">{pet.followerCount}</div>
-          <div className="text-xs text-ink-faded">关注者</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold">{pet.followingCount}</div>
-          <div className="text-xs text-ink-faded">关注中</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold">{pet.friendCount}</div>
-          <div className="text-xs text-ink-faded">好友</div>
-        </div>
-      </div>
-
-      <div className="flex gap-2">
-        {isMine ? (
-          <Button variant="outline" className="flex-1" onClick={() => switchPet(pet.id)}>
-            {currentPet?.id === pet.id ? '✓ 当前选中' : '切换身份'}
-          </Button>
-        ) : (
-          <>
-            <FollowButton
-              petId={pet.id}
-              initialFollowing={following}
-              onToggle={(v) => setFollowing(v)}
-              className="flex-1 py-2.5 text-sm"
-            />
-            <Button
-              className="flex-1"
-              variant="outline"
-              onClick={() => setFrOpen(true)}
-              disabled={!currentPet}
-            >
-              打招呼
-            </Button>
-          </>
-        )}
-      </div>
-
-      <FriendRequestModal
+      <IcebreakerModal
         open={frOpen}
         onClose={() => setFrOpen(false)}
         fromPetId={currentPet?.id || 0}

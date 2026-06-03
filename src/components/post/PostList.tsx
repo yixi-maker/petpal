@@ -71,9 +71,9 @@ export function PostList({ posts, loading, currentPetId, onLike }: PostListProps
   if (!posts || posts.length === 0) {
     return (
       <EmptyState
-        icon={<PawPrint className="w-10 h-10" />}
+        icon={<PawPrint className="w-10 h-10 text-teal-500/40" />}
         title="还没有动态"
-        description="关注更多宠物或去看看推荐内容"
+        description="这里还没有动态，去看看推荐内容"
       />
     );
   }

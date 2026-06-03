@@ -87,6 +87,21 @@ const TYPE_VARIANT_MAP: Record<string, 'teal' | 'sea' | 'sage' | 'amber' | 'rose
   BOARDING: 'sea',
 };
 
+function getPlaceTags(place: Place): { label: string; variant: 'sage' | 'sea' | 'teal' | 'amber' | 'rose' }[] {
+  const tags: { label: string; variant: 'sage' | 'sea' | 'teal' | 'amber' | 'rose' }[] = [];
+  if (place.petFriendlyTags?.includes('可带宠入内')) tags.push({ label: '可入内', variant: 'sage' });
+  if (place.petFriendlyTags?.includes('提供饮水')) tags.push({ label: '有饮水', variant: 'sea' });
+  if (place.petFriendlyTags?.includes('超大草坪')) tags.push({ label: '有草坪', variant: 'sage' });
+  if (place.petFriendlyTags?.includes('24小时急诊')) tags.push({ label: '24h急诊', variant: 'rose' });
+  if (place.petFriendlyTags?.includes('SPA护理')) tags.push({ label: 'SPA', variant: 'sea' });
+  if (place.petFriendlyTags?.includes('有草坪')) tags.push({ label: '有草坪', variant: 'sage' });
+  // Always show type-based tag
+  if (place.type === 'HOSPITAL') tags.push({ label: '专业医疗', variant: 'teal' });
+  if (place.type === 'PARK') tags.push({ label: '户外空间', variant: 'sage' });
+  if (place.type === 'CAFE' || place.type === 'RESTAURANT') tags.push({ label: '餐饮', variant: 'amber' });
+  return tags;
+}
+
 function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-0.5">
@@ -165,7 +180,7 @@ export default function MapPage() {
           />
         </div>
 
-        {/* City selector: FilterChip row — bigger, more prominent */}
+        {/* City selector: FilterChip row */}
         <div className="flex gap-2 mb-2 overflow-x-auto">
           {CITIES.map((city) => (
             <FilterChip
@@ -204,69 +219,67 @@ export default function MapPage() {
               <div className="text-center py-20">
                 <Search className="w-10 h-10 text-ink-faded/30 mx-auto mb-3" />
                 <p className="text-[14px] text-ink-faded">该区域暂无收录地点</p>
-                <p className="text-[12px] text-ink-faded/60 mt-1">换个城市或类型试试吧</p>
+                <p className="text-[12px] text-ink-faded/60 mt-1">换个城市或类型，也许会发现新的宠物友好空间</p>
               </div>
             ) : (
-              places.map((place) => (
-                <Link
-                  key={place.id}
-                  href={`/map/${place.id}`}
-                  className="block bg-surface-white rounded-[10px] shadow-sm mb-3 overflow-hidden active:scale-[0.98]
-                    hover:shadow-md transition-shadow duration-150"
-                >
-                  {/* Top row: icon + info + distance */}
-                  <div className="flex items-start gap-3 p-3.5">
-                    {/* Left: type icon in IconBadge */}
-                    <IconBadge
-                      icon={TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
-                      variant={TYPE_VARIANT_MAP[place.type] || 'teal'}
-                      size="md"
-                    />
+              places.map((place) => {
+                const tags = getPlaceTags(place);
+                return (
+                  <Link
+                    key={place.id}
+                    href={`/map/${place.id}`}
+                    className="block bg-surface-white rounded-[10px] shadow-sm mb-3 overflow-hidden active:scale-[0.98]
+                      hover:shadow-md transition-shadow duration-150"
+                  >
+                    {/* Top row: icon + info + distance */}
+                    <div className="flex items-start gap-3 p-3.5">
+                      {/* Left: type icon in IconBadge */}
+                      <IconBadge
+                        icon={TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
+                        variant={TYPE_VARIANT_MAP[place.type] || 'teal'}
+                        size="md"
+                      />
 
-                    {/* Center: name, rating, address */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-[15px] font-medium text-ink truncate">{place.name}</h3>
-                        <Badge variant="default" size="sm">{TYPE_LABEL_MAP[place.type] || place.type}</Badge>
+                      {/* Center: name, rating, address */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-[15px] font-medium text-ink truncate">{place.name}</h3>
+                          <Badge variant="default" size="sm">{TYPE_LABEL_MAP[place.type] || place.type}</Badge>
+                        </div>
+                        <div className="mt-1 flex items-center gap-2">
+                          <StarRating rating={place.rating} />
+                          <span className="text-[12px] text-ink-faded">{place.reviewCount} 条评价</span>
+                        </div>
+                        <p className="text-[12px] text-ink-faded mt-1.5 flex items-center gap-1 truncate">
+                          <MapPin className="w-3 h-3 shrink-0" />
+                          {place.address}
+                        </p>
                       </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <StarRating rating={place.rating} />
-                        <span className="text-[12px] text-ink-faded">{place.reviewCount} 条评价</span>
+
+                      {/* Right: distance + open status */}
+                      <div className="shrink-0 text-right">
+                        <p className="text-[12px] text-ink-faded">{mockDistance(place.id)}</p>
+                        <Badge
+                          variant={place.isOpen ? 'sage' : 'default'}
+                          size="sm"
+                          className="mt-1"
+                        >
+                          {place.isOpen ? '营业中' : '休息中'}
+                        </Badge>
                       </div>
-                      <p className="text-[12px] text-ink-faded mt-1.5 flex items-center gap-1 truncate">
-                        <MapPin className="w-3 h-3 shrink-0" />
-                        {place.address}
-                      </p>
                     </div>
 
-                    {/* Right: distance + open status */}
-                    <div className="shrink-0 text-right">
-                      <p className="text-[12px] text-ink-faded">{mockDistance(place.id)}</p>
-                      <Badge
-                        variant={place.isOpen ? 'sage' : 'default'}
-                        size="sm"
-                        className="mt-1"
-                      >
-                        {place.isOpen ? '营业中' : '休息中'}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {/* Bottom: pet-friendly tags */}
-                  {place.petFriendlyTags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 px-3.5 pb-3">
-                      {place.petFriendlyTags.slice(0, 3).map((tag, i) => (
-                        <Badge key={i} variant="teal" size="sm">{tag}</Badge>
-                      ))}
-                      {place.petFriendlyTags.length > 3 && (
-                        <span className="text-[11px] text-ink-faded self-center">
-                          +{place.petFriendlyTags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </Link>
-              ))
+                    {/* Bottom: trust tags (max 3) */}
+                    {tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 px-3.5 pb-3">
+                        {tags.slice(0, 3).map((tag, i) => (
+                          <Badge key={i} variant={tag.variant} size="sm">{tag.label}</Badge>
+                        ))}
+                      </div>
+                    )}
+                  </Link>
+                );
+              })
             )}
           </div>
         ) : (
@@ -381,14 +394,17 @@ export default function MapPage() {
                 </div>
               )}
 
-              {/* Pet friendly tags */}
-              {selectedPlace.petFriendlyTags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedPlace.petFriendlyTags.map((tag, i) => (
-                    <Badge key={i} variant="teal" size="sm">{tag}</Badge>
-                  ))}
-                </div>
-              )}
+              {/* Pet friendly trust tags in modal */}
+              {(() => {
+                const modalTags = getPlaceTags(selectedPlace);
+                return modalTags.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {modalTags.map((tag, i) => (
+                      <Badge key={i} variant={tag.variant} size="sm">{tag.label}</Badge>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
 
               {/* Actions */}
               <div className="flex gap-3 pt-2">

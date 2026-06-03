@@ -1,7 +1,9 @@
 'use client';
 
-import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import Link from 'next/link';
+import { CheckCircle, AlertTriangle, Info, Stethoscope } from 'lucide-react';
 import { AITriageResult } from '@/lib/ai-provider';
+import { Button } from '@/components/ui';
 
 interface AIResultCardProps {
   result: AITriageResult;
@@ -40,6 +42,7 @@ const riskConfig = {
 export function AIResultCard({ result }: AIResultCardProps) {
   const config = riskConfig[result.riskLevel];
   const Icon = config.icon;
+  const isHigh = result.riskLevel === 'HIGH';
 
   return (
     <div className={`rounded-[12px] border p-5 ${config.bg} ${config.border}`}>
@@ -71,11 +74,22 @@ export function AIResultCard({ result }: AIResultCardProps) {
 
       {/* Should see vet */}
       <Section icon={AlertTriangle} color={result.shouldSeeVet ? 'text-rose-500' : 'text-ink-faded'} title="是否建议就医">
-        <p className={`text-[14px] font-medium ${result.shouldSeeVet ? 'text-rose-500' : 'text-ink-muted'}`}>
+        <p className={`${isHigh ? 'text-[15px] text-rose-600 font-semibold' : 'text-[14px] font-medium'} ${result.shouldSeeVet ? 'text-rose-500' : 'text-ink-muted'}`}>
           {result.shouldSeeVet ? '建议前往宠物医院就诊' : '暂不建议紧急就医'}
         </p>
         {result.urgencyNote && (
-          <p className="text-[14px] text-ink-muted mt-1">{result.urgencyNote}</p>
+          <p className={`mt-1 ${isHigh ? 'text-[14px] text-rose-600 font-semibold' : 'text-[14px] text-ink-muted'}`}>
+            {result.urgencyNote}
+          </p>
+        )}
+        {/* High-risk: show nearby hospital link */}
+        {isHigh && (
+          <Link href="/map?type=HOSPITAL" className="block mt-3">
+            <Button variant="outline" className="w-full">
+              <Stethoscope className="w-4 h-4 mr-1.5" />
+              查看附近宠物医院
+            </Button>
+          </Link>
         )}
       </Section>
 

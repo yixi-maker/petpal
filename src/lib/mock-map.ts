@@ -65,7 +65,7 @@ const PLACES: MockPlace[] = [
     rating: 4.6,
     isOpen: true,
     openHours: '06:00-21:00',
-    petFriendlyTags: ['超大草坪', '宠物专属区域', '提供饮水'],
+    petFriendlyTags: ['超大草坪', '宠物专属区域', '提供饮水', '需要牵引绳', '适合大型犬'],
     images: [],
   },
   {
@@ -80,7 +80,7 @@ const PLACES: MockPlace[] = [
     rating: 4.7,
     isOpen: true,
     openHours: '06:00-20:00',
-    petFriendlyTags: ['超大草坪', '跑步友好', '提供饮水'],
+    petFriendlyTags: ['超大草坪', '跑步友好', '提供饮水', '需要牵引绳', '有草坪'],
     images: [],
   },
   {
@@ -95,7 +95,7 @@ const PLACES: MockPlace[] = [
     rating: 4.9,
     isOpen: true,
     openHours: '06:30-18:00',
-    petFriendlyTags: ['超大草坪', '景区级环境'],
+    petFriendlyTags: ['超大草坪', '景区级环境', '需要牵引绳', '有草坪'],
     images: [],
   },
   {
@@ -155,7 +155,7 @@ const PLACES: MockPlace[] = [
     rating: 4.5,
     isOpen: true,
     openHours: '11:00-21:30',
-    petFriendlyTags: ['可带宠入内', '户外座位', '提供饮水'],
+    petFriendlyTags: ['可带宠入内', '户外座位', '提供饮水', '有户外座'],
     images: [],
   },
   {
@@ -247,7 +247,7 @@ const PLACES: MockPlace[] = [
     rating: 4.8,
     isOpen: true,
     openHours: '07:00-18:00',
-    petFriendlyTags: ['超大草坪', '宠物专属区域', '提供饮水'],
+    petFriendlyTags: ['超大草坪', '宠物专属区域', '提供饮水', '适合大型犬'],
     images: [],
   },
   {
@@ -262,7 +262,7 @@ const PLACES: MockPlace[] = [
     rating: 4.8,
     isOpen: true,
     openHours: '全天开放',
-    petFriendlyTags: ['超大草坪', '跑步友好', '宠物专属区域'],
+    petFriendlyTags: ['超大草坪', '跑步友好', '宠物专属区域', '需要牵引绳', '有草坪'],
     images: [],
   },
   {
@@ -322,7 +322,7 @@ const PLACES: MockPlace[] = [
     rating: 4.3,
     isOpen: true,
     openHours: '10:00-21:30',
-    petFriendlyTags: ['可带宠入内', '户外座位', '提供饮水', '宠物菜单'],
+    petFriendlyTags: ['可带宠入内', '户外座位', '提供饮水', '宠物菜单', '有户外座'],
     images: [],
   },
   {
@@ -429,7 +429,7 @@ const PLACES: MockPlace[] = [
     rating: 4.9,
     isOpen: true,
     openHours: '06:00-23:00',
-    petFriendlyTags: ['超大草坪', '海景', '跑步友好', '宠物专属区域'],
+    petFriendlyTags: ['超大草坪', '海景', '跑步友好', '宠物专属区域', '适合大型犬', '有草坪'],
     images: [],
   },
   {
@@ -444,7 +444,7 @@ const PLACES: MockPlace[] = [
     rating: 4.7,
     isOpen: true,
     openHours: '06:00-22:30',
-    petFriendlyTags: ['超大草坪', '山景', '提供饮水'],
+    petFriendlyTags: ['超大草坪', '山景', '提供饮水', '有草坪'],
     images: [],
   },
   {
@@ -504,7 +504,7 @@ const PLACES: MockPlace[] = [
     rating: 4.5,
     isOpen: true,
     openHours: '11:00-22:00',
-    petFriendlyTags: ['可带宠入内', '户外座位', '提供饮水', '海景'],
+    petFriendlyTags: ['可带宠入内', '户外座位', '提供饮水', '海景', '有户外座'],
     images: [],
   },
   {
