@@ -1,10 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-export function EmergencyGuide() {
-  const [expanded, setExpanded] = useState(false);
+interface EmergencyGuideProps {
+  defaultExpanded?: boolean;
+}
+
+export function EmergencyGuide({ defaultExpanded = false }: EmergencyGuideProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  useEffect(() => {
+    setExpanded(defaultExpanded);
+  }, [defaultExpanded]);
 
   return (
     <div className="bg-surface-white rounded-[12px] border border-border shadow-sm overflow-hidden">

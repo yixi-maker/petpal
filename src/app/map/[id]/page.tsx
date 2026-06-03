@@ -295,6 +295,27 @@ export default function PlaceDetailPage() {
             <span className="text-[14px] text-ink-faded">{place.reviewCount} 条评价</span>
           </div>
 
+          {/* Recent confirmation hint — prominent at top */}
+          {showRecentConfirmation && (
+            <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-sage-50/70 border border-sage-100 rounded-[8px]">
+              <svg
+                className="w-4 h-4 text-sage-500 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <span className="text-[13px] font-medium text-sage-600">
+                最近 30 天内有宠友确认信息有效
+              </span>
+            </div>
+          )}
+
           {/* Status */}
           <div className="flex items-center gap-2 text-[14px] text-ink-muted mb-3">
             <Clock className="w-4 h-4" />
@@ -322,18 +343,10 @@ export default function PlaceDetailPage() {
 
           {/* Pet friendly trust tags — show ALL */}
           {allTags.length > 0 && (
-            <div className="mb-3">
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {allTags.map((tag, i) => (
-                  <Badge key={i} variant={tag.variant} size="sm">{tag.label}</Badge>
-                ))}
-              </div>
-              {/* Recent confirmation hint */}
-              {showRecentConfirmation && (
-                <p className="text-[12px] text-sage-500">
-                  最近 30 天内有用户确认
-                </p>
-              )}
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {allTags.map((tag, i) => (
+                <Badge key={i} variant={tag.variant} size="sm">{tag.label}</Badge>
+              ))}
             </div>
           )}
 

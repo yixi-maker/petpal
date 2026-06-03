@@ -4,10 +4,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { PawPrint, Plus, Users, MapPin, Calendar, Stethoscope } from 'lucide-react';
-import { Tabs, Modal, Avatar, EmptyState, Button, IconBadge } from '@/components/ui';
+import { PawPrint, Plus } from 'lucide-react';
+import { Tabs, Modal, EmptyState, Button } from '@/components/ui';
 import { PostList } from '@/components/post/PostList';
 import { PostForm } from '@/components/post/PostForm';
+import { StoryRail } from '@/components/post/StoryRail';
+import { PetDashboard } from '@/components/home/PetDashboard';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import Link from 'next/link';
 
@@ -36,15 +38,31 @@ interface Post {
   _count: { likes: number; comments: number };
 }
 
+interface StoryPet {
+  id: number;
+  name: string;
+  avatar?: string | null;
+  type: string;
+}
+
 const tabs = [
   { key: 'FOLLOWING', label: '关注' },
   { key: 'NEARBY', label: '附近' },
   { key: 'RECOMMENDED', label: '推荐' },
 ];
 
+const INITIAL_POST_LIMIT = 3;
+
+const MOCK_RECOMMENDED: StoryPet[] = [
+  { id: 101, name: '布丁', type: 'CAT', avatar: null },
+  { id: 102, name: '乐乐', type: 'DOG', avatar: null },
+  { id: 103, name: '奶糖', type: 'CAT', avatar: null },
+  { id: 104, name: '多多', type: 'DOG', avatar: null },
+];
+
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
-  const { currentPet, pets, loading: petLoading } = usePet();
+  const { currentPet, pets, loading: petLoading, switchPet } = usePet();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('RECOMMENDED');
   const [posts, setPosts] = useState<Post[]>([]);
@@ -54,10 +72,11 @@ export default function HomePage() {
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Today Status module state
-  const [statusReminder, setStatusReminder] = useState<string | null>(null);
-  const [statusReminderLoading, setStatusReminderLoading] = useState(false);
-  const [statusHospitalCount, setStatusHospitalCount] = useState<number | null>(null);
+  // StoryRail data
+  const [friendStories, setFriendStories] = useState<StoryPet[]>([]);
+
+  // Posts limit toggle
+  const [showAllPosts, setShowAllPosts] = useState(false);
 
   // Auto-set onboarding flag when pets exist (existing users never see it)
   useEffect(() => {
@@ -110,47 +129,16 @@ export default function HomePage() {
     }
   }, [user, fetchPosts]);
 
-  // Fetch today status data when currentPet changes
+  // Fetch friend stories for StoryRail
   useEffect(() => {
-    if (!currentPet) return;
-
-    // Fetch health profile for next reminder
-    setStatusReminderLoading(true);
-    fetch(`/api/health/profile?petId=${currentPet.id}`)
-      .then((res) => res.ok ? res.json() : null)
-      .then((data) => {
-        if (data?.profile?.nextReminder) {
-          const d = new Date(data.profile.nextReminder);
-          const now = new Date();
-          const diffDays = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          if (diffDays <= 0) {
-            setStatusReminder('今天');
-          } else if (diffDays === 1) {
-            setStatusReminder('明天');
-          } else if (diffDays <= 7) {
-            setStatusReminder(`${diffDays}天后`);
-          } else {
-            setStatusReminder(data.profile.nextReminder.slice(0, 10));
-          }
-        } else {
-          setStatusReminder(null);
-        }
-      })
-      .catch(() => setStatusReminder(null))
-      .finally(() => setStatusReminderLoading(false));
-
-    // Fetch hospital count (mock: try API, fallback to mock)
-    // We need city from pet location; since we don't have it directly, try the API
-    fetch(`/api/places?type=HOSPITAL`)
-      .then((res) => res.ok ? res.json() : null)
-      .then((data) => {
-        if (data?.places) {
-          setStatusHospitalCount(data.places.length);
-        } else {
-          setStatusHospitalCount(0);
-        }
-      })
-      .catch(() => setStatusHospitalCount(0));
+    if (!currentPet) {
+      setFriendStories([]);
+      return;
+    }
+    fetch(`/api/social/friends?petId=${currentPet.id}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setFriendStories(data?.friends || []))
+      .catch(() => setFriendStories([]));
   }, [currentPet]);
 
   const handleLike = async (postId: number) => {
@@ -191,140 +179,36 @@ export default function HomePage() {
     return <OnboardingFlow onComplete={handleOnboardingComplete} />;
   }
 
-  const petType = (currentPet?.type === 'DOG' || currentPet?.type === 'CAT')
-    ? (currentPet.type as 'DOG' | 'CAT')
-    : undefined;
+  // Convert currentPet to StoryPet
+  const currentStoryPet: StoryPet | null = currentPet
+    ? { id: currentPet.id, name: currentPet.name, avatar: currentPet.avatar, type: currentPet.type }
+    : null;
+
+  const visiblePosts = showAllPosts ? posts : posts.slice(0, INITIAL_POST_LIMIT);
+  const hasMorePosts = posts.length > INITIAL_POST_LIMIT;
 
   return (
     <div className="relative bg-surface min-h-screen">
-      {/* Header with subtle top warmth */}
-      <div className="bg-gradient-to-b from-teal-50/20 to-transparent pt-4">
-        <div className="flex items-center justify-between px-4 pt-0 pb-1">
-          <h1 className="text-lg font-semibold flex items-center gap-2 text-ink">
-            <PawPrint className="w-5 h-5 text-teal-500" />
-            PetPal
-          </h1>
-          <div className="flex items-center gap-3">
-            {/* Avatar button to /me */}
-            <Link href="/me">
-              <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center hover:bg-border-light transition-colors">
-                <PawPrint className="w-4 h-4 text-ink-muted" />
-              </div>
-            </Link>
-          </div>
-        </div>
+      {/* ===== PetDashboard (hero + status rings + health glance + friends + posts teaser) ===== */}
+      <PetDashboard
+        currentPet={currentPet}
+        pets={pets}
+        onSwitchPet={switchPet}
+      />
 
-        {/* Pet Identity Header -- proper card */}
-        <div className="px-4 mb-3">
-          {currentPet ? (
-            <div className="bg-surface-white rounded-[12px] shadow-sm px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-3 min-w-0">
-                <Avatar
-                  src={currentPet.avatar}
-                  petType={petType}
-                  size="md"
-                  className="w-[40px] h-[40px] flex-shrink-0"
-                />
-                <span className="text-[13px] text-ink-muted truncate">
-                  今天用 <span className="font-medium text-teal-600">{currentPet.name}</span> 的身份探索
-                </span>
-              </div>
-              <Link
-                href="/me"
-                className="text-[13px] text-teal-500 hover:text-teal-600 font-medium flex-shrink-0 ml-2 transition-colors"
-              >
-                切换
-              </Link>
-            </div>
-          ) : (
-            <div className="bg-surface-white rounded-[12px] shadow-sm px-4 py-3 text-center">
-              <Link
-                href="/pets/new"
-                className="text-[13px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
-              >
-                添加你的第一只宠物
-              </Link>
-            </div>
-          )}
-        </div>
+      {/* ===== StoryRail ===== */}
+      <StoryRail
+        currentPet={currentStoryPet}
+        friends={friendStories}
+        recommended={MOCK_RECOMMENDED}
+      />
 
-        {/* Today Status Mini Pills -- shown when currentPet exists */}
-        {currentPet && (
-          <div className="px-4 mb-3">
-            <div className="flex gap-2.5">
-              {/* Pill 1: Health Reminder */}
-              <div className="bg-surface-white/80 rounded-[10px] px-3 py-2 shadow-xs text-center flex-1">
-                <div className="flex items-center justify-center gap-1 mb-0.5">
-                  <Calendar className="w-3 h-3 text-teal-500" />
-                  <span className="text-[10px] text-ink-faded leading-none">下次提醒</span>
-                </div>
-                {statusReminderLoading ? (
-                  <span className="text-[12px] text-ink-faded">加载中</span>
-                ) : statusReminder ? (
-                  <span className="text-[13px] font-medium text-ink block">{statusReminder}</span>
-                ) : (
-                  <Link
-                    href="/health"
-                    className="text-[12px] text-teal-500 hover:text-teal-600 font-medium transition-colors block"
-                  >
-                    完善健康档案
-                  </Link>
-                )}
-              </div>
-
-              {/* Pill 2: Nearby Hospitals */}
-              <div className="bg-surface-white/80 rounded-[10px] px-3 py-2 shadow-xs text-center flex-1">
-                <div className="flex items-center justify-center gap-1 mb-0.5">
-                  <Stethoscope className="w-3 h-3 text-teal-500" />
-                  <span className="text-[10px] text-ink-faded leading-none">附近医院</span>
-                </div>
-                <span className="text-[13px] font-medium text-ink block">
-                  {statusHospitalCount !== null ? `${statusHospitalCount}家` : '--'}
-                </span>
-              </div>
-
-              {/* Pill 3: New Friends */}
-              <div className="bg-surface-white/80 rounded-[10px] px-3 py-2 shadow-xs text-center flex-1">
-                <div className="flex items-center justify-center gap-1 mb-0.5">
-                  <Users className="w-3 h-3 text-teal-500" />
-                  <span className="text-[10px] text-ink-faded leading-none">新朋友</span>
-                </div>
-                <Link
-                  href="/nearby"
-                  className="text-[12px] text-teal-500 hover:text-teal-600 font-medium transition-colors block"
-                >
-                  去发现
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Discovery Row */}
-      <div className="px-4 mb-3">
-        <div className="flex gap-2.5">
-          <Link href="/nearby" className="flex-1">
-            <div className="bg-surface-white rounded-[10px] shadow-sm px-3 py-2.5 flex items-center gap-2 hover:shadow-md transition-shadow">
-              <IconBadge icon={<Users className="w-[14px] h-[14px]" />} variant="sea" size="sm" />
-              <span className="text-[12px] text-ink-muted leading-tight">附近新朋友</span>
-            </div>
-          </Link>
-          <Link href="/map" className="flex-1">
-            <div className="bg-surface-white rounded-[10px] shadow-sm px-3 py-2.5 flex items-center gap-2 hover:shadow-md transition-shadow">
-              <IconBadge icon={<MapPin className="w-[14px] h-[14px]" />} variant="teal" size="sm" />
-              <span className="text-[12px] text-ink-muted leading-tight">友好地点</span>
-            </div>
-          </Link>
-        </div>
-      </div>
-
-      {/* Tabs */}
+      {/* ===== Tabs ===== */}
       <div className="sticky top-0 z-10 bg-surface">
         <Tabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
       </div>
 
-      {/* Feed */}
+      {/* ===== PostList ===== */}
       <div className="px-4 pb-24 mt-2">
         {activeTab === 'FOLLOWING' && !currentPet && (
           <EmptyState
@@ -339,16 +223,31 @@ export default function HomePage() {
         )}
 
         {!(activeTab === 'FOLLOWING' && !currentPet) && (
-          <PostList
-            posts={posts}
-            loading={loading}
-            currentPetId={currentPet?.id}
-            onLike={handleLike}
-          />
+          <>
+            <PostList
+              posts={visiblePosts}
+              loading={loading}
+              currentPetId={currentPet?.id}
+              onLike={handleLike}
+            />
+
+            {/* "查看全部" expand link */}
+            {!loading && hasMorePosts && !showAllPosts && (
+              <div className="text-center mt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAllPosts(true)}
+                  className="text-[14px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
+                >
+                  查看全部
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* FAB - Floating Action Button */}
+      {/* ===== FAB - Floating Action Button ===== */}
       <button
         type="button"
         onClick={() => setShowPostForm(true)}
@@ -361,7 +260,7 @@ export default function HomePage() {
         <Plus className="w-[22px] h-[22px]" />
       </button>
 
-      {/* Post Form Modal */}
+      {/* ===== Post Form Modal ===== */}
       <Modal
         open={showPostForm}
         onClose={() => setShowPostForm(false)}

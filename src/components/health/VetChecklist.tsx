@@ -1,10 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, ClipboardList } from 'lucide-react';
 
-export function VetChecklist() {
-  const [expanded, setExpanded] = useState(false);
+interface VetChecklistProps {
+  defaultExpanded?: boolean;
+}
+
+export function VetChecklist({ defaultExpanded = false }: VetChecklistProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  useEffect(() => {
+    setExpanded(defaultExpanded);
+  }, [defaultExpanded]);
 
   return (
     <div className="bg-surface-white rounded-[12px] border border-border shadow-sm overflow-hidden">
