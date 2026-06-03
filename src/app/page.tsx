@@ -53,32 +53,29 @@ export default function HomePage() {
 
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
 
   // Today Status module state
   const [statusReminder, setStatusReminder] = useState<string | null>(null);
   const [statusReminderLoading, setStatusReminderLoading] = useState(false);
   const [statusHospitalCount, setStatusHospitalCount] = useState<number | null>(null);
 
-  // Check if onboarding has been completed
+  // Auto-set onboarding flag when pets exist (existing users never see it)
   useEffect(() => {
-    const done = localStorage.getItem('petpal-onboarding-done');
-    if (done === 'true') {
-      setOnboardingChecked(true);
-    } else {
-      setOnboardingChecked(true);
+    if (pets.length > 0) {
+      localStorage.setItem('petpal-onboarding-done', 'true');
+      setShowOnboarding(false);
     }
-  }, []);
+  }, [pets.length]);
 
-  // Show onboarding when: not loading, no pets, not already done
+  // Show onboarding ONLY when pet API has returned and confirmed no pets
   useEffect(() => {
-    if (!petLoading && onboardingChecked && pets.length === 0) {
+    if (!petLoading && pets.length === 0) {
       const done = localStorage.getItem('petpal-onboarding-done');
       if (done !== 'true') {
         setShowOnboarding(true);
       }
     }
-  }, [petLoading, pets.length, onboardingChecked]);
+  }, [petLoading, pets.length]);
 
   // Handle onboarding complete
   const handleOnboardingComplete = () => {
@@ -179,7 +176,7 @@ export default function HomePage() {
   };
 
   // Loading state
-  if (authLoading || petLoading || !onboardingChecked) {
+  if (authLoading || petLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <PawPrint className="w-8 h-8 text-teal-500/40 animate-pulse" />

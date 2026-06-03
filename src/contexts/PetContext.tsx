@@ -31,6 +31,7 @@ export function PetProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshPets = useCallback(async () => {
+    setLoading(true);
     if (!user) {
       setPets([]);
       setCurrentPet(null);
