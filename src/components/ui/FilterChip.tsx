@@ -12,8 +12,8 @@ export function FilterChip({ label, active = false, onClick, className = '' }: F
       className={`inline-flex px-3 py-1.5 text-[13px] font-medium rounded-full whitespace-nowrap
         transition-all duration-150
         ${active
-          ? 'bg-ink text-surface-white'
-          : 'bg-surface-white text-ink-muted border border-border'
+          ? 'bg-teal-500 text-white shadow-sm'
+          : 'bg-surface-white/80 backdrop-blur-sm text-ink-muted border border-border'
         } ${className}`}
     >
       {label}

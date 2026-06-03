@@ -48,7 +48,7 @@ export default function MePage() {
   return (
     <div className="max-w-mobile mx-auto px-4 pb-24">
       {/* ========== Profile header card ========== */}
-      <div className="bg-surface-white rounded-[12px] p-4 shadow-card mb-4 mt-4">
+      <div className="bg-surface-white rounded-[12px] p-4 shadow-sm mb-4 mt-4">
         <div className="flex items-center gap-3">
           <Avatar size="xl" className="w-[56px] h-[56px]" />
           <div className="flex-1 min-w-0">
@@ -63,8 +63,8 @@ export default function MePage() {
         </div>
       </div>
 
-      {/* ========== Current pet identity card ========== */}
-      <div className="bg-teal-50/50 border border-teal-100 rounded-[12px] p-4 mb-4">
+      {/* ========== Current pet identity card — enhanced gradient ========== */}
+      <div className="bg-gradient-to-br from-teal-50/40 via-teal-50/20 to-surface-white rounded-[14px] shadow-sm p-4 mb-4">
         <h3 className="text-[13px] font-medium text-ink-muted mb-3">当前宠物身份</h3>
         {petLoading ? (
           <div className="flex items-center gap-3 animate-pulse">
@@ -147,8 +147,8 @@ export default function MePage() {
         )}
       </div>
 
-      {/* ========== Menu list ========== */}
-      <div className="bg-surface-white rounded-[12px] shadow-card overflow-hidden divide-y divide-border-light">
+      {/* ========== Menu list — with shadow-xs ========== */}
+      <div className="bg-surface-white rounded-[12px] shadow-xs overflow-hidden divide-y divide-border-light">
         <Link
           href="/messages"
           className="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-alt transition-colors"

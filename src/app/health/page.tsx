@@ -303,8 +303,8 @@ export default function HealthPage() {
     <div className="max-w-mobile mx-auto px-4 pb-24">
       <h1 className="text-lg font-bold text-ink mb-4 pt-4">健康管理</h1>
 
-      {/* Health Summary Header */}
-      <div className="bg-surface-white rounded-[12px] p-4 shadow-card mb-4">
+      {/* Health Summary Header — subtle medical/clean gradient */}
+      <div className="bg-gradient-to-br from-sage-50/30 to-teal-50/20 rounded-[14px] p-4 mb-4">
         <div className="flex items-center gap-3 mb-4">
           <Avatar
             src={currentPet.avatar}
@@ -331,19 +331,19 @@ export default function HealthPage() {
         {/* Mini stat pills */}
         {profile ? (
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-surface-white rounded-[8px] px-3 py-2 shadow-card text-center border border-border-light">
+            <div className="bg-surface-white rounded-[10px] px-3 py-2 shadow-sm text-center border border-border-light">
               <p className="text-[11px] text-ink-faded">体重</p>
               <p className="text-[14px] font-semibold text-ink">
                 {profile.weight ? `${profile.weight} kg` : '--'}
               </p>
             </div>
-            <div className="bg-surface-white rounded-[8px] px-3 py-2 shadow-card text-center border border-border-light">
+            <div className="bg-surface-white rounded-[10px] px-3 py-2 shadow-sm text-center border border-border-light">
               <p className="text-[11px] text-ink-faded">绝育</p>
               <p className={`text-[14px] font-semibold ${profile.isNeutered !== null ? 'text-ink' : 'text-ink-faded'}`}>
                 {neuteredLabel}
               </p>
             </div>
-            <div className="bg-surface-white rounded-[8px] px-3 py-2 shadow-card text-center border border-border-light">
+            <div className="bg-surface-white rounded-[10px] px-3 py-2 shadow-sm text-center border border-border-light">
               <p className="text-[11px] text-ink-faded">下次提醒</p>
               <p className={`text-[14px] font-semibold ${profile.nextReminder ? 'text-ink' : 'text-ink-faded'}`}>
                 {profile.nextReminder ? formatDate(profile.nextReminder) : '--'}
@@ -399,7 +399,7 @@ export default function HealthPage() {
                 <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
               </div>
             ) : profile ? (
-              <div className="bg-surface-white rounded-[12px] p-4 shadow-card">
+              <div className="bg-surface-white rounded-[12px] p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-[15px] font-semibold text-ink">健康档案</h3>
                   <Button variant="outline" size="sm" onClick={openEditModal}>
@@ -443,7 +443,7 @@ export default function HealthPage() {
                 </SectionGroup>
               </div>
             ) : (
-              <div className="bg-surface-white rounded-[12px] p-8 shadow-card text-center">
+              <div className="bg-surface-white rounded-[12px] p-8 shadow-sm text-center">
                 <p className="text-[14px] text-ink-muted mb-3">尚未创建健康档案</p>
                 <Button variant="outline" size="sm" onClick={openEditModal}>
                   <Plus className="w-3.5 h-3.5 mr-1" />
@@ -475,7 +475,7 @@ export default function HealthPage() {
         {/* ========== Tab 2: AI 健康助手 ========== */}
         {activeTab === 'ai' && (
           <div className="space-y-4">
-            {/* Warning banner - more subtle */}
+            {/* Warning banner — subtle */}
             <div className="bg-amber-50/60 border border-amber-500/10 rounded-[8px] p-3 flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-amber-500/70 flex-shrink-0 mt-[1px]" />
               <p className="text-[12px] text-ink-muted leading-relaxed">
@@ -484,7 +484,7 @@ export default function HealthPage() {
             </div>
 
             {/* Triage form with step indicators */}
-            <div className="bg-surface-white rounded-[12px] border border-border p-4 shadow-card">
+            <div className="bg-surface-white rounded-[12px] border border-border p-4 shadow-sm">
               <h3 className="text-[15px] font-semibold text-ink flex items-center gap-2 mb-4">
                 <Stethoscope className="w-5 h-5 text-teal-500" />
                 分诊表
@@ -494,7 +494,7 @@ export default function HealthPage() {
                 {/* Step 1: 宠物信息 */}
                 <div className="bg-surface-alt/50 rounded-[10px] p-4">
                   <div className="flex items-center gap-2.5 mb-3">
-                    <span className="w-[22px] h-[22px] rounded-full bg-teal-500 text-white text-[12px] font-semibold flex items-center justify-center flex-shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-teal-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                       1
                     </span>
                     <span className="text-[14px] font-medium text-ink">宠物信息</span>
@@ -544,7 +544,7 @@ export default function HealthPage() {
                 {/* Step 2: 症状描述 */}
                 <div className="bg-surface-alt/50 rounded-[10px] p-4">
                   <div className="flex items-center gap-2.5 mb-3">
-                    <span className="w-[22px] h-[22px] rounded-full bg-teal-500 text-white text-[12px] font-semibold flex items-center justify-center flex-shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-teal-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                       2
                     </span>
                     <span className="text-[14px] font-medium text-ink">症状描述</span>
@@ -641,7 +641,7 @@ export default function HealthPage() {
                 {/* Step 3: 上传图片 */}
                 <div className="bg-surface-alt/50 rounded-[10px] p-4">
                   <div className="flex items-center gap-2.5 mb-3">
-                    <span className="w-[22px] h-[22px] rounded-full bg-teal-500 text-white text-[12px] font-semibold flex items-center justify-center flex-shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-teal-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                       3
                     </span>
                     <span className="text-[14px] font-medium text-ink">上传图片</span>

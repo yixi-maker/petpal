@@ -5,7 +5,7 @@ import { usePet } from '@/contexts/PetContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { PawPrint, Plus, Users, MapPin } from 'lucide-react';
-import { Tabs, Modal, Avatar, EmptyState, Button } from '@/components/ui';
+import { Tabs, Modal, Avatar, EmptyState, Button, IconBadge } from '@/components/ui';
 import { PostList } from '@/components/post/PostList';
 import { PostForm } from '@/components/post/PostForm';
 import Link from 'next/link';
@@ -115,68 +115,70 @@ export default function HomePage() {
 
   return (
     <div className="relative bg-surface min-h-screen">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-3 pb-1">
-        <h1 className="text-lg font-semibold flex items-center gap-2 text-ink">
-          <PawPrint className="w-5 h-5 text-teal-500" />
-          PetPal
-        </h1>
-        <div className="flex items-center gap-3">
-          {/* Avatar button to /me */}
-          <Link href="/me">
-            <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center hover:bg-border-light transition-colors">
-              <PawPrint className="w-4 h-4 text-ink-muted" />
-            </div>
-          </Link>
+      {/* Header with subtle top warmth */}
+      <div className="bg-gradient-to-b from-teal-50/20 to-transparent pt-4">
+        <div className="flex items-center justify-between px-4 pt-0 pb-1">
+          <h1 className="text-lg font-semibold flex items-center gap-2 text-ink">
+            <PawPrint className="w-5 h-5 text-teal-500" />
+            PetPal
+          </h1>
+          <div className="flex items-center gap-3">
+            {/* Avatar button to /me */}
+            <Link href="/me">
+              <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center hover:bg-border-light transition-colors">
+                <PawPrint className="w-4 h-4 text-ink-muted" />
+              </div>
+            </Link>
+          </div>
         </div>
-      </div>
 
-      {/* Pet Identity Header */}
-      <div className="px-4 mb-3">
-        {currentPet ? (
-          <div className="bg-teal-50/60 rounded-[10px] px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <Avatar
-                src={currentPet.avatar}
-                petType={petType}
-                size="md"
-                className="w-[40px] h-[40px] flex-shrink-0"
-              />
-              <span className="text-[13px] text-ink-muted truncate">
-                今天用 <span className="font-medium text-teal-600">{currentPet.name}</span> 的身份探索
-              </span>
+        {/* Pet Identity Header — proper card */}
+        <div className="px-4 mb-3">
+          {currentPet ? (
+            <div className="bg-surface-white rounded-[12px] shadow-sm px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar
+                  src={currentPet.avatar}
+                  petType={petType}
+                  size="md"
+                  className="w-[40px] h-[40px] flex-shrink-0"
+                />
+                <span className="text-[13px] text-ink-muted truncate">
+                  今天用 <span className="font-medium text-teal-600">{currentPet.name}</span> 的身份探索
+                </span>
+              </div>
+              <Link
+                href="/me"
+                className="text-[13px] text-teal-500 hover:text-teal-600 font-medium flex-shrink-0 ml-2 transition-colors"
+              >
+                切换
+              </Link>
             </div>
-            <Link
-              href="/me"
-              className="text-[13px] text-teal-500 hover:text-teal-600 font-medium flex-shrink-0 ml-2 transition-colors"
-            >
-              切换
-            </Link>
-          </div>
-        ) : (
-          <div className="bg-teal-50/60 rounded-[10px] px-4 py-3 text-center">
-            <Link
-              href="/pets/new"
-              className="text-[13px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
-            >
-              添加你的第一只宠物
-            </Link>
-          </div>
-        )}
+          ) : (
+            <div className="bg-surface-white rounded-[12px] shadow-sm px-4 py-3 text-center">
+              <Link
+                href="/pets/new"
+                className="text-[13px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
+              >
+                添加你的第一只宠物
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Discovery Row */}
       <div className="px-4 mb-3">
         <div className="flex gap-2.5">
           <Link href="/nearby" className="flex-1">
-            <div className="bg-surface-white rounded-[10px] px-3 py-2.5 shadow-card flex items-center gap-2 hover:bg-surface-alt transition-colors">
-              <Users className="w-[18px] h-[18px] text-teal-500 flex-shrink-0" />
+            <div className="bg-surface-white rounded-[10px] shadow-sm px-3 py-2.5 flex items-center gap-2 hover:shadow-md transition-shadow">
+              <IconBadge icon={<Users className="w-[14px] h-[14px]" />} variant="sea" size="sm" />
               <span className="text-[12px] text-ink-muted leading-tight">附近新朋友</span>
             </div>
           </Link>
           <Link href="/map" className="flex-1">
-            <div className="bg-surface-white rounded-[10px] px-3 py-2.5 shadow-card flex items-center gap-2 hover:bg-surface-alt transition-colors">
-              <MapPin className="w-[18px] h-[18px] text-teal-500 flex-shrink-0" />
+            <div className="bg-surface-white rounded-[10px] shadow-sm px-3 py-2.5 flex items-center gap-2 hover:shadow-md transition-shadow">
+              <IconBadge icon={<MapPin className="w-[14px] h-[14px]" />} variant="teal" size="sm" />
               <span className="text-[12px] text-ink-muted leading-tight">友好地点</span>
             </div>
           </Link>
@@ -192,7 +194,7 @@ export default function HomePage() {
       <div className="px-4 pb-24 mt-2">
         {activeTab === 'FOLLOWING' && !currentPet && (
           <EmptyState
-            icon={<PawPrint className="w-10 h-10" />}
+            icon={<PawPrint className="w-10 h-10 text-teal-500/60" />}
             title="创建宠物后即可关注其他宠物"
             action={
               <Link href="/pets/new">
@@ -218,9 +220,9 @@ export default function HomePage() {
         onClick={() => setShowPostForm(true)}
         aria-label="发布动态"
         className="fixed bottom-20 right-4 w-[52px] h-[52px] bg-teal-500 text-white rounded-full
-          shadow-[0_4px_16px_rgba(29,138,128,0.25)]
+          shadow-lg hover:shadow-xl
           flex items-center justify-center
-          hover:bg-teal-600 active:bg-teal-600 transition-colors z-20"
+          hover:bg-teal-600 active:bg-teal-600 transition-all z-20"
       >
         <Plus className="w-[22px] h-[22px]" />
       </button>

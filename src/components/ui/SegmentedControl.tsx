@@ -21,7 +21,7 @@ export function SegmentedControl({ options, activeKey, onChange, className = '' 
           onClick={() => onChange(opt.key)}
           className={`px-3.5 py-1.5 text-[13px] font-medium rounded-[6px] transition-all duration-150
             ${activeKey === opt.key
-              ? 'bg-surface-white text-ink shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
+              ? 'bg-surface-white text-ink shadow-sm'
               : 'text-ink-faded hover:text-ink-muted'
             }`}
         >

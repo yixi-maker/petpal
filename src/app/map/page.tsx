@@ -19,7 +19,7 @@ import {
   Clock,
   Phone,
 } from 'lucide-react';
-import { Modal, FilterChip, Badge, SegmentedControl } from '@/components/ui';
+import { Modal, FilterChip, Badge, SegmentedControl, IconBadge } from '@/components/ui';
 import { MapPlaceholder } from '@/components/map/MapPlaceholder';
 
 interface Place {
@@ -76,14 +76,15 @@ const TYPE_LABEL_MAP: Record<string, string> = {
   BOARDING: '寄养',
 };
 
-const TYPE_CIRCLE_MAP: Record<string, string> = {
-  HOSPITAL: 'bg-rose-50 text-rose-500',
-  PARK: 'bg-sage-50 text-sage-500',
-  MALL: 'bg-teal-50 text-teal-500',
-  CAFE: 'bg-teal-50 text-teal-500',
-  RESTAURANT: 'bg-teal-50 text-teal-500',
-  GROOMING: 'bg-sea-50 text-sea-500',
-  BOARDING: 'bg-sea-50 text-sea-500',
+// IconBadge variant mapping by place type
+const TYPE_VARIANT_MAP: Record<string, 'teal' | 'sea' | 'sage' | 'amber' | 'rose'> = {
+  HOSPITAL: 'rose',
+  PARK: 'sage',
+  MALL: 'teal',
+  CAFE: 'teal',
+  RESTAURANT: 'teal',
+  GROOMING: 'sea',
+  BOARDING: 'sea',
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -164,7 +165,7 @@ export default function MapPage() {
           />
         </div>
 
-        {/* City selector: FilterChip row */}
+        {/* City selector: FilterChip row — bigger, more prominent */}
         <div className="flex gap-2 mb-2 overflow-x-auto">
           {CITIES.map((city) => (
             <FilterChip
@@ -172,6 +173,7 @@ export default function MapPage() {
               label={city.label}
               active={activeCity === city.key}
               onClick={() => setActiveCity(city.key)}
+              className="px-4 py-2 text-[14px]"
             />
           ))}
         </div>
@@ -209,18 +211,17 @@ export default function MapPage() {
                 <Link
                   key={place.id}
                   href={`/map/${place.id}`}
-                  className="block bg-surface-white rounded-[10px] shadow-card mb-3 overflow-hidden active:scale-[0.98] transition-transform"
+                  className="block bg-surface-white rounded-[10px] shadow-sm mb-3 overflow-hidden active:scale-[0.98]
+                    hover:shadow-md transition-shadow duration-150"
                 >
                   {/* Top row: icon + info + distance */}
                   <div className="flex items-start gap-3 p-3.5">
-                    {/* Left: type icon in colored circle */}
-                    <div
-                      className={`w-[40px] h-[40px] rounded-full flex items-center justify-center shrink-0 ${
-                        TYPE_CIRCLE_MAP[place.type] || 'bg-surface-alt text-ink-faded'
-                      }`}
-                    >
-                      {TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
-                    </div>
+                    {/* Left: type icon in IconBadge */}
+                    <IconBadge
+                      icon={TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
+                      variant={TYPE_VARIANT_MAP[place.type] || 'teal'}
+                      size="md"
+                    />
 
                     {/* Center: name, rating, address */}
                     <div className="flex-1 min-w-0">
@@ -307,16 +308,15 @@ export default function MapPage() {
                 <button
                   key={place.id}
                   onClick={() => handlePlaceClick(place)}
-                  className="w-full text-left flex items-center gap-3 p-3 bg-surface-white rounded-[10px] active:scale-[0.98] transition cursor-pointer shadow-card border-0"
+                  className="w-full text-left flex items-center gap-3 p-3 bg-surface-white rounded-[10px] shadow-sm
+                    active:scale-[0.98] hover:shadow-md transition-shadow duration-150 cursor-pointer border-0"
                   aria-label={`查看 ${place.name} 详情`}
                 >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                      TYPE_CIRCLE_MAP[place.type] || 'bg-surface-alt text-ink-faded'
-                    }`}
-                  >
-                    {TYPE_ICON_MAP[place.type] || <MapPin className="w-3.5 h-3.5" />}
-                  </div>
+                  <IconBadge
+                    icon={TYPE_ICON_MAP[place.type] || <MapPin className="w-3.5 h-3.5" />}
+                    variant={TYPE_VARIANT_MAP[place.type] || 'teal'}
+                    size="sm"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-medium text-ink truncate">{place.name}</p>
                     <p className="text-[12px] text-ink-faded truncate">{place.address}</p>
