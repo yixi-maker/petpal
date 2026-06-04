@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed-feed": "node prisma/seed-feed.mjs"
+    "seed-feed": "node prisma/seed-feed.mjs",
+    "smoke": "bash scripts/smoke-test.sh",
+    "smoke:ci": "bash scripts/smoke-test-ci.sh"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

@@ -1,16 +1,26 @@
 // ============================================================
 // DATABASE SETUP
+// ============================================================
 // Development (SQLite):  DATABASE_URL="file:./dev.db"
-// Production (PostgreSQL): DATABASE_URL="postgresql://user:pass@host:5432/petpal?schema=public"
+// Production (PostgreSQL): see the comment block below for exact steps.
 //
-// To switch: update the datasource.url below to use the appropriate
-// DATABASE_URL, then run:
-//   npx prisma migrate dev    (dev with SQLite)
-//   npx prisma migrate deploy (prod with PostgreSQL)
+// === PRODUCTION (PostgreSQL) ===
+// This entire schema is PostgreSQL-compatible as-is. No field type changes needed:
+//   - Int @id @default(autoincrement())  ✅ works on both SQLite and PostgreSQL
+//   - String                             ✅ works on both (no @db.Text / @db.VarChar)
+//   - Float                              ✅ works on both
+//   - DateTime                           ✅ works on both
+//   - Boolean                            ✅ works on both
+//   - JSON arrays stored as String       ✅ works on both (e.g. personalityTags String @default("[]"))
+//   - @@unique([...])                    ✅ works on both
+//   - @relation(...)                     ✅ works on both
 //
-// For PostgreSQL in production:
-//   1. Change provider from "sqlite" to "postgresql"
-//   2. Set DATABASE_URL to your PostgreSQL connection string
+// No SQLite-specific features (@db.Text, AUTOINCREMENT without @default, etc.) are used.
+//
+// To switch to PostgreSQL:
+//   1. Change: provider = "postgresql"
+//   2. Set DATABASE_URL to your PostgreSQL connection string, e.g.:
+//      DATABASE_URL="postgresql://user:pass@host:5432/petpal?schema=public"
 //   3. Run: npx prisma migrate deploy
 //   4. Run: npx prisma generate
 // ============================================================

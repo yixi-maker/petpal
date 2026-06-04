@@ -1,28 +1,14 @@
 import { checkRateLimit } from './rate-limit';
+import { getCodeStore } from './code-store';
 
 // ---------------------------------------------------------------------------
-// Verification code store with TTL
+// Verification code store — backed by swappable CodeStore
 // ---------------------------------------------------------------------------
 
-interface CodeRecord {
-  code: string;
-  expiresAt: number;
-}
-
-const codeStore = new Map<string, CodeRecord>();
+const codeStore = getCodeStore();
 
 /** 5-minute TTL for verification codes */
-const CODE_TTL_MS = 5 * 60 * 1000;
-
-/** Clean expired entries periodically */
-function pruneCodes(): void {
-  const now = Date.now();
-  for (const [key, record] of codeStore) {
-    if (now > record.expiresAt) {
-      codeStore.delete(key);
-    }
-  }
-}
+const CODE_TTL_SECONDS = 5 * 60;
 
 const DEV_CODE = '123456';
 
@@ -40,34 +26,23 @@ export function generateCode(): string {
 /**
  * Store a verification code for a phone number with 5-minute TTL.
  */
-export function storeCode(phone: string, code: string): void {
-  pruneCodes();
-  codeStore.set(phone, {
-    code,
-    expiresAt: Date.now() + CODE_TTL_MS,
-  });
+export async function storeCode(phone: string, code: string): Promise<void> {
+  await codeStore.set(phone, code, CODE_TTL_SECONDS);
 }
 
 /**
  * Verify a code against the stored code for a phone number.
  * In dev mode, also accepts 123456 for convenience.
  */
-export function verifyCode(phone: string, code: string): boolean {
-  pruneCodes();
-
+export async function verifyCode(phone: string, code: string): Promise<boolean> {
   // Dev mode: 123456 always works
   const isDev = process.env.SMS_PROVIDER !== 'production';
   if (isDev && code === DEV_CODE) return true;
 
-  const record = codeStore.get(phone);
-  if (!record) return false;
+  const stored = await codeStore.get(phone);
+  if (!stored) return false;
 
-  if (Date.now() > record.expiresAt) {
-    codeStore.delete(phone);
-    return false;
-  }
-
-  return record.code === code;
+  return stored === code;
 }
 
 // ---------------------------------------------------------------------------
@@ -80,7 +55,7 @@ export function verifyCode(phone: string, code: string): boolean {
  *
  * Returns true if allowed, false if rate-limited.
  */
-export function checkCodeRateLimit(phone: string): boolean {
+export async function checkCodeRateLimit(phone: string): Promise<boolean> {
   return checkRateLimit(`code:phone:${phone}`, 1, 60_000);
 }
 
@@ -90,7 +65,7 @@ export function checkCodeRateLimit(phone: string): boolean {
  *
  * Returns true if allowed, false if rate-limited.
  */
-export function checkIpRateLimit(ip: string): boolean {
+export async function checkIpRateLimit(ip: string): Promise<boolean> {
   return checkRateLimit(`code:ip:${ip}`, 5, 3600_000);
 }
 
@@ -100,14 +75,14 @@ export function checkIpRateLimit(ip: string): boolean {
  *
  * @returns An object with { allowed, reason? }. When allowed is false, reason explains why.
  */
-export function checkSendCodeRateLimit(
+export async function checkSendCodeRateLimit(
   phone: string,
   ip: string
-): { allowed: boolean; reason?: string } {
+): Promise<{ allowed: boolean; reason?: string }> {
   const isDev = process.env.SMS_PROVIDER !== 'production';
 
-  const phoneOk = checkCodeRateLimit(phone);
-  const ipOk = checkIpRateLimit(ip);
+  const phoneOk = await checkCodeRateLimit(phone);
+  const ipOk = await checkIpRateLimit(ip);
 
   if (isDev) {
     if (!phoneOk) console.log(`[DEV] Rate limit would block phone: ${phone}`);

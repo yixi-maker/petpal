@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const ip = forwarded?.split(',')[0]?.trim() || '127.0.0.1';
 
   // Rate limiting (dev: logged but not enforced)
-  const rateCheck = checkSendCodeRateLimit(phone, ip);
+  const rateCheck = await checkSendCodeRateLimit(phone, ip);
   if (!rateCheck.allowed) {
     return NextResponse.json(
       { error: rateCheck.reason || '请求过于频繁，请稍后再试' },
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
   // Generate and store verification code
   const code = generateCode();
-  storeCode(phone, code);
+  await storeCode(phone, code);
 
   // Send via SMS provider
   const sms = getSmsProvider();

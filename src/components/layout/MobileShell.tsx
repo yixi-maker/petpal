@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { TabBar } from './TabBar';
@@ -8,6 +9,7 @@ import { PawPrint } from 'lucide-react';
 
 export function MobileShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { loading: petLoading } = usePet();
 
@@ -16,11 +18,17 @@ export function MobileShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/legal');
 
+  useEffect(() => {
+    if (!isFullPage && !authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, isFullPage, router, user]);
+
   if (isFullPage) {
     return <>{children}</>;
   }
 
-  // Show loading while auth/pet contexts initialize OR when user is null after auth loaded
+  // Show loading while auth/pet contexts initialize or while redirecting guests.
   if (authLoading || petLoading || (!user && !authLoading)) {
     return (
       <div className="max-w-mobile mx-auto min-h-screen bg-surface flex items-center justify-center">

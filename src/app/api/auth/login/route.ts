@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '请输入手机号和验证码' }, { status: 400 });
   }
 
-  if (!verifyCode(phone, code)) {
+  if (!(await verifyCode(phone, code))) {
     return NextResponse.json({ error: '验证码错误或已过期' }, { status: 400 });
   }
 

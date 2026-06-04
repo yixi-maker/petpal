@@ -1,5 +1,4 @@
-// NOTE: When real AI provider is implemented, import the system prompt:
-// import { AI_SYSTEM_PROMPT } from './ai-system-prompt';
+import { AI_SYSTEM_PROMPT } from './ai-system-prompt';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,10 +36,19 @@ export interface AITriageResult {
 }
 
 // ---------------------------------------------------------------------------
-// Input validation
+// Constants
 // ---------------------------------------------------------------------------
 
+const DISCLAIMER =
+  'AI 健康助手结果仅供健康咨询、初步分诊和风险判断参考，不能替代执业兽医的专业诊断。\n如您的宠物出现以下情况，请立即前往宠物医院就诊：呼吸困难、严重外伤、持续呕吐/腹泻、意识模糊、中毒可能、超过 24 小时拒食。';
+
 const MAX_SYMPTOMS_LENGTH = 2000;
+
+const VALID_RISK_LEVELS = ['LOW', 'MEDIUM', 'HIGH'] as const;
+
+// ---------------------------------------------------------------------------
+// Input validation
+// ---------------------------------------------------------------------------
 
 function validateTriageRequest(req: AITriageRequest): string | null {
   if (!req.symptoms || !req.symptoms.trim()) {
@@ -71,46 +79,263 @@ function getAIProviderType(): AIProviderType {
 }
 
 // ---------------------------------------------------------------------------
-// Real provider stub (placeholder for external AI API)
+// Build user message for AI API call
+// ---------------------------------------------------------------------------
+
+function formatPetInfo(pet: AITriageRequest['pet']): string {
+  const parts: string[] = [];
+  parts.push(`种类：${pet.type === 'CAT' ? '猫' : '狗'}`);
+  if (pet.breed) parts.push(`品种：${pet.breed}`);
+  if (pet.age !== undefined && pet.age !== null) {
+    const ageLabel = pet.age < 1 ? `${Math.round(pet.age * 12)}个月` : `${pet.age}岁`;
+    parts.push(`年龄：${ageLabel}`);
+  }
+  if (pet.gender) parts.push(`性别：${pet.gender}`);
+  if (pet.weight !== undefined && pet.weight !== null) {
+    parts.push(`体重：${pet.weight}kg`);
+  }
+  if (pet.isNeutered !== undefined) {
+    parts.push(`绝育：${pet.isNeutered ? '是' : '否'}`);
+  }
+  return parts.join('；');
+}
+
+function buildUserMessage(request: AITriageRequest): string {
+  const lines: string[] = [];
+
+  lines.push('【宠物信息】');
+  lines.push(formatPetInfo(request.pet));
+  lines.push('');
+
+  lines.push('【症状描述】');
+  lines.push(request.symptoms);
+  lines.push('');
+
+  lines.push('【症状持续时长】');
+  lines.push(request.duration || '未知');
+  lines.push('');
+
+  lines.push('【食欲状况】');
+  lines.push(request.appetite || '未知');
+  lines.push('');
+
+  lines.push('【饮水状况】');
+  lines.push(request.drinking || '未知');
+  lines.push('');
+
+  lines.push('【精神状态】');
+  lines.push(request.energy || '未知');
+  lines.push('');
+
+  if (request.bowelMovement) {
+    lines.push('【排便情况】');
+    lines.push(request.bowelMovement);
+    lines.push('');
+  }
+
+  const flags: string[] = [];
+  if (request.isVomiting) flags.push('有呕吐');
+  if (request.hasInjury) flags.push('有外伤');
+  if (flags.length > 0) {
+    lines.push('【额外标志】');
+    lines.push(flags.join('；'));
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Validate and normalize AI response
+// ---------------------------------------------------------------------------
+
+function validateAndNormalize(
+  raw: Record<string, unknown>,
+): AITriageResult {
+  // Ensure riskLevel is valid
+  if (!raw.riskLevel || !VALID_RISK_LEVELS.includes(raw.riskLevel)) {
+    raw.riskLevel = 'LOW';
+  }
+
+  // Ensure arrays are arrays
+  if (!Array.isArray(raw.possibleConditions)) {
+    raw.possibleConditions = [];
+  }
+  if (!Array.isArray(raw.homeCareAdvice)) {
+    raw.homeCareAdvice = [];
+  }
+  if (!Array.isArray(raw.precautions)) {
+    raw.precautions = [];
+  }
+
+  // Sanitize possibleConditions: remove drug names, dosages, definitive diagnoses
+  raw.possibleConditions = raw.possibleConditions.map((c: string) =>
+    String(c)
+      .replace(/确诊|患有|得了|诊断|确认/g, '可能')
+      .replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量'),
+  );
+
+  // Sanitize homeCareAdvice: remove specific drug mentions
+  raw.homeCareAdvice = raw.homeCareAdvice.map((a: string) =>
+    String(a)
+      .replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量')
+      .replace(/服用|口服|注射|喂药/g, '咨询兽医后使用'),
+  );
+
+  // Sanitize precautions similarly
+  raw.precautions = raw.precautions.map((p: string) =>
+    String(p).replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量'),
+  );
+
+  // Ensure shouldSeeVet is boolean
+  raw.shouldSeeVet =
+    typeof raw.shouldSeeVet === 'boolean' ? raw.shouldSeeVet : raw.riskLevel !== 'LOW';
+
+  // Generate unique ID
+  const id = `triage-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+  // Force disclaimer – if AI didn't include one or it lacks the reference marker, inject ours
+  const hasDisclaimer =
+    typeof raw.disclaimer === 'string' &&
+    raw.disclaimer.length > 20 &&
+    (raw.disclaimer.includes('参考') || raw.disclaimer.includes('不能替代'));
+
+  return {
+    id,
+    riskLevel: raw.riskLevel,
+    possibleConditions: raw.possibleConditions.filter(
+      (c: string) => typeof c === 'string' && c.trim().length > 0,
+    ),
+    homeCareAdvice: raw.homeCareAdvice.filter(
+      (a: string) => typeof a === 'string' && a.trim().length > 0,
+    ),
+    shouldSeeVet: raw.shouldSeeVet,
+    urgencyNote:
+      typeof raw.urgencyNote === 'string' ? raw.urgencyNote : undefined,
+    precautions: raw.precautions.filter(
+      (p: string) => typeof p === 'string' && p.trim().length > 0,
+    ),
+    disclaimer: hasDisclaimer ? raw.disclaimer : DISCLAIMER,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Real AI provider – production implementation
 // ---------------------------------------------------------------------------
 
 async function callRealAI(request: AITriageRequest): Promise<AITriageResult> {
   const apiKey = process.env.AI_API_KEY;
   if (!apiKey) {
-    throw new Error('AI_API_KEY not configured');
+    console.warn('[AI] No AI_API_KEY set, falling back to mock');
+    const { getMockAITriage } = await import('./mock-ai');
+    return getMockAITriage(request);
   }
 
-  const providerType = getAIProviderType();
+  const model = process.env.AI_MODEL || 'gpt-4o-mini';
+  const provider = getAIProviderType();
+  const userMessage = buildUserMessage(request);
 
-  // TODO: Integrate with the selected provider's API.
-  // Example for OpenAI-compatible endpoint:
-  //
-  //   const response = await fetch('https://api.openai.com/v1/chat/completions', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Authorization': `Bearer ${apiKey}`,
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       model: process.env.AI_MODEL || 'gpt-4o',
-  //       messages: [
-  //         { role: 'system', content: AI_SYSTEM_PROMPT },
-  //         { role: 'user', content: JSON.stringify(request) },
-  //       ],
-  //       response_format: { type: 'json_object' },
-  //       temperature: 0.3,
-  //     }),
-  //   });
-  //
-  //   const data = await response.json();
-  //   return JSON.parse(data.choices[0].message.content) as AITriageResult;
+  // 15-second timeout
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    console.error('[AI] Request timed out after 15 seconds');
+    controller.abort();
+  }, 15000);
 
-  console.log(
-    `[AI Provider] Would call ${providerType} API for symptoms: ${request.symptoms.slice(0, 80)}...`
-  );
+  try {
+    const endpoint =
+      provider === 'zhipu'
+        ? 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
+        : 'https://api.openai.com/v1/chat/completions';
 
-  // Placeholder: throw so the caller falls back to mock
-  throw new Error('Real AI provider not yet implemented');
+    // Only OpenAI supports response_format json_object; zhipu does not
+    const body: Record<string, unknown> = {
+      model,
+      messages: [
+        { role: 'system', content: AI_SYSTEM_PROMPT },
+        { role: 'user', content: userMessage },
+      ],
+      temperature: 0.3,
+      max_tokens: 800,
+    };
+    if (provider !== 'zhipu') {
+      body.response_format = { type: 'json_object' };
+    }
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'unknown');
+      console.error(
+        `[AI] API error ${response.status}: ${errorText.slice(0, 200)}`,
+      );
+      console.warn('[AI] Falling back to mock AI');
+      const { getMockAITriage } = await import('./mock-ai');
+      return getMockAITriage(request);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content || typeof content !== 'string') {
+      console.error('[AI] Empty or invalid response content');
+      console.warn('[AI] Falling back to mock AI');
+      const { getMockAITriage } = await import('./mock-ai');
+      return getMockAITriage(request);
+    }
+
+    console.log(
+      `[AI] ${provider} response (${content.length} chars), model: ${data.model || model}`,
+    );
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      // Try to extract JSON from the response if it's wrapped in markdown code blocks
+      const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        try {
+          parsed = JSON.parse(jsonMatch[1].trim());
+        } catch {
+          console.error('[AI] Failed to parse response as JSON');
+          console.warn('[AI] Falling back to mock AI');
+          const { getMockAITriage } = await import('./mock-ai');
+          return getMockAITriage(request);
+        }
+      } else {
+        console.error('[AI] Response is not valid JSON');
+        console.warn('[AI] Falling back to mock AI');
+        const { getMockAITriage } = await import('./mock-ai');
+        return getMockAITriage(request);
+      }
+    }
+
+    return validateAndNormalize(parsed, request);
+  } catch (error: unknown) {
+    clearTimeout(timeout);
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      console.error('[AI] Request aborted (timeout)');
+    } else {
+      console.error(
+        '[AI] Request failed:',
+        error instanceof Error ? error.message : error,
+      );
+    }
+    console.warn('[AI] Falling back to mock AI');
+    const { getMockAITriage } = await import('./mock-ai');
+    return getMockAITriage(request);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -126,7 +351,9 @@ async function callRealAI(request: AITriageRequest): Promise<AITriageResult> {
  * - When AI_PROVIDER is "openai" or "zhipu": attempts the real provider,
  *   falls back to mock with a warning log on failure.
  */
-export async function getAITriage(request: AITriageRequest): Promise<AITriageResult> {
+export async function getAITriage(
+  request: AITriageRequest,
+): Promise<AITriageResult> {
   const validationError = validateTriageRequest(request);
   if (validationError) {
     throw new Error(validationError);
@@ -145,7 +372,7 @@ export async function getAITriage(request: AITriageRequest): Promise<AITriageRes
   } catch (err) {
     console.warn(
       `[AI Provider] ${providerType} call failed, falling back to mock:`,
-      err instanceof Error ? err.message : err
+      err instanceof Error ? err.message : err,
     );
     const { getMockAITriage } = await import('./mock-ai');
     return getMockAITriage(request);
