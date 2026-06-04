@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // ---------------------------------------------------------------------------
 // Verification code store — swappable backend for auth codes
 // ---------------------------------------------------------------------------
@@ -7,6 +6,8 @@
 //
 // To activate Redis: set CODE_STORE=redis and REDIS_URL=<connection string>
 // ---------------------------------------------------------------------------
+
+import Redis from 'ioredis';
 
 export interface CodeStore {
   set(key: string, value: string, ttlSeconds: number): Promise<void>;
@@ -21,16 +22,15 @@ export interface CodeStore {
 
 class MemoryCodeStore implements CodeStore {
   private store = new Map<string, { value: string; expiresAt: number }>();
- 
 
-  async set(_key: string, _value: string, _ttlSeconds: number): Promise<void> {
+  async set(key: string, value: string, ttlSeconds: number): Promise<void> {
     this.store.set(key, {
       value,
       expiresAt: Date.now() + ttlSeconds * 1000,
     });
   }
 
-  async get(_key: string): Promise<string | null> {
+  async get(key: string): Promise<string | null> {
     const entry = this.store.get(key);
     if (!entry || Date.now() > entry.expiresAt) {
       this.store.delete(key);
@@ -39,11 +39,11 @@ class MemoryCodeStore implements CodeStore {
     return entry.value;
   }
 
-  async delete(_key: string): Promise<void> {
+  async delete(key: string): Promise<void> {
     this.store.delete(key);
   }
 
-  async exists(_key: string): Promise<boolean> {
+  async exists(key: string): Promise<boolean> {
     const v = await this.get(key);
     return v !== null;
   }
@@ -53,46 +53,40 @@ class MemoryCodeStore implements CodeStore {
 // Redis store (production)
 // ---------------------------------------------------------------------------
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 class RedisCodeStore implements CodeStore {
-  private getClient(): unknown {
-    if (!process.env.REDIS_URL) {
+  private client: Redis;
+
+  constructor() {
+    const url = process.env.REDIS_URL;
+    if (!url) {
       throw new Error(
-        'Redis not configured. Set REDIS_URL env var for production code store.'
+        'REDIS_URL is required when CODE_STORE=redis'
       );
     }
-    // TODO: return new Redis(process.env.REDIS_URL)
-    // Install ioredis:  npm install ioredis
-    // Then uncomment:
-    //   import Redis from 'ioredis';
-    //   private client: Redis;
-    //   constructor() { this.client = new Redis(process.env.REDIS_URL!); }
-    //   private getClient(): Redis { return this.client; }
-    throw new Error(
-      'Redis client not yet implemented. Install ioredis and uncomment.'
-    );
+    this.client = new Redis(url, {
+      maxRetriesPerRequest: 3,
+      lazyConnect: false,
+    });
+    this.client.on('error', (err) => {
+      console.error('[RedisCodeStore] Redis connection error:', err.message);
+    });
   }
 
-  async set(_key: string, _value: string, _ttlSeconds: number): Promise<void> {
-    // const client = this.getClient() as any;
-    // await client.setex(key, ttlSeconds, value);
+  async set(key: string, value: string, ttlSeconds: number): Promise<void> {
+    await this.client.setex(`code:${key}`, ttlSeconds, value);
   }
 
-  async get(_key: string): Promise<string | null> {
-    // const client = this.getClient() as any;
-    // return await client.get(key);
-    return null;
+  async get(key: string): Promise<string | null> {
+    return await this.client.get(`code:${key}`);
   }
 
-  async delete(_key: string): Promise<void> {
-    // const client = this.getClient() as any;
-    // await client.del(key);
+  async delete(key: string): Promise<void> {
+    await this.client.del(`code:${key}`);
   }
 
-  async exists(_key: string): Promise<boolean> {
-    // const client = this.getClient() as any;
-    // return (await client.exists(key)) === 1;
-    return false;
+  async exists(key: string): Promise<boolean> {
+    const result = await this.client.exists(`code:${key}`);
+    return result === 1;
   }
 }
 
@@ -100,7 +94,16 @@ class RedisCodeStore implements CodeStore {
 // Factory
 // ---------------------------------------------------------------------------
 
+let cachedStore: CodeStore | null = null;
+
 export function getCodeStore(): CodeStore {
-  if (process.env.CODE_STORE === 'redis') return new RedisCodeStore();
-  return new MemoryCodeStore();
+  if (cachedStore) return cachedStore;
+
+  if (process.env.CODE_STORE === 'redis') {
+    cachedStore = new RedisCodeStore();
+  } else {
+    cachedStore = new MemoryCodeStore();
+  }
+
+  return cachedStore;
 }

@@ -152,44 +152,40 @@ function buildUserMessage(request: AITriageRequest): string {
 function validateAndNormalize(
   raw: Record<string, unknown>,
 ): AITriageResult {
-  // Ensure riskLevel is valid
-  if (!raw.riskLevel || !VALID_RISK_LEVELS.includes(raw.riskLevel)) {
-    raw.riskLevel = 'LOW';
-  }
+  const riskLevel: AITriageResult['riskLevel'] =
+    typeof raw.riskLevel === 'string' &&
+    (VALID_RISK_LEVELS as readonly string[]).includes(raw.riskLevel)
+      ? (raw.riskLevel as AITriageResult['riskLevel'])
+      : 'LOW';
 
-  // Ensure arrays are arrays
-  if (!Array.isArray(raw.possibleConditions)) {
-    raw.possibleConditions = [];
-  }
-  if (!Array.isArray(raw.homeCareAdvice)) {
-    raw.homeCareAdvice = [];
-  }
-  if (!Array.isArray(raw.precautions)) {
-    raw.precautions = [];
-  }
+  const possibleConditions = (
+    Array.isArray(raw.possibleConditions) ? raw.possibleConditions : []
+  )
+    .map((condition) =>
+      String(condition)
+        .replace(/确诊|患有|得了|诊断|确认/g, '可能')
+        .replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量'),
+    )
+    .filter((condition) => condition.trim().length > 0);
 
-  // Sanitize possibleConditions: remove drug names, dosages, definitive diagnoses
-  raw.possibleConditions = raw.possibleConditions.map((c: string) =>
-    String(c)
-      .replace(/确诊|患有|得了|诊断|确认/g, '可能')
-      .replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量'),
-  );
+  const homeCareAdvice = (
+    Array.isArray(raw.homeCareAdvice) ? raw.homeCareAdvice : []
+  )
+    .map((advice) =>
+      String(advice)
+        .replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量')
+        .replace(/服用|口服|注射|喂药/g, '咨询兽医后使用'),
+    )
+    .filter((advice) => advice.trim().length > 0);
 
-  // Sanitize homeCareAdvice: remove specific drug mentions
-  raw.homeCareAdvice = raw.homeCareAdvice.map((a: string) =>
-    String(a)
-      .replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量')
-      .replace(/服用|口服|注射|喂药/g, '咨询兽医后使用'),
-  );
+  const precautions = (Array.isArray(raw.precautions) ? raw.precautions : [])
+    .map((precaution) =>
+      String(precaution).replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量'),
+    )
+    .filter((precaution) => precaution.trim().length > 0);
 
-  // Sanitize precautions similarly
-  raw.precautions = raw.precautions.map((p: string) =>
-    String(p).replace(/[\d.]+(?:mg|ml|g|片|粒|支|包|袋)/g, '适当剂量'),
-  );
-
-  // Ensure shouldSeeVet is boolean
-  raw.shouldSeeVet =
-    typeof raw.shouldSeeVet === 'boolean' ? raw.shouldSeeVet : raw.riskLevel !== 'LOW';
+  const shouldSeeVet =
+    typeof raw.shouldSeeVet === 'boolean' ? raw.shouldSeeVet : riskLevel !== 'LOW';
 
   // Generate unique ID
   const id = `triage-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -199,23 +195,20 @@ function validateAndNormalize(
     typeof raw.disclaimer === 'string' &&
     raw.disclaimer.length > 20 &&
     (raw.disclaimer.includes('参考') || raw.disclaimer.includes('不能替代'));
+  const disclaimer = hasDisclaimer && typeof raw.disclaimer === 'string'
+    ? raw.disclaimer
+    : DISCLAIMER;
 
   return {
     id,
-    riskLevel: raw.riskLevel,
-    possibleConditions: raw.possibleConditions.filter(
-      (c: string) => typeof c === 'string' && c.trim().length > 0,
-    ),
-    homeCareAdvice: raw.homeCareAdvice.filter(
-      (a: string) => typeof a === 'string' && a.trim().length > 0,
-    ),
-    shouldSeeVet: raw.shouldSeeVet,
+    riskLevel,
+    possibleConditions,
+    homeCareAdvice,
+    shouldSeeVet,
     urgencyNote:
       typeof raw.urgencyNote === 'string' ? raw.urgencyNote : undefined,
-    precautions: raw.precautions.filter(
-      (p: string) => typeof p === 'string' && p.trim().length > 0,
-    ),
-    disclaimer: hasDisclaimer ? raw.disclaimer : DISCLAIMER,
+    precautions,
+    disclaimer,
   };
 }
 
@@ -321,7 +314,18 @@ async function callRealAI(request: AITriageRequest): Promise<AITriageResult> {
       }
     }
 
-    return validateAndNormalize(parsed, request);
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      Array.isArray(parsed)
+    ) {
+      console.error('[AI] Parsed response is not an object');
+      console.warn('[AI] Falling back to mock AI');
+      const { getMockAITriage } = await import('./mock-ai');
+      return getMockAITriage(request);
+    }
+
+    return validateAndNormalize(parsed as Record<string, unknown>);
   } catch (error: unknown) {
     clearTimeout(timeout);
     if (error instanceof DOMException && error.name === 'AbortError') {

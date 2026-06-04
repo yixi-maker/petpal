@@ -2,17 +2,21 @@
 
 > 最后更新：2026-06-04
 > 适用环境：Staging / 生产
+>
+> **Current Staging Status**: The project runs on SQLite with in-memory stores (code store, rate limiter).
+> All provider implementations (Aliyun SMS, S3 storage, moderation) are code-complete but untested against real accounts.
+> See individual provider status comments in their source files for details.
 
 ---
 
 ## 环境准备
 
-| 组件 | 版本要求 | 说明 |
-|------|----------|------|
-| Node.js | 22+ | 运行时 |
-| npm | 10+ | 随 Node.js 22 自带 |
-| PostgreSQL | 15+ | 生产数据库 |
-| Redis | 7+ | 可选，用于验证码/限流持久化（未配置时使用内存存储） |
+| 组件 | 版本要求 | 说明 | Staging 状态 |
+|------|----------|------|--------------|
+| Node.js | 22+ | 运行时 | 当前使用中 |
+| npm | 10+ | 随 Node.js 22 自带 | 当前使用中 |
+| PostgreSQL | 15+ | 生产数据库 | 未配置（运行在 SQLite） |
+| Redis | 7+ | 可选，用于验证码/限流持久化（未配置时使用内存存储） | 未配置（使用内存存储） |
 
 ---
 
@@ -40,7 +44,7 @@ ADMIN_PASSWORD_HASH="$2a$10$..."  # 使用 bcryptjs 生成
 
 ```bash
 # === 短信服务 ===
-SMS_PROVIDER="production"                    # 从 "mock" 切换为 "production"
+SMS_PROVIDER="aliyun"                       # 从 "mock" 切换为 "aliyun"（构造时即要求 SMS_ACCESS_KEY / SMS_SECRET / SMS_TEMPLATE_ID）
 SMS_ACCESS_KEY="your_aliyun_access_key"
 SMS_SECRET="your_aliyun_secret"
 SMS_SIGN_NAME="PetPal"
@@ -63,7 +67,10 @@ STORAGE_ACCESS_KEY="your_storage_access_key"
 STORAGE_SECRET_KEY="your_storage_secret_key"
 
 # === 内容审核 ===
-MODERATION_PROVIDER="aliyun"                 # 从 "mock" 切换为真实服务
+# 注意：内容审核在 production 模式下自动启用（fail-closed）。
+# 开发环境使用 mock（全部通过）。生产环境无需设置 MODERATION_PROVIDER，
+# NODE_ENV=production 即启用 RealModerationProvider。
+# 若未配置 MODERATION_API_KEY，RealModerationProvider 会拒绝所有内容（fail-closed）。
 MODERATION_API_KEY="your_moderation_api_key"
 
 # === 错误监控（可选）===
@@ -81,7 +88,7 @@ ADMIN_SESSION_SECRET="prod-admin-secret-64-chars-min-replace-this-with-openssl-r
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD_HASH="$2a$10$Ci3MZDucxCw1oJMcFPkIiO7GfKGJBR6APJKAjNBXYFwG6hFYD3uOe"
 
-SMS_PROVIDER="production"
+SMS_PROVIDER="aliyun"
 SMS_ACCESS_KEY="LTAI5t..."
 SMS_SECRET="..."
 SMS_SIGN_NAME="PetPal"
@@ -100,7 +107,7 @@ STORAGE_BUCKET="petpal-staging"
 STORAGE_ACCESS_KEY="LTAI5t..."
 STORAGE_SECRET_KEY="..."
 
-MODERATION_PROVIDER="aliyun"
+# 内容审核在 production 模式下自动启用（fail-closed），无需单独的 PROVIDER 变量
 MODERATION_API_KEY="..."
 
 NODE_ENV="production"
@@ -374,8 +381,8 @@ exit 0
 | **地图服务** | Mock 占位数据 | 高德地图 API | 高德地图 API |
 | **内容审核** | mock（全部通过） | 阿里云/第三方审核 (fail-closed) | 阿里云/第三方审核 |
 | **Session 存储** | 加密 Cookie | 加密 Cookie | 加密 Cookie |
-| **验证码存储** | 内存 (`Map`) | Redis（推荐）或内存 | Redis（推荐）或内存 |
-| **限流存储** | 内存 (`Map`) | Redis（推荐）或内存 | Redis（推荐）或内存 |
+| **验证码存储** | 内存 (`Map`) | Redis（已实现，需配置 REDIS_URL + CODE_STORE=redis） | Redis（已实现，需配置 REDIS_URL + CODE_STORE=redis） |
+| **限流存储** | 内存 (`Map`) | Redis（已实现，需配置 REDIS_URL + RATE_LIMIT_STORE=redis） | Redis（已实现，需配置 REDIS_URL + RATE_LIMIT_STORE=redis） |
 
 ### Provider 切换步骤
 
@@ -383,7 +390,7 @@ exit 0
 
 ```bash
 # 1. 设置环境变量
-SMS_PROVIDER="production"
+SMS_PROVIDER="aliyun"
 SMS_ACCESS_KEY="LTAI5t..."
 SMS_SECRET="..."
 SMS_SIGN_NAME="PetPal"

@@ -1,11 +1,15 @@
-// import { createHmac } from 'crypto';
+// STAGING STATUS: Aliyun SMS implementation is complete with HMAC-SHA1 signing.
+// To use: set SMS_PROVIDER=aliyun and configure SMS_ACCESS_KEY, SMS_SECRET,
+// SMS_SIGN_NAME, SMS_TEMPLATE_ID.
+// The implementation follows https://help.aliyun.com/document_detail/101346.html
+// Note: Not yet tested against a real Aliyun account. Test with valid credentials.
 
 export interface SmsProvider {
   sendCode(phone: string, code: string): Promise<{ success: boolean; error?: string }>;
 }
 
 // ---------------------------------------------------------------------------
-// Mock provider – logs to console, always succeeds (dev)
+// Mock provider - logs to console, always succeeds (dev)
 // ---------------------------------------------------------------------------
 
 class MockSmsProvider implements SmsProvider {
@@ -51,39 +55,43 @@ async function aliyunHmacSha1(key: string, data: string): Promise<string> {
 }
 
 class AliyunSmsProvider implements SmsProvider {
+  private accessKey: string;
+  private secret: string;
+  private signName: string;
+  private templateId: string;
+
+  constructor() {
+    this.accessKey = process.env.SMS_ACCESS_KEY || '';
+    this.secret = process.env.SMS_SECRET || '';
+    this.signName = process.env.SMS_SIGN_NAME || 'PetPal';
+    this.templateId = process.env.SMS_TEMPLATE_ID || '';
+
+    if (!this.accessKey || !this.secret) {
+      throw new Error(
+        'Aliyun SMS not configured. Set SMS_ACCESS_KEY and SMS_SECRET when SMS_PROVIDER=aliyun'
+      );
+    }
+    if (!this.templateId) {
+      throw new Error(
+        'Aliyun SMS template not configured. Set SMS_TEMPLATE_ID when SMS_PROVIDER=aliyun'
+      );
+    }
+  }
+
   async sendCode(phone: string, code: string) {
-    const accessKey = process.env.SMS_ACCESS_KEY;
-    const secret = process.env.SMS_SECRET;
-    const signName = process.env.SMS_SIGN_NAME || 'PetPal';
-    const templateId = process.env.SMS_TEMPLATE_ID;
-
-    if (!accessKey || !secret) {
-      return {
-        success: false,
-        error: 'SMS_ACCESS_KEY and SMS_SECRET required for production SMS',
-      };
-    }
-    if (!templateId) {
-      return {
-        success: false,
-        error: 'SMS_TEMPLATE_ID required for production SMS',
-      };
-    }
-
-    // Build sorted params for signature
     const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
     const nonce = Math.random().toString(36).substring(2, 15);
 
     const params: Record<string, string> = {
-      AccessKeyId: accessKey,
+      AccessKeyId: this.accessKey,
       Action: 'SendSms',
       Format: 'JSON',
       PhoneNumbers: phone,
       SignatureMethod: 'HMAC-SHA1',
       SignatureNonce: nonce,
       SignatureVersion: '1.0',
-      SignName: signName,
-      TemplateCode: templateId,
+      SignName: this.signName,
+      TemplateCode: this.templateId,
       TemplateParam: JSON.stringify({ code }),
       Timestamp: timestamp,
       Version: ALIYUN_SMS_API_VERSION,
@@ -98,7 +106,7 @@ class AliyunSmsProvider implements SmsProvider {
     const stringToSign = `POST&${encode('/')}&${encode(canonicalQuery)}`;
 
     // Sign with HMAC-SHA1 using secret + "&"
-    const signature = await aliyunHmacSha1(`${secret}&`, stringToSign);
+    const signature = await aliyunHmacSha1(`${this.secret}&`, stringToSign);
 
     // Append signature to params
     params.Signature = signature;
@@ -152,11 +160,21 @@ class AliyunSmsProvider implements SmsProvider {
 
 // ---------------------------------------------------------------------------
 // Factory
+//
+// Fail-fast: if SMS_PROVIDER=aliyun but credentials are missing, throws at
+// construction time rather than silently falling back to mock.
 // ---------------------------------------------------------------------------
 
+let cachedProvider: SmsProvider | null = null;
+
 export function getSmsProvider(): SmsProvider {
+  if (cachedProvider) return cachedProvider;
+
   if (process.env.SMS_PROVIDER === 'aliyun') {
-    return new AliyunSmsProvider();
+    cachedProvider = new AliyunSmsProvider();
+  } else {
+    cachedProvider = new MockSmsProvider();
   }
-  return new MockSmsProvider();
+
+  return cachedProvider;
 }

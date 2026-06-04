@@ -57,12 +57,12 @@ export async function POST(
   // Content moderation
   const moderation = getModerationProvider();
   const textResult = await moderation.checkText(content);
-  let commentStatus = 'ACTIVE';
-  let commentModeration = 'APPROVED';
 
   if (!textResult.approved) {
-    commentStatus = 'HIDDEN';
-    commentModeration = 'REJECTED';
+    return NextResponse.json(
+      { error: textResult.reason || '内容不符合社区规范' },
+      { status: 400 }
+    );
   }
 
   const comment = await prisma.comment.create({
@@ -70,8 +70,8 @@ export async function POST(
       postId: Number(id),
       authorPetId,
       content,
-      status: commentStatus,
-      moderationStatus: commentModeration,
+      status: 'ACTIVE',
+      moderationStatus: 'APPROVED',
     },
     include: {
       author: {

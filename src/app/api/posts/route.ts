@@ -122,22 +122,23 @@ export async function POST(req: Request) {
   const { getModerationProvider } = await import('@/lib/moderation-provider');
   const moderation = getModerationProvider();
   const textResult = await moderation.checkText(content);
-  let moderationStatus = 'APPROVED';
-  let postStatus = 'ACTIVE';
 
   if (!textResult.approved) {
-    moderationStatus = 'REJECTED';
-    postStatus = 'HIDDEN';
+    return NextResponse.json(
+      { error: textResult.reason || '内容不符合社区规范' },
+      { status: 400 }
+    );
   }
 
   // Check images if present
-  if (textResult.approved && images && images.length > 0) {
+  if (images && images.length > 0) {
     for (const img of images as { url: string; order: number }[]) {
       const imgResult = await moderation.checkImage(img.url);
       if (!imgResult.approved) {
-        moderationStatus = 'REJECTED';
-        postStatus = 'HIDDEN';
-        break;
+        return NextResponse.json(
+          { error: imgResult.reason || '内容不符合社区规范' },
+          { status: 400 }
+        );
       }
     }
   }
@@ -148,8 +149,8 @@ export async function POST(req: Request) {
       content,
       mediaType: mediaType || 'TEXT',
       fuzzyLocation: fuzzyLocation || null,
-      status: postStatus,
-      moderationStatus,
+      status: 'ACTIVE',
+      moderationStatus: 'APPROVED',
       images: images && images.length > 0
         ? {
             create: (images as { url: string; order: number }[]).map((img) => ({

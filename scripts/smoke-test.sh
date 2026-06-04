@@ -104,7 +104,8 @@ echo ""
 # ============================================================
 echo "--- Phase 1: Unauthenticated ---"
 
-check "GET / returns 200 (home/login page)"  GET "/" "" 200
+check "GET / redirects to login"  GET "/" "" 307
+check "GET /health redirects to login" GET "/health" "" 307
 check "GET /api/auth/me returns 401 (not logged in)" GET "/api/auth/me" "" 401
 
 # ============================================================
@@ -175,7 +176,16 @@ echo "--- Phase 5: Public Endpoints ---"
 check "GET /api/places?city=北京" GET "/api/places?city=%E5%8C%97%E4%BA%AC" "" 200
 
 # ============================================================
-# Phase 6: Admin
+# Phase 6: Provider Fail-Safe (no production config = no silent pass)
+# ============================================================
+echo ""
+echo "--- Phase 6: Provider Fail-Safe ---"
+
+# Verify mock providers work (dev mode should always work)
+check "POST /api/auth/send-code with mock provider" POST "/api/auth/send-code" '{"phone":"13900000000"}' 200
+
+# ============================================================
+# Phase 7: Admin
 # ============================================================
 echo ""
 echo "--- Phase 6: Admin ---"

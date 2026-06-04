@@ -1,5 +1,11 @@
+// STAGING STATUS: S3 SigV4 signing is implemented.
+// Compatible with AWS S3, Alibaba Cloud OSS, Tencent COS, MinIO, Cloudflare R2.
+// To use: set STORAGE_PROVIDER=s3 and configure STORAGE_ENDPOINT, STORAGE_BUCKET,
+// STORAGE_ACCESS_KEY, STORAGE_SECRET_KEY.
+// Note: Not yet tested against a real bucket. Test with valid credentials.
+
 /**
- * Storage provider interface – abstracts file upload / delete so the
+ * Storage provider interface — abstracts file upload / delete so the
  * application code does not need to know whether files live on the local
  * filesystem or in cloud object storage (e.g. AWS S3, Alibaba OSS, Tencent COS, MinIO).
  */
@@ -66,7 +72,7 @@ class LocalStorageProvider implements StorageProvider {
     try {
       await unlink(filePath);
     } catch (err) {
-      // File may already be gone – not an error worth throwing
+      // File may already be gone - not an error worth throwing
       console.warn(`[Storage] Could not delete ${filePath}:`, err);
     }
   }
@@ -282,7 +288,7 @@ class S3StorageProvider implements StorageProvider {
 }
 
 // ---------------------------------------------------------------------------
-// Cryptographic helpers (Web Crypto API – works in Node.js and edge runtimes)
+// Cryptographic helpers (Web Crypto API - works in Node.js and edge runtimes)
 // ---------------------------------------------------------------------------
 
 async function sha256Hex(data: Uint8Array): Promise<string> {
@@ -352,6 +358,9 @@ function isoDatetime(d: Date): string {
 
 // ---------------------------------------------------------------------------
 // Factory
+//
+// Fail-fast: if STORAGE_PROVIDER is not 'local' but credentials are missing,
+// throws at construction time. Connection errors also propagate.
 // ---------------------------------------------------------------------------
 
 export function getStorageProvider(): StorageProvider {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // ---------------------------------------------------------------------------
 // Rate limit store — swappable backend for rate limiting
 // ---------------------------------------------------------------------------
@@ -7,6 +6,8 @@
 //
 // To activate Redis: set RATE_LIMIT_STORE=redis and REDIS_URL=<connection string>
 // ---------------------------------------------------------------------------
+
+import Redis from 'ioredis';
 
 export interface RateLimitStore {
   /**
@@ -26,7 +27,7 @@ export interface RateLimitStore {
 class MemoryRateLimitStore implements RateLimitStore {
   private store = new Map<string, { count: number; resetAt: number }>();
 
-  async increment(_key: string, _windowMs: number): Promise<number> {
+  async increment(key: string, windowMs: number): Promise<number> {
     const now = Date.now();
     const record = this.store.get(key);
 
@@ -39,7 +40,7 @@ class MemoryRateLimitStore implements RateLimitStore {
     return record.count;
   }
 
-  async reset(_key: string): Promise<void> {
+  async reset(key: string): Promise<void> {
     this.store.delete(key);
   }
 }
@@ -48,20 +49,35 @@ class MemoryRateLimitStore implements RateLimitStore {
 // Redis store (production)
 // ---------------------------------------------------------------------------
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 class RedisRateLimitStore implements RateLimitStore {
-  async increment(_key: string, _windowMs: number): Promise<number> {
-    // TODO: Implement with Redis
-    // const client = getRedisClient();
-    // const count = await client.incr(key);
-    // if (count === 1) await client.pexpire(key, windowMs);
-    // return count;
-    return 1;
+  private client: Redis;
+
+  constructor() {
+    const url = process.env.REDIS_URL;
+    if (!url) {
+      throw new Error(
+        'REDIS_URL is required when RATE_LIMIT_STORE=redis'
+      );
+    }
+    this.client = new Redis(url, {
+      maxRetriesPerRequest: 3,
+      lazyConnect: false,
+    });
+    this.client.on('error', (err) => {
+      console.error('[RedisRateLimitStore] Redis connection error:', err.message);
+    });
   }
 
-  async reset(_key: string): Promise<void> {
-    // TODO: const client = getRedisClient();
-    // await client.del(key);
+  async increment(key: string, windowMs: number): Promise<number> {
+    const count = await this.client.incr(`ratelimit:${key}`);
+    if (count === 1) {
+      await this.client.pexpire(`ratelimit:${key}`, windowMs);
+    }
+    return count;
+  }
+
+  async reset(key: string): Promise<void> {
+    await this.client.del(`ratelimit:${key}`);
   }
 }
 
@@ -69,9 +85,18 @@ class RedisRateLimitStore implements RateLimitStore {
 // Factory
 // ---------------------------------------------------------------------------
 
+let cachedStore: RateLimitStore | null = null;
+
 export function getRateLimitStore(): RateLimitStore {
-  if (process.env.RATE_LIMIT_STORE === 'redis') return new RedisRateLimitStore();
-  return new MemoryRateLimitStore();
+  if (cachedStore) return cachedStore;
+
+  if (process.env.RATE_LIMIT_STORE === 'redis') {
+    cachedStore = new RedisRateLimitStore();
+  } else {
+    cachedStore = new MemoryRateLimitStore();
+  }
+
+  return cachedStore;
 }
 
 // ---------------------------------------------------------------------------

@@ -99,7 +99,15 @@ export async function POST(req: Request) {
   // Content moderation
   const moderation = getModerationProvider();
   const textResult = await moderation.checkText(content.trim());
-  const msgModerationStatus = textResult.approved ? 'APPROVED' : 'REJECTED';
+
+  if (!textResult.approved) {
+    return NextResponse.json(
+      { error: textResult.reason || '内容不符合社区规范' },
+      { status: 400 }
+    );
+  }
+
+  const msgModerationStatus = 'APPROVED';
 
   // Check if thread already exists
   const existingThread = await prisma.messageThread.findFirst({
