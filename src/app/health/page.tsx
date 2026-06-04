@@ -558,7 +558,7 @@ export default function HealthPage() {
                 <div className="flex items-start gap-2.5 rounded-[18px] border border-amber-500/10 bg-white/75 p-3 shadow-[0_10px_24px_rgba(232,149,45,0.08)] backdrop-blur-xl">
                   <AlertTriangle className="w-4 h-4 text-amber-500/70 flex-shrink-0 mt-[1px]" />
                   <p className="text-[12px] text-ink-muted leading-relaxed min-w-0">
-                    AI 结果仅供初步分诊参考，不能替代执业兽医诊断。如宠物出现紧急症状，请立即前往宠物医院就诊。
+                    AI 结果仅供初步分诊和风险判断参考，不能替代执业兽医的专业诊断。如宠物出现紧急症状，请立即前往宠物医院就诊。
                   </p>
                 </div>
 

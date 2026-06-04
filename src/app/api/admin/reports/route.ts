@@ -30,6 +30,7 @@ export async function GET(req: Request) {
           status: true,
           resolution: true,
           createdAt: true,
+          updatedAt: true,
           reporter: {
             select: { id: true, phone: true, nickname: true },
           },
@@ -44,8 +45,33 @@ export async function GET(req: Request) {
       prisma.report.count({ where }),
     ]);
 
+    // Fetch target content preview for each report
+    const reportsWithPreview = await Promise.all(
+      reports.map(async (report) => {
+        let targetContent: string | null = null;
+        try {
+          if (report.targetType === 'POST') {
+            const post = await prisma.post.findUnique({
+              where: { id: report.targetId },
+              select: { content: true },
+            });
+            targetContent = post?.content ?? null;
+          } else if (report.targetType === 'COMMENT') {
+            const comment = await prisma.comment.findUnique({
+              where: { id: report.targetId },
+              select: { content: true },
+            });
+            targetContent = comment?.content ?? null;
+          }
+        } catch {
+          targetContent = null;
+        }
+        return { ...report, targetContent };
+      }),
+    );
+
     return NextResponse.json({
-      reports,
+      reports: reportsWithPreview,
       pagination: {
         page,
         pageSize,
@@ -92,10 +118,30 @@ export async function PUT(req: Request) {
     if (action === 'RESOLVE') {
       newStatus = 'RESOLVED';
       actionType = 'RESOLVE_REPORT';
+
+      // Auto-hide the reported content
+      try {
+        if (report.targetType === 'POST') {
+          await prisma.post.update({
+            where: { id: report.targetId },
+            data: { status: 'HIDDEN' },
+          });
+        } else if (report.targetType === 'COMMENT') {
+          await prisma.comment.update({
+            where: { id: report.targetId },
+            data: { status: 'HIDDEN' },
+          });
+        }
+      } catch (hideError) {
+        console.error('Failed to auto-hide reported content:', hideError);
+        // Continue with report resolution even if hide fails
+      }
     } else {
       newStatus = 'DISMISSED';
       actionType = 'DISMISS_REPORT';
     }
+
+    const now = new Date();
 
     await prisma.report.update({
       where: { id },
@@ -103,6 +149,7 @@ export async function PUT(req: Request) {
         status: newStatus,
         handlerAdminId: session.adminId,
         resolution: resolution || null,
+        updatedAt: now,
       },
     });
 

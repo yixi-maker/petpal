@@ -12,7 +12,9 @@ interface ReportItem {
   reason: string;
   status: string;
   resolution: string | null;
+  targetContent: string | null;
   createdAt: string;
+  updatedAt: string;
   reporter: { id: number; phone: string; nickname: string | null } | null;
   handler: { id: number; username: string } | null;
 }
@@ -113,6 +115,11 @@ export default function AdminReportsPage() {
     }
   };
 
+  const formatDateTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">举报管理</h2>
@@ -149,18 +156,19 @@ export default function AdminReportsPage() {
                   <tr>
                     <th className="text-left px-4 py-3 font-medium text-ink-muted">举报人</th>
                     <th className="text-left px-4 py-3 font-medium text-ink-muted">目标类型</th>
-                    <th className="text-left px-4 py-3 font-medium text-ink-muted">目标ID</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">目标内容</th>
                     <th className="text-left px-4 py-3 font-medium text-ink-muted">原因</th>
                     <th className="text-left px-4 py-3 font-medium text-ink-muted">状态</th>
                     <th className="text-left px-4 py-3 font-medium text-ink-muted">处理人</th>
-                    <th className="text-left px-4 py-3 font-medium text-ink-muted">时间</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">处理时间</th>
+                    <th className="text-left px-4 py-3 font-medium text-ink-muted">处理意见</th>
                     <th className="text-left px-4 py-3 font-medium text-ink-muted">操作</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border-light">
                   {reports.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-10 text-ink-faded">
+                      <td colSpan={9} className="text-center py-10 text-ink-faded">
                         暂无数据
                       </td>
                     </tr>
@@ -171,7 +179,21 @@ export default function AdminReportsPage() {
                           {report.reporter?.nickname || report.reporter?.phone || '未知'}
                         </td>
                         <td className="px-4 py-3">{targetTypeLabel(report.targetType)}</td>
-                        <td className="px-4 py-3 text-ink-muted">#{report.targetId}</td>
+                        <td className="px-4 py-3 max-w-[200px]">
+                          {report.targetContent ? (
+                            <span className="text-ink-muted text-xs truncate block">
+                              {report.targetContent.length > 50
+                                ? report.targetContent.slice(0, 50) + '...'
+                                : report.targetContent}
+                            </span>
+                          ) : (
+                            <span className="text-ink-faded text-xs italic">
+                              {report.targetType === 'USER' || report.targetType === 'PET' || report.targetType === 'PLACE'
+                                ? `#${report.targetId}`
+                                : '内容已删除'}
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 max-w-[150px] truncate text-ink-muted">
                           {report.reason}
                         </td>
@@ -179,8 +201,21 @@ export default function AdminReportsPage() {
                         <td className="px-4 py-3 text-ink-muted">
                           {report.handler?.username || '-'}
                         </td>
-                        <td className="px-4 py-3 text-ink-muted">
-                          {new Date(report.createdAt).toLocaleDateString('zh-CN')}
+                        <td className="px-4 py-3 text-ink-muted text-xs">
+                          {report.status !== 'PENDING'
+                            ? formatDateTime(report.updatedAt)
+                            : '-'}
+                        </td>
+                        <td className="px-4 py-3 max-w-[150px]">
+                          {report.resolution ? (
+                            <span className="text-ink-muted text-xs truncate block">
+                              {report.resolution.length > 30
+                                ? report.resolution.slice(0, 30) + '...'
+                                : report.resolution}
+                            </span>
+                          ) : (
+                            <span className="text-ink-faded text-xs">-</span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           {report.status === 'PENDING' ? (
@@ -201,9 +236,7 @@ export default function AdminReportsPage() {
                               </Button>
                             </div>
                           ) : (
-                            <span className="text-xs text-ink-faded">
-                              {report.resolution ? report.resolution.slice(0, 20) : '无'}
-                            </span>
+                            <span className="text-xs text-ink-faded">已完成</span>
                           )}
                         </td>
                       </tr>
@@ -253,9 +286,18 @@ export default function AdminReportsPage() {
                 <Flag className="w-4 h-4 text-teal-500" aria-label="举报" />
                 <span>举报 #{currentReport.id}</span>
               </div>
-              <p className="text-ink-muted bg-surface-alt p-2 rounded-lg">
-                {currentReport.reason}
-              </p>
+              <div>
+                <span className="text-xs text-ink-faded">被举报内容预览：</span>
+                <p className="text-ink-muted bg-surface-alt p-2 rounded-lg mt-1 text-xs whitespace-pre-wrap max-h-24 overflow-y-auto">
+                  {currentReport.targetContent || '(内容不可用)'}
+                </p>
+              </div>
+              <div>
+                <span className="text-xs text-ink-faded">举报原因：</span>
+                <p className="text-ink-muted bg-surface-alt p-2 rounded-lg mt-1">
+                  {currentReport.reason}
+                </p>
+              </div>
             </div>
           )}
 
@@ -271,6 +313,9 @@ export default function AdminReportsPage() {
                 value={resolution}
                 onChange={(e) => setResolution(e.target.value)}
               />
+              <p className="text-xs text-ink-faded mt-1">
+                处理举报后，被举报内容将被自动隐藏。
+              </p>
             </div>
           )}
 

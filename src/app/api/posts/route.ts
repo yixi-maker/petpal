@@ -118,15 +118,41 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '无权限' }, { status: 403 });
   }
 
+  // Content moderation
+  const { getModerationProvider } = await import('@/lib/moderation-provider');
+  const moderation = getModerationProvider();
+  const textResult = await moderation.checkText(content);
+  let moderationStatus = 'APPROVED';
+  let postStatus = 'ACTIVE';
+
+  if (!textResult.approved) {
+    moderationStatus = 'REJECTED';
+    postStatus = 'HIDDEN';
+  }
+
+  // Check images if present
+  if (textResult.approved && images && images.length > 0) {
+    for (const img of images as { url: string; order: number }[]) {
+      const imgResult = await moderation.checkImage(img.url);
+      if (!imgResult.approved) {
+        moderationStatus = 'REJECTED';
+        postStatus = 'HIDDEN';
+        break;
+      }
+    }
+  }
+
   const post = await prisma.post.create({
     data: {
       authorPetId,
       content,
       mediaType: mediaType || 'TEXT',
       fuzzyLocation: fuzzyLocation || null,
+      status: postStatus,
+      moderationStatus,
       images: images && images.length > 0
         ? {
-            create: images.map((img: { url: string; order: number }) => ({
+            create: (images as { url: string; order: number }[]).map((img) => ({
               url: img.url,
               order: img.order,
             })),

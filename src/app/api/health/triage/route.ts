@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { getAITriage } from '@/lib/ai-provider';
+import { saveTriageRecord } from '@/lib/triage-log';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,6 +54,14 @@ export async function POST(req: Request) {
       ? (typeof images === 'string' ? images.split(',').map((s: string) => s.trim()).filter(Boolean) : images)
       : undefined,
   });
+
+  // Persist triage result as a health record
+  try {
+    await saveTriageRecord(Number(petId), triageResult);
+  } catch (err) {
+    console.error('Failed to save triage record:', err);
+    // Non-blocking: still return the triage result to the user
+  }
 
   return NextResponse.json({ result: triageResult });
 }

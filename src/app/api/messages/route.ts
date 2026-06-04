@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
+import { getModerationProvider } from '@/lib/moderation-provider';
 
 export async function GET() {
   const session = await getSession();
@@ -95,6 +96,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '仅好友之间可以发送私信' }, { status: 403 });
   }
 
+  // Content moderation
+  const moderation = getModerationProvider();
+  const textResult = await moderation.checkText(content.trim());
+  const msgModerationStatus = textResult.approved ? 'APPROVED' : 'REJECTED';
+
   // Check if thread already exists
   const existingThread = await prisma.messageThread.findFirst({
     where: {
@@ -111,6 +117,7 @@ export async function POST(req: Request) {
         threadId: existingThread.id,
         senderPetId: fromPetId,
         content: content.trim(),
+        moderationStatus: msgModerationStatus,
       },
       include: {
         sender: { select: { id: true, name: true, avatar: true } },
@@ -139,6 +146,7 @@ export async function POST(req: Request) {
         threadId: thread.id,
         senderPetId: fromPetId,
         content: content.trim(),
+        moderationStatus: msgModerationStatus,
       },
       include: {
         sender: { select: { id: true, name: true, avatar: true } },

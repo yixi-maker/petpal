@@ -1,3 +1,20 @@
+// ============================================================
+// DATABASE SETUP
+// Development (SQLite):  DATABASE_URL="file:./dev.db"
+// Production (PostgreSQL): DATABASE_URL="postgresql://user:pass@host:5432/petpal?schema=public"
+//
+// To switch: update the datasource.url below to use the appropriate
+// DATABASE_URL, then run:
+//   npx prisma migrate dev    (dev with SQLite)
+//   npx prisma migrate deploy (prod with PostgreSQL)
+//
+// For PostgreSQL in production:
+//   1. Change provider from "sqlite" to "postgresql"
+//   2. Set DATABASE_URL to your PostgreSQL connection string
+//   3. Run: npx prisma migrate deploy
+//   4. Run: npx prisma generate
+// ============================================================
+
 generator client {
   provider = "prisma-client-js"
 }

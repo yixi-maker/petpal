@@ -48,6 +48,27 @@ npm run dev
 | `AI_API_KEY` | AI API 密钥（可选，不填则使用模拟 AI） | 空 |
 | `AMAP_KEY` | 高德地图 API Key（可选） | 空 |
 
+## 生产环境部署
+
+部署到生产环境前，请完成以下步骤：
+
+1. **配置环境变量**：复制 `.env.example` 为 `.env` 并根据生产环境修改所有变量。
+   - 必须设置 `SESSION_SECRET` 和 `ADMIN_SESSION_SECRET`（各至少 32 字符，可使用 `openssl rand -base64 64` 生成）。
+   - 必须设置 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD_HASH`（管理员密码的 bcrypt 哈希，可用 `node -e "const bcrypt=require('bcryptjs');bcrypt.hash('your-password',10).then(h=>console.log(h))"` 生成）。
+   - 根据实际使用的服务配置 AI、SMS、地图、存储、内容审核的 Provider。
+
+2. **数据库**：将 `prisma/schema.prisma` 中的 provider 从 `sqlite` 改为 `postgresql`，设置 PostgreSQL 连接串，执行 `npx prisma migrate deploy && npx prisma generate`。
+
+3. **会话安全**：应用启动时会自动检测生产环境中是否仍在使用开发默认密钥，若未修改则会抛出错误并拒绝启动。
+
+4. **管理员账号**：生产环境不会自动创建默认 admin/admin123 账号，必须通过环境变量 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD_HASH` 配置。
+
+5. **构建与启动**：
+   ```bash
+   npm run build
+   npm start
+   ```
+
 ## 项目结构
 
 ```

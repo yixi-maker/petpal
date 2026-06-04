@@ -1,4 +1,26 @@
+import { isMapAvailable } from '@/lib/map-provider';
+
 export function MapPlaceholder() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const mapReady = isMapAvailable();
+
+  // TODO: When AMAP key is configured, load the AMAP JS SDK and render
+  // a live interactive map instead of this placeholder SVG.
+  //
+  // Example integration:
+  //
+  //   if (mapReady) {
+  //     const key = getAmapKey();
+  //     // 1. Add <script src={`https://webapi.amap.com/maps?v=2.0&key=${key}`} />
+  //     //    to layout.tsx or use next/script with strategy="beforeInteractive"
+  //     // 2. Create a MapContainer component that initializes:
+  //     //      new AMap.Map('map-container', { zoom: 14, center: [lng, lat] })
+  //     // 3. Use AMap.Marker / AMap.CircleMarker to plot nearby pets
+  //     // 4. Handle click events to navigate to pet profile
+  //     return <MapContainer />;
+  //   }
+  //   const key = getAmapKey(); // used in the script tag above
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-[#EBE6DD]">
       {/* ---------- SVG map illustration ---------- */}

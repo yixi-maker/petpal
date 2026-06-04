@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
+import { getModerationProvider } from '@/lib/moderation-provider';
 
 export async function GET(
   _req: Request,
@@ -53,11 +54,24 @@ export async function POST(
     return NextResponse.json({ error: '动态不存在' }, { status: 404 });
   }
 
+  // Content moderation
+  const moderation = getModerationProvider();
+  const textResult = await moderation.checkText(content);
+  let commentStatus = 'ACTIVE';
+  let commentModeration = 'APPROVED';
+
+  if (!textResult.approved) {
+    commentStatus = 'HIDDEN';
+    commentModeration = 'REJECTED';
+  }
+
   const comment = await prisma.comment.create({
     data: {
       postId: Number(id),
       authorPetId,
       content,
+      status: commentStatus,
+      moderationStatus: commentModeration,
     },
     include: {
       author: {

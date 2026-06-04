@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { getAdminSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
+import { ensureAdmin } from '@/lib/admin-setup';
 
 export async function POST(req: Request) {
   try {
@@ -11,13 +12,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '请输入用户名和密码' }, { status: 400 });
     }
 
-    // Check if any admin exists; if not, create default admin
-    const adminCount = await prisma.adminUser.count();
-    if (adminCount === 0) {
-      const passwordHash = await bcrypt.hash('admin123', 10);
-      await prisma.adminUser.create({
-        data: { username: 'admin', passwordHash },
-      });
+    // Ensure admin account exists (creates dev default, or validates prod env vars)
+    try {
+      await ensureAdmin();
+    } catch (e: unknown) {
+      // Account already exists or setup error — continue to login attempt
+      if (e instanceof Error && e.message.includes('env vars')) {
+        throw e; // Re-throw production config errors
+      }
     }
 
     const admin = await prisma.adminUser.findUnique({

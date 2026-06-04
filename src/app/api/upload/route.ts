@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import {
+  getStorageProvider,
+  ALLOWED_UPLOAD_TYPES,
+  MAX_UPLOAD_SIZE,
+  sanitizeFilename,
+} from '@/lib/storage-provider';
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -18,32 +22,37 @@ export async function POST(req: Request) {
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: '不支持的文件类型，请上传 JPG/PNG/WebP/GIF 图片' }, { status: 400 });
+    if (!(ALLOWED_UPLOAD_TYPES as readonly string[]).includes(file.type)) {
+      return NextResponse.json(
+        { error: '不支持的文件类型，请上传 JPG/PNG/WebP 图片' },
+        { status: 400 }
+      );
     }
 
-    // Limit file size to 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: '文件大小不能超过 5MB' }, { status: 400 });
+    // Validate file size
+    if (file.size > MAX_UPLOAD_SIZE) {
+      return NextResponse.json(
+        { error: '文件大小不能超过 5MB' },
+        { status: 400 }
+      );
     }
 
-    // Generate unique filename
-    const ext = file.name.split('.').pop() || 'jpg';
-    const filename = `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    const filePath = path.join(uploadDir, filename);
+    // Validate file is not empty
+    if (file.size === 0) {
+      return NextResponse.json({ error: '文件为空' }, { status: 400 });
+    }
 
-    // Ensure uploads directory exists
-    await mkdir(uploadDir, { recursive: true });
+    // Sanitize filename before storage
+    const sanitizedFilename = sanitizeFilename(file.name);
+    const renamedFile = new File([file], sanitizedFilename, { type: file.type });
 
-    // Write file
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(filePath, buffer);
+    // Upload via storage provider
+    const storage = getStorageProvider();
+    const { url } = await storage.upload(renamedFile);
 
-    const url = `/uploads/${filename}`;
     return NextResponse.json({ url });
-  } catch {
+  } catch (err) {
+    console.error('[Upload] Failed:', err);
     return NextResponse.json({ error: '上传失败，请重试' }, { status: 500 });
   }
 }
