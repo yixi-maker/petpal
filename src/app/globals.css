@@ -34,8 +34,8 @@
   --color-ink-faded: #979A9F;
 
   /* === Surfaces: Warm off-white === */
-  --color-surface: #F4F8F7;
-  --color-surface-alt: #EAF1EF;
+  --color-surface: #F2F8F6;
+  --color-surface-alt: #E7F0ED;
   --color-surface-white: #FFFFFF;
   --color-border: #E8E6E2;
   --color-border-light: #F0EEEA;
@@ -47,8 +47,10 @@
   --color-rose-500: #DC4A4A;
 
   /* === Gradients === */
-  --gradient-page: linear-gradient(160deg, #EAF6F4 0%, #FAFBF8 34%, #EEF5F1 68%, #F5F2EA 100%);
-  --gradient-card-glow: radial-gradient(circle at 50% 0%, rgba(29,138,128,0.08) 0%, transparent 70%);
+  --gradient-page: radial-gradient(circle at 18% 8%, rgba(122,174,198,0.28) 0%, transparent 30%),
+    radial-gradient(circle at 86% 20%, rgba(106,168,110,0.20) 0%, transparent 28%),
+    linear-gradient(150deg, #EAF6F4 0%, #FAFBF8 38%, #EEF5F1 72%, #F6F1E8 100%);
+  --gradient-card-glow: radial-gradient(circle at 50% 0%, rgba(29,138,128,0.10) 0%, transparent 72%);
 
   /* === Shadows === */
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
@@ -95,6 +97,7 @@
 @layer base {
   html {
     background: #EAF6F4;
+    overscroll-behavior-y: none;
   }
 
   body {
@@ -108,5 +111,21 @@
       'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
     font-size: 15px;
     line-height: 1.5;
+  }
+}
+
+@layer utilities {
+  .petpal-glass {
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.68);
+    box-shadow: 0 18px 48px rgba(16, 80, 75, 0.12), 0 2px 10px rgba(28, 29, 32, 0.04);
+    backdrop-filter: blur(22px);
+  }
+
+  .petpal-soft-card {
+    border: 1px solid rgba(255, 255, 255, 0.74);
+    background: linear-gradient(145deg, rgba(255,255,255,0.82), rgba(245,250,248,0.66));
+    box-shadow: 0 14px 34px rgba(16, 80, 75, 0.10);
+    backdrop-filter: blur(18px);
   }
 }

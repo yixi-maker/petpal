@@ -7,15 +7,11 @@ import { Avatar, Button, Modal } from '@/components/ui';
 import { ChevronRight, LogOut, MessageCircle, Plus, Settings, Shield, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-function petTypeFromString(t: string): 'DOG' | 'CAT' | undefined {
-  if (t === 'DOG' || t === 'CAT') return t;
-  return undefined;
-}
+import { PetDashboard } from '@/components/home/PetDashboard';
 
 export default function MePage() {
   const { user, logout } = useAuth();
-  const { pets, currentPet, loading: petLoading, switchPet } = usePet();
+  const { pets, currentPet, switchPet } = usePet();
   const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteStep, setDeleteStep] = useState(1);
@@ -46,9 +42,14 @@ export default function MePage() {
   };
 
   return (
-    <div className="max-w-mobile mx-auto px-4 pb-24">
-      {/* ========== Profile header card ========== */}
-      <div className="bg-surface-white rounded-[12px] p-4 shadow-sm mb-4 mt-4">
+    <div className="max-w-mobile mx-auto px-4 pb-28">
+      {/* ========== Pet identity profile ========== */}
+      <div className="-mx-4 mb-4">
+        <PetDashboard currentPet={currentPet} pets={pets} onSwitchPet={switchPet} />
+      </div>
+
+      {/* ========== Owner account card ========== */}
+      <div className="petpal-soft-card rounded-[22px] p-4 mb-4">
         <div className="flex items-center gap-3">
           <Avatar size="xl" className="w-[56px] h-[56px]" />
           <div className="flex-1 min-w-0">
@@ -57,100 +58,14 @@ export default function MePage() {
             </div>
             <div className="text-[13px] text-ink-faded truncate">{user?.phone}</div>
           </div>
-          <Link href="/settings" className="p-2 -mr-1 hover:bg-surface-alt rounded-[8px] transition-colors">
+          <Link href="/settings" className="p-2 -mr-1 hover:bg-white/70 rounded-full transition-colors">
             <Settings className="w-5 h-5 text-ink-muted" aria-label="设置" />
           </Link>
         </div>
       </div>
 
-      {/* ========== Current pet identity card — enhanced gradient ========== */}
-      <div className="bg-gradient-to-br from-teal-50/40 via-teal-50/20 to-surface-white rounded-[14px] shadow-sm p-4 mb-4">
-        <h3 className="text-[13px] font-medium text-ink-muted mb-3">当前宠物身份</h3>
-        {petLoading ? (
-          <div className="flex items-center gap-3 animate-pulse">
-            <div className="w-12 h-12 rounded-full bg-surface-alt" />
-            <div className="flex-1 space-y-2">
-              <div className="h-4 bg-surface-alt rounded w-20" />
-              <div className="h-3 bg-surface-alt rounded w-16" />
-            </div>
-          </div>
-        ) : pets.length > 0 ? (
-          <>
-            {/* Current pet */}
-            <div className="flex items-center gap-3">
-              <Avatar
-                src={currentPet?.avatar}
-                petType={currentPet ? petTypeFromString(currentPet.type) : undefined}
-                size="lg"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="text-[15px] font-semibold text-ink">
-                  {currentPet?.name || '未选择'}
-                </div>
-                <div className="text-[13px] text-ink-muted flex items-center gap-1.5">
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] bg-teal-50 text-teal-600 text-[11px] font-medium">
-                    {currentPet?.type === 'DOG' ? '狗狗' : currentPet?.type === 'CAT' ? '猫咪' : '宠物'}
-                  </span>
-                  {currentPet?.breed ? <span>{currentPet.breed}</span> : null}
-                </div>
-              </div>
-              <Link
-                href="/pets/new"
-                className="flex items-center gap-1 text-[13px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                添加宠物
-              </Link>
-            </div>
-
-            {/* Pet switcher — horizontal row of small avatars */}
-            {pets.length > 1 && (
-              <div className="flex gap-2 mt-3 pt-3 border-t border-teal-100">
-                {pets.map((p) => {
-                  const isCurrent = p.id === currentPet?.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => switchPet(p.id)}
-                      className={`relative flex flex-col items-center gap-1 transition-all ${
-                        isCurrent ? 'opacity-100' : 'opacity-50 hover:opacity-75'
-                      }`}
-                    >
-                      <Avatar
-                        src={p.avatar}
-                        petType={petTypeFromString(p.type)}
-                        size="md"
-                        className={isCurrent ? 'ring-2 ring-teal-500 ring-offset-1' : ''}
-                      />
-                      <span
-                        className={`text-[11px] truncate max-w-[48px] ${
-                          isCurrent ? 'text-teal-600 font-medium' : 'text-ink-muted'
-                        }`}
-                      >
-                        {p.name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-2">
-            <p className="text-[14px] text-ink-faded mb-2">还没有添加宠物</p>
-            <Link
-              href="/pets/new"
-              className="inline-flex items-center gap-1 text-[14px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              添加宠物
-            </Link>
-          </div>
-        )}
-      </div>
-
       {/* ========== Menu list — with shadow-xs ========== */}
-      <div className="bg-surface-white rounded-[12px] shadow-xs overflow-hidden divide-y divide-border-light">
+      <div className="overflow-hidden rounded-[24px] border border-white/72 bg-white/72 shadow-[0_14px_34px_rgba(16,80,75,0.08)] backdrop-blur-xl divide-y divide-border-light">
         <Link
           href="/messages"
           className="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-alt transition-colors"

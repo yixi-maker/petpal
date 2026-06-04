@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PawPrint, MapPinned, Map, Stethoscope, CircleUserRound } from 'lucide-react';
+import { CircleUserRound, HeartPulse, House, Map, PawPrint } from 'lucide-react';
 
 const tabs = [
-  { key: '/', label: '首页', icon: PawPrint },
-  { key: '/nearby', label: '附近', icon: MapPinned },
+  { key: '/', label: '首页', icon: House },
   { key: '/map', label: '地图', icon: Map },
-  { key: '/health', label: '健康', icon: Stethoscope },
+  { key: '/nearby', label: '宝贝', icon: PawPrint, center: true },
+  { key: '/health', label: '健康', icon: HeartPulse },
   { key: '/me', label: '我的', icon: CircleUserRound },
 ];
 
@@ -21,29 +21,36 @@ export function TabBar() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-white/95 backdrop-blur-sm border-t border-border-light pb-[calc(4px+env(safe-area-inset-bottom))]">
-      <div className="max-w-mobile mx-auto flex items-center justify-around">
-        {tabs.map(({ key, label, icon: Icon }) => {
+    <nav className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 pb-[calc(12px+env(safe-area-inset-bottom))]">
+      <div className="mx-auto max-w-mobile px-4">
+        <div className="pointer-events-auto flex h-[64px] items-center justify-around rounded-[28px] border border-white/70 bg-white/82 px-3 shadow-[0_18px_44px_rgba(16,80,75,0.18)] backdrop-blur-2xl">
+        {tabs.map(({ key, label, icon: Icon, center }) => {
           const isActive = key === '/' ? pathname === '/' : pathname.startsWith(key);
           return (
             <Link
               key={key}
               href={key}
-              className={`relative flex flex-col items-center gap-[3px] py-[6px] min-w-[56px] transition-all duration-200
-                ${isActive ? 'text-teal-500' : 'text-ink-faded/60 hover:text-ink-muted'}`}
+              className={`relative flex min-w-[54px] flex-col items-center gap-[3px] transition-all duration-200
+                ${center ? '-mt-7' : 'py-[7px]'}
+                ${isActive ? 'text-teal-600' : 'text-ink-faded/70 hover:text-ink-muted'}`}
             >
-              <span className="relative flex items-center justify-center">
+              <span
+                className={`relative flex items-center justify-center transition-all duration-200 ${
+                  center
+                    ? 'h-[58px] w-[58px] rounded-full border-[4px] border-white bg-[radial-gradient(circle_at_35%_25%,#66C6BE_0%,#1D8A80_58%,#10504B_100%)] text-white shadow-[0_16px_30px_rgba(29,138,128,0.34)]'
+                    : isActive
+                      ? 'h-[28px] w-[28px] rounded-full bg-teal-50 text-teal-600'
+                      : 'h-[28px] w-[28px]'
+                }`}
+              >
                 <Icon
-                  className={`w-[20px] h-[20px] transition-all duration-200 ${isActive ? 'drop-shadow-[0_0_4px_rgba(29,138,128,0.2)]' : ''}`}
-                  strokeWidth={isActive ? 2 : 1.5}
+                  className={`${center ? 'h-7 w-7 drop-shadow-[0_2px_6px_rgba(7,36,34,0.24)]' : 'h-[19px] w-[19px]'} transition-all duration-200`}
+                  strokeWidth={center ? 2.5 : isActive ? 2.1 : 1.6}
                 />
-                {isActive && (
-                  <span className="absolute -top-[2px] -right-[3px] w-[3px] h-[3px] rounded-full bg-teal-500" />
-                )}
               </span>
               <span
                 className={`text-[10px] leading-none ${
-                  isActive ? 'font-medium' : ''
+                  center ? 'mt-0 text-teal-700 font-semibold' : isActive ? 'font-semibold' : ''
                 }`}
               >
                 {label}
@@ -51,6 +58,7 @@ export function TabBar() {
             </Link>
           );
         })}
+        </div>
       </div>
     </nav>
   );

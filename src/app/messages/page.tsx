@@ -64,7 +64,7 @@ export default function MessagesPage() {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-24">
       {/* Header */}
       <div className="px-4 pt-4 pb-2">
         <h1 className="text-lg font-semibold flex items-center gap-2">

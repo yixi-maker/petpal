@@ -1,4 +1,5 @@
 import { isMapAvailable } from '@/lib/map-provider';
+import { Coffee, Scissors, Stethoscope, TreePine } from 'lucide-react';
 
 export function MapPlaceholder() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,8 +22,15 @@ export function MapPlaceholder() {
   //   }
   //   const key = getAmapKey(); // used in the script tag above
 
+  const markers = [
+    { left: '22%', top: '31%', label: '公园', icon: <TreePine className="h-4 w-4" />, tone: 'bg-teal-700' },
+    { left: '68%', top: '25%', label: '咖啡', icon: <Coffee className="h-4 w-4" />, tone: 'bg-amber-500' },
+    { left: '76%', top: '58%', label: '医院', icon: <Stethoscope className="h-4 w-4" />, tone: 'bg-teal-600' },
+    { left: '38%', top: '70%', label: '洗护', icon: <Scissors className="h-4 w-4" />, tone: 'bg-sea-500' },
+  ];
+
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#EBE6DD]">
+    <div className="relative h-full w-full overflow-hidden bg-[#E9EFE9]">
       {/* ---------- SVG map illustration ---------- */}
       <svg
         viewBox="0 0 400 320"
@@ -214,12 +222,23 @@ export function MapPlaceholder() {
         ))}
       </svg>
 
-      {/* ---------- Overlay text at bottom ---------- */}
-      <div className="absolute bottom-0 left-0 right-0 bg-surface-white/70 py-1.5 text-center rounded-t-[8px]">
-        <p className="text-[11px] text-ink-faded/50">
-          接入高德地图后显示完整地图
-        </p>
-      </div>
+      <div className="pointer-events-none absolute left-[50%] top-[42%] h-[96px] w-[96px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/10 ring-1 ring-teal-500/18" />
+      <div className="pointer-events-none absolute left-[50%] top-[42%] h-[17px] w-[17px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white bg-teal-500 shadow-[0_8px_18px_rgba(29,138,128,0.26)]" />
+
+      {markers.map((marker) => (
+        <div
+          key={marker.label}
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+          style={{ left: marker.left, top: marker.top }}
+        >
+          <div className={`flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-white text-white shadow-[0_12px_24px_rgba(16,80,75,0.22)] ${marker.tone}`}>
+            {marker.icon}
+          </div>
+          <div className="mx-auto mt-1 w-max rounded-full bg-white/76 px-2 py-0.5 text-[10px] font-medium text-ink-muted shadow-sm backdrop-blur-md">
+            {marker.label}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

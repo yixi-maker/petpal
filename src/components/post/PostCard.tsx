@@ -4,8 +4,8 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar } from '@/components/ui';
 import { ReportButton } from '@/components/social/ReportButton';
-import { GreetingButton } from '@/components/social/GreetingButton';
 import { Heart, MessageCircle, Share2, MapPin } from 'lucide-react';
+import { GreetingButton } from '@/components/social/GreetingButton';
 
 interface PostAuthor {
   id: number;
@@ -121,42 +121,42 @@ function ActionBar({
   variant?: 'light' | 'dark';
 }) {
   const buttonClass = variant === 'dark'
-    ? 'text-white/80 hover:text-white'
-    : 'text-ink-faded hover:text-ink-muted';
+    ? 'rounded-full bg-white/12 text-white/88 shadow-[0_8px_18px_rgba(7,36,34,0.18)] backdrop-blur-md hover:bg-white/20 hover:text-white'
+    : 'rounded-full bg-white/72 text-ink-faded shadow-[0_8px_18px_rgba(16,80,75,0.07)] backdrop-blur-md hover:text-ink-muted';
 
   const shareAvailable = typeof navigator !== 'undefined' && !!navigator.share;
 
   return (
     <div className={`flex items-center justify-between ${variant === 'dark' ? 'px-0 py-0' : 'px-0 py-2'}`}>
-      <div className="flex items-center">
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={onLike}
-          className={`flex min-w-[44px] items-center gap-1.5 p-2 transition-colors ${buttonClass} ${liked ? 'text-amber-400' : 'hover:text-amber-500'}`}
+          className={`flex min-w-[46px] items-center justify-center gap-1.5 px-2.5 py-2 transition-colors ${buttonClass} ${liked ? '!text-amber-300' : 'hover:text-amber-500'}`}
           aria-label="点赞"
         >
-          <span className="text-[13px]">{likesCount}</span>
           <Heart
             className={`h-5 w-5 ${liked ? 'fill-amber-400 text-amber-400' : ''}`}
           />
+          <span className="text-[12px] font-semibold">{likesCount}</span>
         </button>
         <button
           type="button"
           onClick={onComment}
-          className={`flex min-w-[44px] items-center gap-1.5 p-2 transition-colors ${buttonClass}`}
+          className={`flex min-w-[46px] items-center justify-center gap-1.5 px-2.5 py-2 transition-colors ${buttonClass}`}
           aria-label="评论"
         >
-          <span className="text-[13px]">{commentsCount}</span>
           <MessageCircle className="h-5 w-5" />
+          <span className="text-[12px] font-semibold">{commentsCount}</span>
         </button>
         {shareAvailable && (
           <button
             type="button"
             onClick={onShare}
-            className={`flex min-w-[44px] items-center gap-1.5 p-2 transition-colors ${buttonClass}`}
+            className={`flex h-[38px] w-[38px] items-center justify-center transition-colors ${buttonClass}`}
             aria-label="分享"
           >
-            <Share2 className="h-5 w-5" />
+            <Share2 className="h-[18px] w-[18px]" />
           </button>
         )}
       </div>
@@ -282,68 +282,82 @@ export function PostCard({ post, currentPetId, liked, onLike }: PostCardProps) {
               </div>
             )}
 
-            {post.fuzzyLocation && (
-              <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full border border-white/10 bg-white/12 px-2.5 py-1 text-[11px] text-white/85 backdrop-blur-md">
-                <MapPin className="h-3 w-3 text-white/75" />
-                <span>{post.fuzzyLocation}</span>
-              </div>
-            )}
-
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <div className="rounded-[22px] border border-white/20 bg-white/20 p-3.5 text-white shadow-[0_14px_34px_rgba(7,36,34,0.22)] backdrop-blur-xl">
-                <div
-                  className="mb-3 flex min-w-0 cursor-pointer items-center gap-2.5"
-                  onClick={handleAuthorClick}
-                >
-                  <Avatar
-                    src={post.author.avatar}
-                    petType={post.author.type as 'DOG' | 'CAT'}
-                    size="md"
-                    className="h-[38px] w-[38px] flex-shrink-0 border-white/60"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-[15px] font-semibold text-white/95 max-w-[200px]">
-                      {post.author.name}
-                    </div>
-                    <div className="flex items-center gap-1.5 truncate text-[12px] text-white/75">
-                      <span className="truncate">{post.author.breed || post.author.type}</span>
-                      <span className="flex-shrink-0">·</span>
-                      <span className="flex-shrink-0">{timeAgoStr}</span>
-                      {showGreeting && currentPetId && (
-                        <GreetingButton
-                          fromPetId={currentPetId}
-                          toPetId={post.author.id}
-                          toPetName={post.author.name}
-                          className="ml-0.5 flex-shrink-0 text-white/80 hover:text-white"
-                        />
-                      )}
-                    </div>
-                  </div>
+            <div
+              className="absolute left-3 top-3 flex min-w-0 max-w-[72%] cursor-pointer items-center gap-2 rounded-full border border-white/18 bg-black/18 px-2 py-1.5 text-white shadow-[0_10px_22px_rgba(7,36,34,0.18)] backdrop-blur-lg"
+              onClick={handleAuthorClick}
+            >
+              <Avatar
+                src={post.author.avatar}
+                petType={post.author.type as 'DOG' | 'CAT'}
+                size="sm"
+                className="h-[30px] w-[30px] flex-shrink-0 border-white/60"
+              />
+              <div className="min-w-0">
+                <div className="max-w-[150px] truncate text-[12px] font-semibold text-white">
+                  {post.author.name}
                 </div>
-
-                {post.content && (
-                  <p className="mb-2 whitespace-pre-wrap text-[17px] font-medium leading-snug text-white line-clamp-3">
-                    {post.content}
-                  </p>
-                )}
-
-                <ActionBar
-                  liked={liked}
-                  likesCount={post._count.likes}
-                  commentsCount={post._count.comments}
-                  onLike={handleLike}
-                  onComment={handleComment}
-                  onShare={handleShare}
-                  postId={post.id}
-                  variant="dark"
-                />
+                <div className="truncate text-[10px] text-white/72">
+                  {timeAgoStr}
+                </div>
               </div>
+            </div>
+
+            <button
+              type="button"
+              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/18 bg-black/16 text-white/88 shadow-[0_10px_22px_rgba(7,36,34,0.16)] backdrop-blur-lg"
+              aria-label="收藏"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+            </button>
+
+            <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+              {post.content && (
+                <p className="mb-3 max-w-[84%] whitespace-pre-wrap text-[22px] font-semibold leading-[1.12] text-white drop-shadow-[0_2px_12px_rgba(7,36,34,0.45)] line-clamp-3">
+                  {post.content}
+                </p>
+              )}
+
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                {post.fuzzyLocation && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/14 bg-black/18 px-2.5 py-1 text-[11px] font-medium text-white/86 backdrop-blur-md">
+                    <MapPin className="h-3 w-3 text-white/78" />
+                    {post.fuzzyLocation}
+                  </span>
+                )}
+                <span className="rounded-full border border-white/14 bg-black/14 px-2.5 py-1 text-[11px] font-medium text-white/76 backdrop-blur-md">
+                  {post.author.breed || (post.author.type === 'DOG' ? '狗狗' : '猫咪')}
+                </span>
+                {showGreeting && currentPetId && (
+                  <GreetingButton
+                    fromPetId={currentPetId}
+                    toPetId={post.author.id}
+                    toPetName={post.author.name}
+                    className="rounded-full border border-white/14 bg-black/14 px-2.5 py-1 text-[11px] font-medium text-white/80 backdrop-blur-md hover:text-white"
+                  />
+                )}
+              </div>
+
+              <ActionBar
+                liked={liked}
+                likesCount={post._count.likes}
+                commentsCount={post._count.comments}
+                onLike={handleLike}
+                onComment={handleComment}
+                onShare={handleShare}
+                postId={post.id}
+                variant="dark"
+              />
             </div>
           </div>
         </div>
       ) : (
         /* ===== Without Images variant ===== */
-        <div className="overflow-hidden rounded-[26px] border border-white/70 bg-gradient-to-br from-sea-50/30 via-surface-white to-sage-50/20 shadow-[0_16px_36px_rgba(16,80,75,0.12)] backdrop-blur-xl">
+        <div className="relative flex min-h-[238px] flex-col overflow-hidden rounded-[28px] border border-white/72 border-t-[3px] border-t-teal-400/20 bg-gradient-to-br from-sea-50/40 via-surface-white to-sage-50/30 shadow-sm backdrop-blur-xl">
+          <div className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full border border-white/60" />
+          <div className="pointer-events-none absolute -bottom-20 left-8 h-44 w-44 rounded-full border border-teal-100/70" />
           {/* Author row */}
           <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
             <AuthorInfo
@@ -356,8 +370,8 @@ export function PostCard({ post, currentPetId, liked, onLike }: PostCardProps) {
           </div>
 
           {/* Content */}
-          <div className="px-4 pb-3">
-            <p className="whitespace-pre-wrap text-[16px] leading-[1.6] text-ink line-clamp-3 border-l-[3px] border-teal-400/30 pl-3 ml-4">
+          <div className="flex flex-1 items-center px-4 py-4">
+            <p className="whitespace-pre-wrap text-[16px] leading-[1.65] text-ink line-clamp-4 border-l-[3px] border-teal-400/30 pl-3 ml-4">
               {post.content}
             </p>
           </div>

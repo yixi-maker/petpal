@@ -45,10 +45,18 @@ export function AIResultCard({ result }: AIResultCardProps) {
   const isHigh = result.riskLevel === 'HIGH';
 
   return (
-    <div className={`rounded-[12px] border p-5 ${config.bg} ${config.border}`}>
+    <div className={`rounded-[24px] border p-4 shadow-[0_16px_36px_rgba(16,80,75,0.10)] backdrop-blur-xl ${config.bg} ${config.border}`}>
       {/* Header with risk badge */}
-      <div className="flex items-center gap-3 mb-4">
-        <Icon className={`w-6 h-6 ${config.iconColor}`} />
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/76 shadow-sm">
+            <Icon className={`w-5 h-5 ${config.iconColor}`} />
+          </span>
+          <div>
+            <p className="text-[15px] font-semibold text-ink">分诊结果</p>
+            <p className="text-[11px] text-ink-faded">初步风险判断</p>
+          </div>
+        </div>
         <span className={`px-3 py-1 rounded-full text-[13px] font-semibold ${config.badgeBg} ${config.badgeText}`}>
           {config.label}
         </span>
@@ -124,7 +132,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-4">
+    <div className="mb-3 rounded-[18px] border border-white/64 bg-white/62 p-3 shadow-sm">
       <div className="flex items-center gap-2 mb-2">
         <Icon className={`w-4 h-4 ${color}`} />
         <h4 className="text-[14px] font-semibold text-ink">{title}</h4>

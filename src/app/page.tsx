@@ -4,12 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { PawPrint, Plus } from 'lucide-react';
+import { Bell, PawPrint, Plus, Sparkles } from 'lucide-react';
 import { Tabs, Modal, EmptyState, Button } from '@/components/ui';
 import { PostList } from '@/components/post/PostList';
 import { PostForm } from '@/components/post/PostForm';
 import { StoryRail } from '@/components/post/StoryRail';
-import { PetDashboard } from '@/components/home/PetDashboard';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import Link from 'next/link';
 
@@ -63,7 +62,7 @@ const MOCK_RECOMMENDED: StoryPet[] = [
 
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
-  const { currentPet, pets, loading: petLoading, switchPet } = usePet();
+  const { currentPet, pets, loading: petLoading } = usePet();
   const currentPetId = currentPet?.id;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('RECOMMENDED');
@@ -211,13 +210,30 @@ export default function HomePage() {
   const hasMorePosts = posts.length > INITIAL_POST_LIMIT;
 
   return (
-    <div className="relative bg-surface min-h-screen">
-      {/* ===== PetDashboard (hero + status rings + health glance + friends + posts teaser) ===== */}
-      <PetDashboard
-        currentPet={currentPet}
-        pets={pets}
-        onSwitchPet={switchPet}
-      />
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[260px] bg-[radial-gradient(circle_at_22%_8%,rgba(122,174,198,0.26),transparent_32%),radial-gradient(circle_at_86%_0%,rgba(106,168,110,0.20),transparent_30%)]" />
+
+      {/* ===== Native-feeling top area: tabs first, then stories ===== */}
+      <header className="sticky top-0 z-20 px-4 pt-5 pb-2 backdrop-blur-2xl">
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-teal-600/75">
+              <Sparkles className="h-3.5 w-3.5" />
+              PetPal
+            </p>
+            <h1 className="mt-0.5 text-[24px] font-semibold leading-tight text-ink">宠物动态</h1>
+          </div>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-white/70 text-ink-muted shadow-[0_10px_24px_rgba(16,80,75,0.10)] backdrop-blur-xl transition-colors hover:text-teal-600"
+            aria-label="通知"
+          >
+            <Bell className="h-[18px] w-[18px]" />
+          </button>
+        </div>
+
+        <Tabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
+      </header>
 
       {/* ===== StoryRail ===== */}
       <StoryRail
@@ -226,13 +242,20 @@ export default function HomePage() {
         recommended={MOCK_RECOMMENDED}
       />
 
-      {/* ===== Tabs ===== */}
-      <div className="sticky top-0 z-10 bg-surface">
-        <Tabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
+      <div className="px-4 pb-1">
+        <div className="mb-3 flex items-end justify-between">
+          <div>
+            <h2 className="text-[17px] font-semibold text-ink">正在发生</h2>
+            <p className="mt-0.5 text-[12px] text-ink-faded">照片、约玩与附近小日常</p>
+          </div>
+          <span className="rounded-full border border-white/70 bg-white/60 px-2.5 py-1 text-[11px] font-medium text-teal-700 shadow-[0_8px_18px_rgba(16,80,75,0.08)] backdrop-blur-xl">
+            {posts.length || 0} 条
+          </span>
+        </div>
       </div>
 
       {/* ===== PostList ===== */}
-      <div className="px-4 pb-24 mt-2">
+      <div className="px-4 pb-24">
         {activeTab === 'FOLLOWING' && !currentPet && (
           <EmptyState
             icon={<PawPrint className="w-10 h-10 text-teal-500/60" />}
@@ -278,13 +301,14 @@ export default function HomePage() {
         type="button"
         onClick={() => setShowPostForm(true)}
         aria-label="发布动态"
-        className={`fixed bottom-24 right-5 w-[46px] h-[46px] bg-teal-500 text-white rounded-full
-          shadow-lg hover:shadow-xl
+        className={`fixed bottom-20 right-[max(20px,calc((100vw-430px)/2+20px))] h-[54px] w-[54px] rounded-full border-[4px] border-white
+          bg-[radial-gradient(circle_at_34%_24%,#6EC4BD_0%,#1D8A80_58%,#10504B_100%)] text-white
+          shadow-[0_18px_36px_rgba(29,138,128,0.34)]
           flex items-center justify-center
-          hover:bg-teal-600 active:bg-teal-600 transition-all duration-200 z-20
+          hover:scale-[1.03] active:scale-[0.97] transition-all duration-200 z-20
           ${showFab ? 'opacity-100 scale-100' : 'pointer-events-none opacity-0 scale-90'}`}
       >
-        <Plus className="w-5 h-5" />
+        <Plus className="h-6 w-6 drop-shadow-[0_2px_5px_rgba(7,36,34,0.22)]" />
       </button>
 
       {/* ===== Post Form Modal ===== */}

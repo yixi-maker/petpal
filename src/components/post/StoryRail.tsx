@@ -26,30 +26,26 @@ export function StoryRail({ currentPet, friends, recommended }: StoryRailProps) 
   const hasFriends = friends.length > 0;
 
   return (
-    <div className="px-4 pb-4 pt-1">
-      <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-[12px] text-ink-faded tracking-[0.02em] uppercase font-medium">
-          今天的故事
-        </h3>
-        <span className="text-[10px] text-ink-faded">轻轻打招呼</span>
-      </div>
-
-      <div className="flex gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
+    <div className="px-4 pt-2 pb-4">
+      <div className="flex gap-4 overflow-x-auto pb-1 pt-1 [&::-webkit-scrollbar]:hidden">
         {currentPet && (
           <Link
             href={`/pets/${currentPet.id}`}
-            className="flex w-[76px] flex-shrink-0 flex-col items-center rounded-[20px] border border-teal-100/80 bg-white/70 p-2.5 text-center shadow-[0_10px_24px_rgba(16,80,75,0.10)] backdrop-blur-xl"
+            className="flex w-[66px] flex-shrink-0 flex-col items-center text-center"
           >
-            <div className="h-[56px] w-[56px] rounded-full bg-gradient-to-br from-teal-400 to-sea-500 p-[2px]">
+            <div className="relative h-[58px] w-[58px] rounded-full bg-[conic-gradient(from_160deg,#6EC4BD,#7AAEC6,#F0E6CE,#6EC4BD)] p-[2px] shadow-[0_10px_20px_rgba(16,80,75,0.13)]">
               <Avatar
                 src={currentPet.avatar}
                 petType={petTypeFromString(currentPet.type)}
                 size="lg"
                 className="h-full w-full border-[3px] border-white"
               />
+              <span className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-teal-600 text-white shadow-sm">
+                <Plus className="h-3 w-3" />
+              </span>
             </div>
-            <span className="mt-1.5 truncate max-w-[56px] text-[10px] font-semibold text-teal-600">
-              你的主页
+            <span className="mt-2 max-w-[60px] truncate text-[10px] font-semibold text-teal-700 leading-tight">
+              你的故事
             </span>
           </Link>
         )}
@@ -58,15 +54,17 @@ export function StoryRail({ currentPet, friends, recommended }: StoryRailProps) 
           <Link
             key={friend.id}
             href={`/pets/${friend.id}`}
-            className="flex w-[76px] flex-shrink-0 flex-col items-center rounded-[20px] border border-white/70 bg-white/60 p-2.5 text-center shadow-[0_8px_20px_rgba(16,80,75,0.08)] backdrop-blur-xl"
+            className="flex w-[66px] flex-shrink-0 flex-col items-center text-center"
           >
-            <Avatar
-              src={friend.avatar}
-              petType={petTypeFromString(friend.type)}
-              size="lg"
-              className="h-[52px] w-[52px] ring-[2.5px] ring-sea-500"
-            />
-            <span className="mt-1.5 truncate max-w-[56px] text-[10px] text-ink-muted font-medium">
+            <div className="h-[58px] w-[58px] rounded-full bg-[conic-gradient(from_180deg,#1D8A80,#7AAEC6,#D4EDEB,#1D8A80)] p-[2px] shadow-[0_9px_18px_rgba(16,80,75,0.10)]">
+              <Avatar
+                src={friend.avatar}
+                petType={petTypeFromString(friend.type)}
+                size="lg"
+                className="h-full w-full border-[3px] border-white"
+              />
+            </div>
+            <span className="mt-2 max-w-[60px] truncate text-[10px] font-medium text-ink-muted leading-tight">
               {friend.name}
             </span>
           </Link>
@@ -76,15 +74,17 @@ export function StoryRail({ currentPet, friends, recommended }: StoryRailProps) 
           <Link
             key={rec.id}
             href={`/pets/${rec.id}`}
-            className="flex w-[76px] flex-shrink-0 flex-col items-center rounded-[20px] border border-white/60 bg-white/50 p-2.5 text-center backdrop-blur-xl"
+            className="flex w-[66px] flex-shrink-0 flex-col items-center text-center"
           >
-            <Avatar
-              src={rec.avatar}
-              petType={petTypeFromString(rec.type)}
-              size="lg"
-              className="h-[52px] w-[52px] ring-[2.5px] ring-teal-200"
-            />
-            <span className="mt-1.5 truncate max-w-[56px] text-[10px] text-ink-faded">
+            <div className="h-[58px] w-[58px] rounded-full bg-white/75 p-[3px] shadow-[0_7px_16px_rgba(16,80,75,0.08)] backdrop-blur-xl">
+              <Avatar
+                src={rec.avatar}
+                petType={petTypeFromString(rec.type)}
+                size="lg"
+                className="h-full w-full border-[2px] border-white"
+              />
+            </div>
+            <span className="mt-2 max-w-[60px] truncate text-[10px] text-ink-faded leading-tight">
               {rec.name}
             </span>
           </Link>
@@ -93,13 +93,13 @@ export function StoryRail({ currentPet, friends, recommended }: StoryRailProps) 
         {!hasFriends && currentPet && (
           <Link
             href="/nearby"
-            className="flex w-[82px] flex-shrink-0 flex-col items-center justify-center rounded-[20px] border border-dashed border-teal-200 bg-white/50 p-2.5 text-center backdrop-blur-xl"
+            className="flex w-[70px] flex-shrink-0 flex-col items-center justify-center text-center"
           >
-            <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full bg-teal-50 text-teal-500">
+            <div className="mx-auto flex h-[58px] w-[58px] items-center justify-center rounded-full border border-dashed border-teal-200 bg-white/60 text-teal-500 shadow-[0_8px_18px_rgba(16,80,75,0.08)] backdrop-blur-xl">
               <Plus className="h-5 w-5" />
             </div>
-            <span className="mt-1.5 truncate max-w-[70px] text-[10px] font-medium text-teal-500">
-              + 发现更多
+            <span className="mt-2 max-w-[70px] truncate text-[10px] font-medium text-teal-600 leading-tight">
+              发现更多
             </span>
           </Link>
         )}

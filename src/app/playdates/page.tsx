@@ -201,7 +201,7 @@ export default function PlaydatesPage() {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 pb-24">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-lg font-bold">约玩</h1>
       </div>

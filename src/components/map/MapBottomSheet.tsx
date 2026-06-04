@@ -11,8 +11,9 @@ import {
   Scissors,
   Home,
   Search,
+  Navigation,
 } from 'lucide-react';
-import { Badge, IconBadge } from '@/components/ui';
+import { Badge } from '@/components/ui';
 
 /* ------------------------------------------------------------------ */
 /*  Shared Place interface (mirrors /api/places response)              */
@@ -47,14 +48,14 @@ const TYPE_ICON_MAP: Record<string, React.ReactNode> = {
   BOARDING: <Home className="w-4 h-4" />,
 };
 
-const TYPE_VARIANT_MAP: Record<string, 'teal' | 'sea' | 'sage' | 'amber' | 'rose'> = {
-  HOSPITAL: 'rose',
-  PARK: 'sage',
-  MALL: 'teal',
-  CAFE: 'teal',
-  RESTAURANT: 'teal',
-  GROOMING: 'sea',
-  BOARDING: 'sea',
+const TYPE_THUMB_MAP: Record<string, string> = {
+  HOSPITAL: 'from-rose-50 via-white to-teal-50',
+  PARK: 'from-sage-100 via-white to-sea-100',
+  MALL: 'from-teal-50 via-white to-sage-50',
+  CAFE: 'from-amber-50 via-white to-teal-50',
+  RESTAURANT: 'from-amber-50 via-white to-sage-50',
+  GROOMING: 'from-sea-100 via-white to-teal-50',
+  BOARDING: 'from-sage-50 via-white to-sea-100',
 };
 
 /* ------------------------------------------------------------------ */
@@ -86,7 +87,7 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`w-3.5 h-3.5 ${
+          className={`w-3 h-3 ${
             star <= rating
               ? 'text-amber-500 fill-amber-500'
               : star - 0.5 <= rating
@@ -95,7 +96,6 @@ function StarRating({ rating }: { rating: number }) {
           }`}
         />
       ))}
-      <span className="text-[12px] text-ink-faded ml-1">{rating}</span>
     </div>
   );
 }
@@ -110,8 +110,8 @@ function mockDistance(placeId: number): string {
 /* ------------------------------------------------------------------ */
 function SkeletonRow() {
   return (
-    <div className="flex items-start gap-3 px-3.5 py-3 border-b border-border-light animate-pulse">
-      <div className="w-[36px] h-[36px] rounded-[9px] bg-surface-alt shrink-0" />
+    <div className="mx-3 mb-2 flex animate-pulse items-start gap-3 rounded-[18px] bg-white/60 p-2">
+      <div className="h-[62px] w-[82px] shrink-0 rounded-[14px] bg-surface-alt" />
       <div className="flex-1 min-w-0 space-y-2">
         <div className="h-4 bg-surface-alt rounded w-3/5" />
         <div className="flex gap-1.5">
@@ -143,8 +143,8 @@ interface MapBottomSheetProps {
 export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheetProps) {
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-30 max-w-mobile mx-auto
-        rounded-t-[30px] border-x border-t border-white/70 bg-white/80 backdrop-blur-2xl
+      className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px))] left-0 right-0 z-30 max-w-mobile mx-auto
+        rounded-t-[32px] border-x border-t border-white/76 bg-white/82 backdrop-blur-2xl
         shadow-[0_-24px_56px_rgba(16,80,75,0.18)]
         animate-slide-up"
     >
@@ -156,17 +156,24 @@ export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheet
       {/* Header row */}
       <div className="flex items-center justify-between px-4 pb-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-[14px] font-semibold text-ink">附近地点</h2>
+          <h2 className="text-[14px] font-semibold text-ink">附近宠物友好地点</h2>
           {!loading && (
             <span className="inline-flex items-center justify-center text-[11px] text-ink-faded bg-surface-alt px-2 py-0.5 rounded-full">
               {places.length}
             </span>
           )}
         </div>
+        <button
+          type="button"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-teal-700"
+          aria-label="导航"
+        >
+          <Navigation className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Scrollable place cards */}
-      <div className="max-h-[42vh] overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+92px)]">
+      <div className="max-h-[44vh] overflow-y-auto px-3 pb-[calc(env(safe-area-inset-bottom)+96px)]">
         {loading ? (
           /* ---------- loading skeleton ---------- */
           <>
@@ -193,52 +200,47 @@ export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheet
               <button
                 key={place.id}
                 onClick={() => onPlaceClick(place.id)}
-                className={`w-full flex items-start gap-3 px-3.5 py-3 text-left
-                  border-b border-border-light active:bg-surface-alt transition-colors
-                  ${isLast ? 'border-0' : ''}`}
+                className={`mb-2 w-full rounded-[20px] border border-white/72 bg-white/72 p-2 text-left shadow-[0_10px_24px_rgba(16,80,75,0.08)] backdrop-blur-xl transition-all active:scale-[0.99] active:bg-white/88
+                  ${isLast ? 'mb-0' : ''}`}
                 aria-label={`查看 ${place.name} 详情`}
               >
-                {/* Left: IconBadge 36px */}
-                <IconBadge
-                  icon={TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
-                  variant={TYPE_VARIANT_MAP[place.type] || 'teal'}
-                  size="md"
-                  className="shrink-0 !w-[36px] !h-[36px]"
-                />
+                <div className="flex items-stretch gap-3">
+                  <div className={`flex h-[72px] w-[92px] shrink-0 items-center justify-center rounded-[16px] bg-gradient-to-br ${TYPE_THUMB_MAP[place.type] || 'from-teal-50 via-white to-sea-50'} text-teal-700 shadow-inner`}>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/82 text-teal-700 shadow-sm">
+                      {TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
+                    </div>
+                  </div>
 
-                {/* Center column */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-medium text-ink truncate">
-                    {place.name}
-                  </p>
+                  <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14px] font-medium text-ink">
+                          {place.name}
+                        </p>
+                        <p className="text-[11px] text-ink-faded truncate max-w-[180px] mt-0.5">
+                          {place.address}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="text-[12px] text-ink-faded">{mockDistance(place.id)}</span>
+                        <Badge
+                          variant={place.isOpen ? 'sage' : 'default'}
+                          size="sm"
+                        >
+                          {place.isOpen ? '营业中' : '休息中'}
+                        </Badge>
+                      </div>
+                    </div>
 
-                  {tags.length > 0 && (
-                    <div className="mt-1 flex flex-wrap gap-1">
+                    <div className="mt-2 flex items-center gap-1">
+                      <StarRating rating={place.rating} />
                       {tags.slice(0, 2).map((tag, i) => (
                         <Badge key={i} variant={tag.variant} size="sm">
                           {tag.label}
                         </Badge>
                       ))}
                     </div>
-                  )}
-
-                  <p className="mt-1 text-[12px] text-ink-faded truncate max-w-[200px]">
-                    {place.address}
-                  </p>
-                </div>
-
-                {/* Right column */}
-                <div className="shrink-0 flex flex-col items-end gap-1">
-                  <span className="text-[12px] text-ink-faded">
-                    {mockDistance(place.id)}
-                  </span>
-                  <Badge
-                    variant={place.isOpen ? 'sage' : 'default'}
-                    size="sm"
-                  >
-                    {place.isOpen ? '营业中' : '休息中'}
-                  </Badge>
-                  <StarRating rating={place.rating} />
+                  </div>
                 </div>
               </button>
             );

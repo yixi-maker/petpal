@@ -168,25 +168,25 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
 
   return (
     <div className="relative px-4 pt-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[260px] bg-[linear-gradient(145deg,rgba(29,138,128,0.18),rgba(122,174,198,0.16)_45%,rgba(244,247,244,0)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[300px] bg-[radial-gradient(circle_at_82%_4%,rgba(122,174,198,0.30),transparent_32%),radial-gradient(circle_at_12%_18%,rgba(106,168,110,0.18),transparent_28%)]" />
 
       {/* ===== Pet Identity Hero ===== */}
-      <div className="relative mb-4 overflow-hidden rounded-[16px] bg-[linear-gradient(140deg,#083B38_0%,#1D8A80_46%,#7AAEC6_100%)] p-5 text-white shadow-[0_20px_48px_rgba(16,80,75,0.28)]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0)_40%,rgba(7,36,34,0.24)_100%)]" />
-        <div className="pointer-events-none absolute -right-12 -top-10 h-40 w-40 rounded-full border border-white/20" />
-        <div className="pointer-events-none absolute -bottom-16 left-10 h-44 w-44 rounded-full border border-white/10" />
+      <div className="petpal-glass relative mb-4 overflow-hidden rounded-[30px] p-5 text-ink">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(122,174,198,0.34),transparent_34%),linear-gradient(145deg,rgba(255,255,255,0.74),rgba(231,245,241,0.56))]" />
+        <div className="pointer-events-none absolute -right-12 -top-10 h-44 w-44 rounded-full border border-white/70 bg-white/16" />
+        <div className="pointer-events-none absolute -bottom-16 left-8 h-44 w-44 rounded-full border border-teal-100/80" />
         {currentPet ? (
           <div className="relative">
             <div className="mb-5 flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="mb-1 flex items-center gap-1.5 text-[12px] font-medium text-white/70">
+                <p className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold text-teal-700/78">
                   <Sparkles className="h-3.5 w-3.5" />
                   PetPal 身份主页
                 </p>
-                <h2 className="truncate text-[22px] font-bold tracking-[-0.3px] leading-tight">
+                <h2 className="truncate text-[30px] font-semibold leading-tight text-ink">
                   {currentPet.name}
                 </h2>
-                <p className="mt-1 truncate text-[13px] text-white/75">
+                <p className="mt-1 truncate text-[13px] text-ink-muted">
                   {typeLabel || '宠物'}{currentPet.breed ? ` · ${currentPet.breed}` : ''} · {heroLine}
                 </p>
               </div>
@@ -194,25 +194,25 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
                 src={currentPet.avatar}
                 petType={petType}
                 size="xl"
-                className="h-[72px] w-[72px] flex-shrink-0 ring-2 ring-teal-100 ring-offset-2 ring-offset-teal-900/20"
+                className="h-[88px] w-[88px] flex-shrink-0 ring-4 ring-white/80 shadow-[0_16px_34px_rgba(16,80,75,0.16)]"
               />
             </div>
 
             <div className="mb-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-white/25 bg-white/20 px-3 py-1 text-[12px] font-medium text-white/90 backdrop-blur-xl">
+              <span className="rounded-full border border-white/75 bg-white/70 px-3 py-1 text-[12px] font-semibold text-teal-700 shadow-sm backdrop-blur-xl">
                 {formatGender(currentPet.gender)}
               </span>
               {(personalityTags.length > 0 ? personalityTags : ['亲人', '爱玩']).map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] text-white/75 backdrop-blur-xl"
+                  className="rounded-full border border-white/60 bg-white/48 px-3 py-1 text-[12px] font-medium text-ink-muted backdrop-blur-xl"
                 >
                   {tag}
                 </span>
               ))}
             </div>
 
-            <div className="flex items-center gap-6 rounded-[20px] border border-white/20 bg-white/10 p-3 backdrop-blur-xl">
+            <div className="flex items-center justify-around rounded-[24px] border border-white/72 bg-white/58 p-3 shadow-[0_10px_26px_rgba(16,80,75,0.08)] backdrop-blur-xl">
               {[
                 { label: '关注者', value: stats.followers },
                 { label: '关注中', value: stats.following },
@@ -220,13 +220,13 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
               ].map((item, i, arr) => (
                 <React.Fragment key={item.label}>
                   <div className="flex flex-col items-center text-center">
-                    <p className="text-[18px] font-semibold leading-none">
+                    <p className="text-[18px] font-semibold leading-none text-ink">
                       {statsLoading ? '...' : item.value}
                     </p>
                     <p className="mt-1 text-[11px] text-ink-faded">{item.label}</p>
                   </div>
                   {i < arr.length - 1 && (
-                    <span className="text-[11px] text-white/30 mx-1">·</span>
+                    <span className="text-[11px] text-teal-200 mx-1">·</span>
                   )}
                 </React.Fragment>
               ))}
@@ -238,7 +238,7 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
                   <button
                     type="button"
                     onClick={() => setShowPetSwitcher((prev) => !prev)}
-                    className="w-full rounded-full border border-white/20 bg-white/20 px-4 py-2.5 text-[13px] font-medium text-white/90 shadow-[0_8px_18px_rgba(7,36,34,0.12)] backdrop-blur-xl transition-colors hover:bg-white/25"
+                    className="w-full rounded-full border border-white/70 bg-white/64 px-4 py-2.5 text-[13px] font-semibold text-teal-700 shadow-[0_8px_18px_rgba(16,80,75,0.08)] backdrop-blur-xl transition-colors hover:bg-white/80"
                   >
                     切换宠物
                   </button>
@@ -274,8 +274,8 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
                 </div>
               )}
               <Link
-                href={`/pets/${currentPet.id}`}
-                className="flex-1 rounded-full border border-white/25 bg-white px-4 py-2.5 text-center text-[13px] font-semibold text-teal-700 shadow-[0_10px_24px_rgba(7,36,34,0.16)] transition-colors hover:bg-teal-50"
+                href={`/pets/${currentPet.id}/edit`}
+                className="flex-1 rounded-full border border-teal-500/10 bg-teal-600 px-4 py-2.5 text-center text-[13px] font-semibold text-white shadow-[0_12px_26px_rgba(29,138,128,0.22)] transition-colors hover:bg-teal-700"
               >
                 编辑档案
               </Link>
@@ -288,10 +288,10 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
                 <Sparkles className="h-8 w-8 text-teal-500" />
               </div>
             </div>
-            <p className="mb-1 text-[15px] font-medium text-white/95">
+            <p className="mb-1 text-[15px] font-semibold text-ink">
               添加你的第一只宠物
             </p>
-            <p className="mb-4 text-[12px] text-white/65">
+            <p className="mb-4 text-[12px] text-ink-faded">
               记录它的日常，认识附近的小伙伴
             </p>
             <Link href="/pets/new">
@@ -302,15 +302,21 @@ export function PetDashboard({ currentPet, pets, onSwitchPet }: PetDashboardProp
       </div>
 
       {/* ===== Status Rings ===== */}
-      <div className="relative mb-4 flex justify-center gap-4 py-1">
-        <StatusRing label="活力" value="充沛" level="high" />
-        <StatusRing label="心情" value="愉悦" level="high" />
-        <StatusRing label="食欲" value="良好" level="high" />
-        <StatusRing label="活动" value="活跃" level="high" />
+      <div className="petpal-soft-card relative mb-4 rounded-[24px] p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-[15px] font-semibold text-ink">今日状态</h3>
+          <span className="rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-semibold text-teal-700">状态良好</span>
+        </div>
+        <div className="flex justify-between gap-2 py-1">
+          <StatusRing label="活力" value="充沛" level="high" />
+          <StatusRing label="心情" value="愉悦" level="high" />
+          <StatusRing label="食欲" value="良好" level="high" />
+          <StatusRing label="活动" value="活跃" level="high" />
+        </div>
       </div>
 
       {/* ===== Health Glance ===== */}
-      <div className="relative mb-4 overflow-hidden rounded-[22px] border border-white/70 bg-white/75 p-4 shadow-[0_14px_34px_rgba(16,80,75,0.10)] backdrop-blur-xl">
+      <div className="petpal-soft-card relative mb-4 overflow-hidden rounded-[24px] p-4">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-teal-400 via-sea-400 to-sage-400" />
         <div className="flex items-center justify-between mb-3">
           <h3 className="flex items-center gap-2 text-[15px] font-semibold text-ink">
