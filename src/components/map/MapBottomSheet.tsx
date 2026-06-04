@@ -12,7 +12,7 @@ import {
   Home,
   Search,
 } from 'lucide-react';
-import { Badge, IconBadge, SegmentedControl } from '@/components/ui';
+import { Badge, IconBadge } from '@/components/ui';
 
 /* ------------------------------------------------------------------ */
 /*  Shared Place interface (mirrors /api/places response)              */
@@ -110,8 +110,8 @@ function mockDistance(placeId: number): string {
 /* ------------------------------------------------------------------ */
 function SkeletonRow() {
   return (
-    <div className="flex items-start gap-3 px-4 py-3 border-b border-border-light animate-pulse">
-      <div className="w-10 h-10 rounded-[9px] bg-surface-alt shrink-0" />
+    <div className="flex items-start gap-3 px-3.5 py-3 border-b border-border-light animate-pulse">
+      <div className="w-[36px] h-[36px] rounded-[9px] bg-surface-alt shrink-0" />
       <div className="flex-1 min-w-0 space-y-2">
         <div className="h-4 bg-surface-alt rounded w-3/5" />
         <div className="flex gap-1.5">
@@ -144,39 +144,29 @@ export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheet
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-30 max-w-mobile mx-auto
-        bg-surface-white rounded-t-[18px]
-        shadow-[0_-8px_32px_rgba(0,0,0,0.08)]
+        rounded-t-[30px] border-x border-t border-white/70 bg-white/80 backdrop-blur-2xl
+        shadow-[0_-24px_56px_rgba(16,80,75,0.18)]
         animate-slide-up"
     >
-      {/* Drag handle */}
+      {/* Drag handle — thinner, softer */}
       <div className="flex justify-center">
-        <div className="w-10 h-1 bg-border rounded-full my-2.5" />
+        <div className="my-2 w-8 h-[3px] rounded-full bg-border/60" />
       </div>
 
       {/* Header row */}
-      <div className="flex items-center justify-between px-4 pb-2">
+      <div className="flex items-center justify-between px-4 pb-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-[15px] font-semibold text-ink">附近地点</h2>
+          <h2 className="text-[14px] font-semibold text-ink">附近地点</h2>
           {!loading && (
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5
-              text-[11px] font-medium text-ink-faded bg-surface-alt rounded-full">
+            <span className="inline-flex items-center justify-center text-[11px] text-ink-faded bg-surface-alt px-2 py-0.5 rounded-full">
               {places.length}
             </span>
           )}
         </div>
-        {/* SegmentedControl mini stays — cosmetic toggle does not affect layout */}
-        <SegmentedControl
-          options={[
-            { key: 'list', label: '列表' },
-            { key: 'map', label: '地图' },
-          ]}
-          activeKey="list"
-          onChange={() => {}}
-        />
       </div>
 
       {/* Scrollable place cards */}
-      <div className="max-h-[45vh] overflow-y-auto">
+      <div className="max-h-[42vh] overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+92px)]">
         {loading ? (
           /* ---------- loading skeleton ---------- */
           <>
@@ -188,13 +178,10 @@ export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheet
           </>
         ) : places.length === 0 ? (
           /* ---------- empty ---------- */
-          <div className="text-center py-12 px-4">
-            <Search className="w-10 h-10 text-ink-faded/30 mx-auto mb-3" />
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <Search className="w-6 h-6 text-teal-500/30 mb-3" />
             <p className="text-[14px] text-ink-faded font-medium">
               该区域暂无宠物友好地点
-            </p>
-            <p className="text-[12px] text-ink-faded/60 mt-1">
-              换个城市或类型，也许会发现新的宠物友好空间
             </p>
           </div>
         ) : (
@@ -206,26 +193,28 @@ export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheet
               <button
                 key={place.id}
                 onClick={() => onPlaceClick(place.id)}
-                className={`w-full text-left flex items-start gap-3 px-4 py-3
-                  ${isLast ? '' : 'border-b border-border-light'}
-                  active:bg-surface-alt/50 transition-colors duration-100
-                  cursor-pointer border-0 bg-transparent`}
+                className={`w-full flex items-start gap-3 px-3.5 py-3 text-left
+                  border-b border-border-light active:bg-surface-alt transition-colors
+                  ${isLast ? 'border-0' : ''}`}
                 aria-label={`查看 ${place.name} 详情`}
               >
-                {/* Left: type circle icon */}
+                {/* Left: IconBadge 36px */}
                 <IconBadge
                   icon={TYPE_ICON_MAP[place.type] || <MapPin className="w-4 h-4" />}
                   variant={TYPE_VARIANT_MAP[place.type] || 'teal'}
                   size="md"
+                  className="shrink-0 !w-[36px] !h-[36px]"
                 />
 
-                {/* Center: name, tags, address */}
+                {/* Center column */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-[15px] font-medium text-ink truncate">{place.name}</p>
+                  <p className="text-[14px] font-medium text-ink truncate">
+                    {place.name}
+                  </p>
 
                   {tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {tags.slice(0, 3).map((tag, i) => (
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {tags.slice(0, 2).map((tag, i) => (
                         <Badge key={i} variant={tag.variant} size="sm">
                           {tag.label}
                         </Badge>
@@ -233,13 +222,13 @@ export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheet
                     </div>
                   )}
 
-                  <p className="text-[12px] text-ink-faded truncate mt-1.5">
+                  <p className="mt-1 text-[12px] text-ink-faded truncate max-w-[200px]">
                     {place.address}
                   </p>
                 </div>
 
-                {/* Right: distance + open badge + star rating */}
-                <div className="shrink-0 text-right flex flex-col items-end gap-0.5">
+                {/* Right column */}
+                <div className="shrink-0 flex flex-col items-end gap-1">
                   <span className="text-[12px] text-ink-faded">
                     {mockDistance(place.id)}
                   </span>

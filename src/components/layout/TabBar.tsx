@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PawPrint, MapPin, Map, Stethoscope, CircleUser } from 'lucide-react';
+import { PawPrint, MapPinned, Map, Stethoscope, CircleUserRound } from 'lucide-react';
 
 const tabs = [
   { key: '/', label: '首页', icon: PawPrint },
-  { key: '/nearby', label: '附近', icon: MapPin },
+  { key: '/nearby', label: '附近', icon: MapPinned },
   { key: '/map', label: '地图', icon: Map },
   { key: '/health', label: '健康', icon: Stethoscope },
-  { key: '/me', label: '我的', icon: CircleUser },
+  { key: '/me', label: '我的', icon: CircleUserRound },
 ];
 
 export function TabBar() {
@@ -21,24 +21,28 @@ export function TabBar() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-white/95 backdrop-blur-sm border-t border-border-light
-      shadow-[0_-1px_4px_rgba(0,0,0,0.03)] pb-[env(safe-area-inset-bottom)]">
-      <div className="max-w-mobile mx-auto flex">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-white/95 backdrop-blur-sm border-t border-border-light pb-[calc(4px+env(safe-area-inset-bottom))]">
+      <div className="max-w-mobile mx-auto flex items-center justify-around">
         {tabs.map(({ key, label, icon: Icon }) => {
           const isActive = key === '/' ? pathname === '/' : pathname.startsWith(key);
           return (
             <Link
               key={key}
               href={key}
-              className={`flex-1 flex flex-col items-center py-1.5 transition-colors duration-200
-                ${isActive ? 'text-teal-500' : 'text-ink-faded/70'}`}
+              className={`relative flex flex-col items-center gap-[3px] py-[6px] min-w-[56px] transition-all duration-200
+                ${isActive ? 'text-teal-500' : 'text-ink-faded/60 hover:text-ink-muted'}`}
             >
-              <Icon
-                className="w-[22px] h-[22px]"
-                strokeWidth={isActive ? 2 : 1.5}
-              />
+              <span className="relative flex items-center justify-center">
+                <Icon
+                  className={`w-[20px] h-[20px] transition-all duration-200 ${isActive ? 'drop-shadow-[0_0_4px_rgba(29,138,128,0.2)]' : ''}`}
+                  strokeWidth={isActive ? 2 : 1.5}
+                />
+                {isActive && (
+                  <span className="absolute -top-[2px] -right-[3px] w-[3px] h-[3px] rounded-full bg-teal-500" />
+                )}
+              </span>
               <span
-                className={`text-[10px] mt-[2px] ${
+                className={`text-[10px] leading-none ${
                   isActive ? 'font-medium' : ''
                 }`}
               >

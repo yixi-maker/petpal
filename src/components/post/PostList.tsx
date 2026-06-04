@@ -27,16 +27,18 @@ interface Post {
   author: PostAuthor;
   images: PostImage[];
   _count: { likes: number; comments: number };
+  likedByCurrentPet?: boolean;
 }
 
 interface PostListProps {
   posts: Post[];
   loading?: boolean;
   currentPetId?: number;
+  likedPostIds?: number[];
   onLike?: (postId: number) => void;
 }
 
-export function PostList({ posts, loading, currentPetId, onLike }: PostListProps) {
+export function PostList({ posts, loading, currentPetId, likedPostIds = [], onLike }: PostListProps) {
   if (loading) {
     return (
       <div className="space-y-3">
@@ -85,6 +87,7 @@ export function PostList({ posts, loading, currentPetId, onLike }: PostListProps
           key={post.id}
           post={post}
           currentPetId={currentPetId}
+          liked={post.likedByCurrentPet || likedPostIds.includes(post.id)}
           onLike={onLike}
         />
       ))}

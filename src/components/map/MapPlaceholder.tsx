@@ -1,116 +1,201 @@
 export function MapPlaceholder() {
   return (
-    <div className="w-full h-full relative overflow-hidden">
-      {/* SVG map background */}
+    <div className="relative h-full w-full overflow-hidden bg-[#EBE6DD]">
+      {/* ---------- SVG map illustration ---------- */}
       <svg
-        viewBox="0 0 400 300"
-        className="w-full h-full"
+        viewBox="0 0 400 320"
+        className="h-full w-full"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Background */}
-        <rect width="400" height="300" fill="#F5F0E8" />
+        <defs>
+          {/* Pulsing ring animation for current location */}
+          <radialGradient id="pulseGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#1D8A80" stopOpacity="0.35" />
+            <stop offset="45%" stopColor="#1D8A80" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#1D8A80" stopOpacity="0" />
+          </radialGradient>
+        </defs>
 
-        {/* Roads - curved paths */}
+        {/* Base fill — warm beige map background */}
+        <rect width="400" height="320" fill="#EBE6DD" />
+
+        {/* ---------- Water areas (soft map blue #C5D4DD) ---------- */}
         <path
-          d="M 0 120 Q 100 130 200 80 T 400 60"
-          fill="none"
-          stroke="#E0D8CC"
-          strokeWidth="14"
-          strokeLinecap="round"
+          d="M -5 72 Q 54 58 112 76 Q 164 92 210 68 Q 262 42 326 64 Q 370 78 405 62 L 405 130 Q 352 148 288 138 Q 210 126 148 142 Q 88 156 24 138 L -5 126 Z"
+          fill="#C5D4DD"
+          opacity="0.85"
         />
         <path
-          d="M 50 0 Q 60 80 30 160 T 80 300"
-          fill="none"
-          stroke="#E0D8CC"
-          strokeWidth="10"
-          strokeLinecap="round"
+          d="M 268 228 Q 302 216 340 232 Q 378 246 405 234 L 405 280 L 268 286 Z"
+          fill="#C5D4DD"
+          opacity="0.7"
+        />
+
+        {/* ---------- Parks (sage-tinted green #C5DCC5) ---------- */}
+        <path
+          d="M 52 176 Q 88 148 132 166 Q 166 182 158 214 Q 148 244 102 238 Q 56 232 44 204 Q 38 190 52 176 Z"
+          fill="#C5DCC5"
+          opacity="0.88"
         />
         <path
-          d="M 200 0 Q 180 100 250 180 T 300 300"
+          d="M 244 158 Q 284 138 330 158 Q 365 174 354 212 Q 338 246 294 238 Q 252 230 238 198 Q 230 174 244 158 Z"
+          fill="#C5DCC5"
+          opacity="0.82"
+        />
+        <path
+          d="M 122 264 Q 156 246 194 260 Q 224 272 216 300 Q 200 322 164 314 Q 128 306 118 284 Q 112 274 122 264 Z"
+          fill="#C5DCC5"
+          opacity="0.78"
+        />
+
+        {/* ---------- Roads (darker beige #D5CFC5) ---------- */}
+        {/* Horizontal road */}
+        <path
+          d="M -5 198 Q 72 210 148 192 Q 226 174 308 190 Q 364 200 405 194"
           fill="none"
-          stroke="#E0D8CC"
+          stroke="#D5CFC5"
           strokeWidth="12"
           strokeLinecap="round"
         />
         <path
-          d="M 350 0 Q 320 90 360 180 T 340 300"
+          d="M -5 198 Q 72 210 148 192 Q 226 174 308 190 Q 364 200 405 194"
           fill="none"
-          stroke="#E0D8CC"
+          stroke="#C5BEB5"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray="12 10"
+          opacity="0.5"
+        />
+
+        {/* Vertical road 1 */}
+        <path
+          d="M 148 192 Q 158 240 144 290 Q 138 312 132 325"
+          fill="none"
+          stroke="#D5CFC5"
+          strokeWidth="12"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 148 192 Q 158 240 144 290 Q 138 312 132 325"
+          fill="none"
+          stroke="#C5BEB5"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray="12 10"
+          opacity="0.5"
+        />
+
+        {/* Road curve 1 */}
+        <path
+          d="M 308 190 Q 302 234 316 270 Q 324 294 340 312"
+          fill="none"
+          stroke="#D5CFC5"
+          strokeWidth="10"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 308 190 Q 302 234 316 270 Q 324 294 340 312"
+          fill="none"
+          stroke="#C5BEB5"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeDasharray="8 8"
+          opacity="0.45"
+        />
+
+        {/* Road curve 2 */}
+        <path
+          d="M 72 198 Q 64 162 74 124 Q 82 94 98 68"
+          fill="none"
+          stroke="#D5CFC5"
+          strokeWidth="9"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 72 198 Q 64 162 74 124 Q 82 94 98 68"
+          fill="none"
+          stroke="#C5BEB5"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeDasharray="8 8"
+          opacity="0.45"
+        />
+
+        {/* Road curve 3 — diagonal */}
+        <path
+          d="M 98 68 Q 158 44 226 58 Q 284 70 308 82"
+          fill="none"
+          stroke="#D5CFC5"
           strokeWidth="8"
           strokeLinecap="round"
         />
-
-        {/* Parks - green polygon blobs */}
         <path
-          d="M 80 200 Q 100 180 130 195 Q 150 210 130 225 Q 100 235 80 220 Z"
-          fill="#D4E5D4"
-          opacity="0.9"
-        />
-        <path
-          d="M 300 50 Q 330 30 360 55 Q 380 80 340 90 Q 310 85 300 65 Z"
-          fill="#D4E5D4"
-          opacity="0.9"
-        />
-        <path
-          d="M 250 250 Q 280 230 310 255 Q 320 280 290 285 Q 260 280 250 260 Z"
-          fill="#D4E5D4"
-          opacity="0.85"
-        />
-
-        {/* Water - blue polygon blobs */}
-        <path
-          d="M 20 260 Q 40 240 70 250 Q 90 270 70 285 Q 40 295 20 280 Z"
-          fill="#D0DEE8"
-          opacity="0.85"
-        />
-        <path
-          d="M 330 170 Q 360 150 390 165 Q 400 190 370 195 Q 340 195 330 180 Z"
-          fill="#D0DEE8"
-          opacity="0.8"
-        />
-
-        {/* Radial gradient circle - current location area */}
-        <defs>
-          <radialGradient id="pulseGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#14b8a6" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="200" cy="150" r="50" fill="url(#pulseGrad)" />
-
-        {/* Place markers - colored circles */}
-        <circle cx="170" cy="110" r="6" fill="#14b8a6" opacity="0.9" />
-        <circle cx="260" cy="80" r="6" fill="#14b8a6" opacity="0.9" />
-        <circle cx="120" cy="180" r="6" fill="#14b8a6" opacity="0.9" />
-        <circle cx="310" cy="200" r="6" fill="#14b8a6" opacity="0.9" />
-
-        {/* Current location - teal dot with pulse ring */}
-        <circle cx="200" cy="150" r="5" fill="#14b8a6" />
-        <circle
-          cx="200"
-          cy="150"
-          r="10"
+          d="M 98 68 Q 158 44 226 58 Q 284 70 308 82"
           fill="none"
-          stroke="#14b8a6"
-          strokeWidth="2"
-          opacity="0.5"
-        />
-        <circle
-          cx="200"
-          cy="150"
-          r="16"
-          fill="none"
-          stroke="#14b8a6"
+          stroke="#C5BEB5"
           strokeWidth="1.5"
-          opacity="0.25"
+          strokeLinecap="round"
+          strokeDasharray="6 8"
+          opacity="0.4"
         />
+
+        {/* ---------- Current location with pulsing ring ---------- */}
+        {/* Outer pulsing ring */}
+        <circle cx="214" cy="138" r="40" fill="url(#pulseGrad)">
+          <animate
+            attributeName="r"
+            values="40;60;40"
+            dur="2.5s"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="opacity"
+            values="1;0;1"
+            dur="2.5s"
+            repeatCount="indefinite"
+          />
+        </circle>
+        {/* Inner ring */}
+        <circle
+          cx="214"
+          cy="138"
+          r="14"
+          fill="none"
+          stroke="#1D8A80"
+          strokeWidth="1.5"
+          opacity="0.3"
+        />
+        {/* Teal dot */}
+        <circle cx="214" cy="138" r="5" fill="#1D8A80" />
+        {/* White border ring */}
+        <circle
+          cx="214"
+          cy="138"
+          r="9"
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth="2"
+        />
+
+        {/* ---------- Place markers (teal-500 8px with white center) ---------- */}
+        {[
+          { x: 62, y: 108 },
+          { x: 288, y: 88 },
+          { x: 346, y: 242 },
+          { x: 166, y: 272 },
+        ].map((pin, index) => (
+          <g key={index}>
+            <circle cx={pin.x} cy={pin.y} r="4" fill="#1D8A80" />
+            <circle cx={pin.x} cy={pin.y} r="1.5" fill="#FFFFFF" />
+          </g>
+        ))}
       </svg>
 
-      {/* Overlay text bar at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 bg-surface-white/70 backdrop-blur-sm py-2 text-center">
-        <p className="text-[11px] text-ink-faded/60">
-          接入高德地图后显示完整地图 · 当前数据仅供参考
+      {/* ---------- Overlay text at bottom ---------- */}
+      <div className="absolute bottom-0 left-0 right-0 bg-surface-white/70 py-1.5 text-center rounded-t-[8px]">
+        <p className="text-[11px] text-ink-faded/50">
+          接入高德地图后显示完整地图
         </p>
       </div>
     </div>

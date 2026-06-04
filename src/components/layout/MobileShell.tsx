@@ -33,7 +33,7 @@ export function MobileShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="max-w-mobile mx-auto min-h-screen bg-surface relative">
+    <div className="max-w-mobile mx-auto min-h-screen bg-surface relative overflow-x-hidden shadow-[0_0_48px_rgba(16,80,75,0.10)]">
       <main className="pb-16">{children}</main>
       <TabBar />
     </div>

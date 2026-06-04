@@ -3,10 +3,12 @@ import { getSession } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const { searchParams } = new URL(req.url);
+  const currentPetId = Number(searchParams.get('currentPetId') || 0);
   const post = await prisma.post.findUnique({
     where: { id: Number(id) },
     include: {
@@ -22,7 +24,19 @@ export async function GET(
     return NextResponse.json({ error: '动态不存在' }, { status: 404 });
   }
 
-  return NextResponse.json({ post });
+  const likedByCurrentPet = currentPetId
+    ? !!(await prisma.like.findUnique({
+        where: {
+          postId_petId: {
+            postId: post.id,
+            petId: currentPetId,
+          },
+        },
+        select: { id: true },
+      }))
+    : false;
+
+  return NextResponse.json({ post: { ...post, likedByCurrentPet } });
 }
 
 export async function DELETE(

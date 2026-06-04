@@ -36,6 +36,7 @@ interface Post {
   author: PostAuthor;
   images: PostImage[];
   _count: { likes: number; comments: number };
+  likedByCurrentPet?: boolean;
 }
 
 interface StoryPet {
@@ -63,11 +64,13 @@ const MOCK_RECOMMENDED: StoryPet[] = [
 export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
   const { currentPet, pets, loading: petLoading, switchPet } = usePet();
+  const currentPetId = currentPet?.id;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('RECOMMENDED');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
+  const [showFab, setShowFab] = useState(true);
 
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -111,7 +114,11 @@ export default function HomePage() {
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/posts?feedType=${activeTab}`);
+      const params = new URLSearchParams({ feedType: activeTab });
+      if (currentPetId) {
+        params.set('currentPetId', String(currentPetId));
+      }
+      const res = await fetch(`/api/posts?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setPosts(data.posts || []);
@@ -121,13 +128,23 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab]);
+  }, [activeTab, currentPetId]);
 
   useEffect(() => {
     if (user) {
       fetchPosts();
     }
   }, [user, fetchPosts]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowFab(window.scrollY < 520);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Fetch friend stories for StoryRail
   useEffect(() => {
@@ -154,7 +171,13 @@ export default function HomePage() {
         const data = await res.json();
         setPosts((prev) =>
           prev.map((p) =>
-            p.id === postId ? { ...p, _count: { ...p._count, likes: data.likeCount } } : p
+            p.id === postId
+              ? {
+                  ...p,
+                  likedByCurrentPet: data.liked,
+                  _count: { ...p._count, likes: data.likeCount },
+                }
+              : p
           )
         );
       }
@@ -228,6 +251,9 @@ export default function HomePage() {
               posts={visiblePosts}
               loading={loading}
               currentPetId={currentPet?.id}
+              likedPostIds={posts
+                .filter((post) => post.likedByCurrentPet)
+                .map((post) => post.id)}
               onLike={handleLike}
             />
 
@@ -252,12 +278,13 @@ export default function HomePage() {
         type="button"
         onClick={() => setShowPostForm(true)}
         aria-label="发布动态"
-        className="fixed bottom-20 right-4 w-[52px] h-[52px] bg-teal-500 text-white rounded-full
+        className={`fixed bottom-24 right-5 w-[46px] h-[46px] bg-teal-500 text-white rounded-full
           shadow-lg hover:shadow-xl
           flex items-center justify-center
-          hover:bg-teal-600 active:bg-teal-600 transition-all z-20"
+          hover:bg-teal-600 active:bg-teal-600 transition-all duration-200 z-20
+          ${showFab ? 'opacity-100 scale-100' : 'pointer-events-none opacity-0 scale-90'}`}
       >
-        <Plus className="w-[22px] h-[22px]" />
+        <Plus className="w-5 h-5" />
       </button>
 
       {/* ===== Post Form Modal ===== */}

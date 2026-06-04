@@ -334,7 +334,7 @@ export default function HealthPage() {
   // ================================================================
 
   return (
-    <div className="max-w-mobile mx-auto px-4 pb-24 pt-4">
+    <div className="max-w-mobile mx-auto px-4 pb-28 pt-5">
       {/* ===== 1. HealthConcierge — always visible ===== */}
       <HealthConcierge
         currentPet={currentPet}
@@ -371,8 +371,8 @@ export default function HealthPage() {
           {pets.length > 1 && (
             <div className="mt-4 mb-4">
               <select
-                className="w-full px-4 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                  focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+                className="w-full max-w-full px-4 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink truncate
+                  focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
                 value={currentPet.id}
                 onChange={(e) => switchPet(Number(e.target.value))}
               >
@@ -404,11 +404,13 @@ export default function HealthPage() {
               <div className="space-y-4">
                 {/* Health Summary Header — stat pills: weight, neutered, reminder */}
                 {profile ? (
-                  <div className="bg-gradient-to-br from-sage-50/30 to-teal-50/20 rounded-[14px] p-4">
+                  <div className="overflow-hidden rounded-[24px] border border-white/70 bg-white/75 p-4 shadow-[0_16px_36px_rgba(16,80,75,0.10)] backdrop-blur-xl">
                     <div className="flex items-center gap-3 mb-4">
-                      <Avatar src={currentPet.avatar} petType={petType} size="lg" />
+                      <div className="rounded-[18px] bg-gradient-to-br from-teal-50 to-sea-50 p-1.5">
+                        <Avatar src={currentPet.avatar} petType={petType} size="lg" />
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-[16px] font-semibold text-ink">{currentPet.name}</h2>
+                        <h2 className="text-[16px] font-semibold text-ink truncate">{currentPet.name}</h2>
                         <p className="text-[13px] text-ink-muted truncate">
                           {petType === 'DOG' ? '狗狗' : petType === 'CAT' ? '猫咪' : '宠物'}
                           {currentPet.breed ? ` · ${currentPet.breed}` : ''}
@@ -416,31 +418,31 @@ export default function HealthPage() {
                       </div>
                       <button
                         onClick={openEditModal}
-                        className="text-[13px] text-teal-500 hover:text-teal-600 font-medium flex-shrink-0 transition-colors"
+                        className="flex-shrink-0 rounded-full bg-teal-50 px-3 py-1.5 text-[13px] font-medium text-teal-600 transition-colors hover:bg-teal-100"
                       >
                         编辑档案
                       </button>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-surface-white rounded-[10px] px-3 py-2 shadow-sm text-center border border-border-light">
+                      <div className="rounded-[18px] border border-white/70 bg-[linear-gradient(145deg,rgba(29,138,128,0.08),rgba(255,255,255,0.86))] px-3 py-3 text-center shadow-sm min-w-0">
                         <p className="text-[11px] text-ink-faded">体重</p>
-                        <p className="text-[14px] font-semibold text-ink">
+                        <p className="text-[14px] font-semibold text-ink truncate">
                           {profile.weight ? `${profile.weight} kg` : '--'}
                         </p>
                       </div>
-                      <div className="bg-surface-white rounded-[10px] px-3 py-2 shadow-sm text-center border border-border-light">
+                      <div className="rounded-[18px] border border-white/70 bg-[linear-gradient(145deg,rgba(122,174,198,0.10),rgba(255,255,255,0.86))] px-3 py-3 text-center shadow-sm min-w-0">
                         <p className="text-[11px] text-ink-faded">绝育</p>
                         <p
-                          className={`text-[14px] font-semibold ${profile.isNeutered !== null ? 'text-ink' : 'text-ink-faded'}`}
+                          className={`text-[14px] font-semibold truncate ${profile.isNeutered !== null ? 'text-ink' : 'text-ink-faded'}`}
                         >
                           {neuteredLabel}
                         </p>
                       </div>
-                      <div className="bg-surface-white rounded-[10px] px-3 py-2 shadow-sm text-center border border-border-light">
+                      <div className="rounded-[18px] border border-white/70 bg-[linear-gradient(145deg,rgba(106,168,110,0.10),rgba(255,255,255,0.86))] px-3 py-3 text-center shadow-sm min-w-0">
                         <p className="text-[11px] text-ink-faded">下次提醒</p>
                         <p
-                          className={`text-[14px] font-semibold ${profile.nextReminder ? 'text-ink' : 'text-ink-faded'}`}
+                          className={`text-[14px] font-semibold truncate ${profile.nextReminder ? 'text-ink' : 'text-ink-faded'}`}
                         >
                           {profile.nextReminder ? formatDate(profile.nextReminder) : '--'}
                         </p>
@@ -454,7 +456,7 @@ export default function HealthPage() {
                 ) : (
                   <button
                     onClick={openEditModal}
-                    className="w-full bg-gradient-to-br from-sage-50/30 to-teal-50/20 rounded-[14px] p-4 text-center
+                    className="w-full rounded-[24px] border border-white/70 bg-white/75 p-5 text-center shadow-[0_14px_34px_rgba(16,80,75,0.10)] backdrop-blur-xl
                       text-[14px] text-teal-500 hover:text-teal-600 font-medium transition-colors"
                   >
                     完善健康档案
@@ -467,7 +469,7 @@ export default function HealthPage() {
                     <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
                   </div>
                 ) : profile ? (
-                  <div className="bg-surface-white rounded-[12px] p-4 shadow-sm">
+                  <div className="rounded-[24px] border border-white/70 bg-white/80 p-4 shadow-[0_16px_36px_rgba(16,80,75,0.10)] backdrop-blur-xl">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-[15px] font-semibold text-ink">健康档案</h3>
                       <Button variant="outline" size="sm" onClick={openEditModal}>
@@ -553,15 +555,15 @@ export default function HealthPage() {
             {activeTab === 'ai' && (
               <div className="space-y-4">
                 {/* Warning banner — subtle */}
-                <div className="bg-amber-50/60 border border-amber-500/10 rounded-[8px] p-3 flex items-start gap-2.5">
+                <div className="flex items-start gap-2.5 rounded-[18px] border border-amber-500/10 bg-white/75 p-3 shadow-[0_10px_24px_rgba(232,149,45,0.08)] backdrop-blur-xl">
                   <AlertTriangle className="w-4 h-4 text-amber-500/70 flex-shrink-0 mt-[1px]" />
-                  <p className="text-[12px] text-ink-muted leading-relaxed">
+                  <p className="text-[12px] text-ink-muted leading-relaxed min-w-0">
                     AI 结果仅供初步分诊参考，不能替代执业兽医诊断。如宠物出现紧急症状，请立即前往宠物医院就诊。
                   </p>
                 </div>
 
                 {/* Triage form with step indicators */}
-                <div className="bg-surface-white rounded-[12px] border border-border p-4 shadow-sm">
+                <div className="rounded-[24px] border border-white/70 bg-white/80 p-4 shadow-[0_16px_36px_rgba(16,80,75,0.10)] backdrop-blur-xl">
                   <h3 className="text-[15px] font-semibold text-ink flex items-center gap-2 mb-4">
                     <Stethoscope className="w-5 h-5 text-teal-500" />
                     分诊表
@@ -569,9 +571,9 @@ export default function HealthPage() {
 
                   <div className="space-y-5">
                     {/* Step 1: 宠物信息 */}
-                    <div className="bg-surface-alt/50 rounded-[10px] p-4">
+                    <div className="rounded-[20px] border border-teal-100/70 bg-[linear-gradient(145deg,rgba(240,247,247,0.88),rgba(255,255,255,0.82))] p-4">
                       <div className="flex items-center gap-2.5 mb-3">
-                        <span className="w-6 h-6 rounded-full bg-teal-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-500 to-sea-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                           1
                         </span>
                         <span className="text-[14px] font-medium text-ink">宠物信息</span>
@@ -583,8 +585,8 @@ export default function HealthPage() {
                           就诊宠物 <span className="text-rose-500">*</span>
                         </label>
                         <select
-                          className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                            focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+                          className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink truncate
+                            focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
                           value={triageForm.petId}
                           onChange={(e) => setTriageForm({ ...triageForm, petId: e.target.value })}
                         >
@@ -621,9 +623,9 @@ export default function HealthPage() {
                     </div>
 
                     {/* Step 2: 症状描述 */}
-                    <div className="bg-surface-alt/50 rounded-[10px] p-4">
+                    <div className="rounded-[20px] border border-sea-100/70 bg-[linear-gradient(145deg,rgba(242,246,248,0.9),rgba(255,255,255,0.84))] p-4">
                       <div className="flex items-center gap-2.5 mb-3">
-                        <span className="w-6 h-6 rounded-full bg-teal-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-500 to-sea-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                           2
                         </span>
                         <span className="text-[14px] font-medium text-ink">症状描述</span>
@@ -635,7 +637,7 @@ export default function HealthPage() {
                           症状描述 <span className="text-rose-500">*</span>
                         </label>
                         <textarea
-                          className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                          className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
                             placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400
                             min-h-[100px] resize-none transition"
                           placeholder="请详细描述宠物的症状，例如：猫咪从昨天开始呕吐、不吃东西、精神萎靡..."
@@ -646,13 +648,13 @@ export default function HealthPage() {
 
                       {/* c/d. Duration / Appetite / Drinking / Energy grid */}
                       <div className="grid grid-cols-2 gap-3 mb-3">
-                        <div>
+                        <div className="min-w-0">
                           <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
                             持续时间 <span className="text-rose-500">*</span>
                           </label>
                           <select
-                            className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+                            className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink truncate
+                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
                             value={triageForm.duration}
                             onChange={(e) => setTriageForm({ ...triageForm, duration: e.target.value })}
                           >
@@ -663,13 +665,13 @@ export default function HealthPage() {
                             ))}
                           </select>
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
                             食欲状况 <span className="text-rose-500">*</span>
                           </label>
                           <select
-                            className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+                            className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink truncate
+                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
                             value={triageForm.appetite}
                             onChange={(e) => setTriageForm({ ...triageForm, appetite: e.target.value })}
                           >
@@ -680,13 +682,13 @@ export default function HealthPage() {
                             ))}
                           </select>
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
                             饮水状况 <span className="text-rose-500">*</span>
                           </label>
                           <select
-                            className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+                            className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink truncate
+                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
                             value={triageForm.drinking}
                             onChange={(e) => setTriageForm({ ...triageForm, drinking: e.target.value })}
                           >
@@ -697,13 +699,13 @@ export default function HealthPage() {
                             ))}
                           </select>
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <label className="block text-[13px] font-medium text-ink-muted mb-1.5">
                             精神状态 <span className="text-rose-500">*</span>
                           </label>
                           <select
-                            className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+                            className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink truncate
+                              focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
                             value={triageForm.energy}
                             onChange={(e) => setTriageForm({ ...triageForm, energy: e.target.value })}
                           >
@@ -726,9 +728,9 @@ export default function HealthPage() {
                     </div>
 
                     {/* Step 3: 上传图片 */}
-                    <div className="bg-surface-alt/50 rounded-[10px] p-4">
+                    <div className="rounded-[20px] border border-sage-100/70 bg-[linear-gradient(145deg,rgba(244,247,244,0.9),rgba(255,255,255,0.84))] p-4">
                       <div className="flex items-center gap-2.5 mb-3">
-                        <span className="w-6 h-6 rounded-full bg-teal-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-500 to-sea-500 text-white text-[12px] font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                           3
                         </span>
                         <span className="text-[14px] font-medium text-ink">上传图片</span>
@@ -768,8 +770,8 @@ export default function HealthPage() {
                         )}
                         {triageForm.images.length < 3 && (
                           <label
-                            className="inline-flex items-center gap-2 px-4 py-2.5 border border-dashed border-border rounded-[8px]
-                              text-[14px] text-ink-faded cursor-pointer hover:border-teal-400 hover:text-teal-500 transition"
+                            className="inline-flex cursor-pointer items-center gap-2 rounded-[16px] border border-dashed border-teal-200 bg-white/70 px-4 py-2.5
+                              text-[14px] text-ink-faded transition hover:border-teal-400 hover:text-teal-500"
                           >
                             <Plus className="w-4 h-4" aria-label="添加" />
                             选择图片
@@ -795,7 +797,7 @@ export default function HealthPage() {
 
                     {/* Submit button */}
                     <Button
-                      className="w-full"
+                      className="w-full rounded-full bg-gradient-to-br from-teal-500 to-sea-500 shadow-[0_12px_28px_rgba(29,138,128,0.24)]"
                       size="lg"
                       loading={triageSubmitting}
                       disabled={!triageForm.petId || !triageForm.symptoms.trim()}
@@ -828,8 +830,8 @@ export default function HealthPage() {
           <div>
             <label className="block text-[13px] font-medium text-ink-muted mb-1.5">是否绝育</label>
             <select
-              className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+              className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
               value={editForm.isNeutered || ''}
               onChange={(e) => setEditForm({ ...editForm, isNeutered: e.target.value })}
             >
@@ -882,8 +884,8 @@ export default function HealthPage() {
           <div>
             <label className="block text-[13px] font-medium text-ink-muted mb-1.5">记录类型</label>
             <select
-              className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
-                focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition"
+              className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+                focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 transition appearance-none"
               value={addRecordForm.type}
               onChange={(e) => setAddRecordForm({ ...addRecordForm, type: e.target.value })}
             >
@@ -903,7 +905,7 @@ export default function HealthPage() {
           <div>
             <label className="block text-[13px] font-medium text-ink-muted mb-1.5">描述</label>
             <textarea
-              className="w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
+              className="w-full max-w-full px-3.5 py-2.5 text-[14px] border border-border rounded-[8px] bg-surface-white text-ink
                 placeholder:text-ink-faded/60 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400
                 min-h-[80px] resize-none transition"
               placeholder="记录详情..."
@@ -939,7 +941,7 @@ function SectionGroup({ title, children, last }: { title: string; children: Reac
 function ProfileField({ label, value }: { label: string; value: string }) {
   const isEmpty = value === '未记录' || value === '无' || !value;
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-[12px] text-ink-faded">{label}</p>
       <p className={`text-[14px] truncate ${isEmpty ? 'text-ink-faded italic' : 'text-ink'}`}>
         {isEmpty ? '未设置' : value}

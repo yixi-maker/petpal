@@ -30,6 +30,7 @@ interface Post {
   author: PostAuthor;
   images: PostImage[];
   _count: { likes: number; comments: number };
+  likedByCurrentPet?: boolean;
 }
 
 interface CommentAuthor {
@@ -68,6 +69,7 @@ export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { currentPet } = usePet();
+  const currentPetId = currentPet?.id;
   const postId = params.id as string;
 
   const [post, setPost] = useState<Post | null>(null);
@@ -78,7 +80,12 @@ export default function PostDetailPage() {
   const fetchPost = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/posts/${postId}`);
+      const params = new URLSearchParams();
+      if (currentPetId) {
+        params.set('currentPetId', String(currentPetId));
+      }
+      const query = params.toString();
+      const res = await fetch(`/api/posts/${postId}${query ? `?${query}` : ''}`);
       if (res.ok) {
         const data = await res.json();
         setPost(data.post);
@@ -90,7 +97,7 @@ export default function PostDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [postId]);
+  }, [postId, currentPetId]);
 
   const fetchComments = useCallback(async () => {
     setCommentsLoading(true);
@@ -124,7 +131,13 @@ export default function PostDetailPage() {
       if (res.ok) {
         const data = await res.json();
         setPost((prev) =>
-          prev ? { ...prev, _count: { ...prev._count, likes: data.likeCount } } : prev
+          prev
+            ? {
+                ...prev,
+                likedByCurrentPet: data.liked,
+                _count: { ...prev._count, likes: data.likeCount },
+              }
+            : prev
         );
       }
     } catch {
@@ -212,9 +225,13 @@ export default function PostDetailPage() {
 
       <div className="p-4">
         {/* Author info */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-border-light">
+        <div className="bg-white rounded-[12px] p-4 shadow-sm border border-border-light">
           <div className="flex items-center gap-3 mb-4">
-            <Avatar src={post.author.avatar} size="lg" />
+            <Avatar
+              src={post.author.avatar}
+              petType={post.author.type === 'DOG' || post.author.type === 'CAT' ? post.author.type : undefined}
+              size="lg"
+            />
             <div>
               <div className="text-base font-medium text-ink">{post.author.name}</div>
               <div className="text-sm text-ink-faded">
@@ -231,12 +248,12 @@ export default function PostDetailPage() {
           {/* Images */}
           {post.images && post.images.length > 0 && (
             <div className="grid gap-2 mb-4">
-              {post.images.map((img) => (
+                {post.images.map((img) => (
                 <img
                   key={img.id}
                   src={img.url}
                   alt=""
-                  className="w-full rounded-xl object-cover max-h-96"
+                  className="w-full rounded-[12px] object-cover aspect-[4/5]"
                 />
               ))}
             </div>
@@ -255,9 +272,13 @@ export default function PostDetailPage() {
             <button
               onClick={handleLike}
               disabled={!currentPet}
-              className="flex items-center gap-1.5 text-ink-muted hover:text-rose-500 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 text-ink-muted hover:text-amber-500 transition-colors disabled:opacity-50"
             >
-              <Heart className="w-5 h-5" />
+              <Heart
+                className={`w-5 h-5 ${
+                  post.likedByCurrentPet ? 'fill-amber-500 text-amber-500' : ''
+                }`}
+              />
               <span className="text-sm">{post._count.likes}</span>
             </button>
             <div className="flex items-center gap-1.5 text-ink-muted">

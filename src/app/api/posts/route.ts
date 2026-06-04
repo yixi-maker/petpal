@@ -6,6 +6,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const feedType = searchParams.get('feedType') || 'RECOMMENDED';
   const cursor = searchParams.get('cursor');
+  const currentPetId = Number(searchParams.get('currentPetId') || 0);
   const limit = 20;
 
   const where: Record<string, unknown> = { status: 'ACTIVE' };
@@ -71,8 +72,25 @@ export async function GET(req: Request) {
     result.sort((a, b) => b._count.likes - a._count.likes);
   }
 
+  const likedPostIds = currentPetId
+    ? new Set(
+        (
+          await prisma.like.findMany({
+            where: {
+              petId: currentPetId,
+              postId: { in: result.map((post) => post.id) },
+            },
+            select: { postId: true },
+          })
+        ).map((like) => like.postId)
+      )
+    : new Set<number>();
+
   return NextResponse.json({
-    posts: result,
+    posts: result.map((post) => ({
+      ...post,
+      likedByCurrentPet: likedPostIds.has(post.id),
+    })),
     nextCursor: hasMore ? String(result[result.length - 1].id) : null,
   });
 }

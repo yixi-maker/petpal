@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Avatar } from '@/components/ui';
+import { Plus } from 'lucide-react';
 
 interface StoryPet {
   id: number;
@@ -25,91 +26,80 @@ export function StoryRail({ currentPet, friends, recommended }: StoryRailProps) 
   const hasFriends = friends.length > 0;
 
   return (
-    <div className="px-4 pt-2 pb-3">
-      <h3 className="text-[13px] font-medium text-ink-muted mb-2">今天的故事</h3>
+    <div className="px-4 pb-4 pt-1">
+      <div className="mb-2 flex items-center justify-between">
+        <h3 className="text-[12px] text-ink-faded tracking-[0.02em] uppercase font-medium">
+          今天的故事
+        </h3>
+        <span className="text-[10px] text-ink-faded">轻轻打招呼</span>
+      </div>
 
-      <div className="flex gap-3 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden">
-        {/* Current pet story — highlighted ring */}
+      <div className="flex gap-2.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
         {currentPet && (
           <Link
             href={`/pets/${currentPet.id}`}
-            className="flex flex-col items-center flex-shrink-0 w-[62px] text-center"
+            className="flex w-[76px] flex-shrink-0 flex-col items-center rounded-[20px] border border-teal-100/80 bg-white/70 p-2.5 text-center shadow-[0_10px_24px_rgba(16,80,75,0.10)] backdrop-blur-xl"
           >
-            <div className="w-[52px] h-[52px] rounded-full p-[3px] bg-gradient-to-br from-teal-400 to-sea-500">
-              <div className="w-full h-full rounded-full overflow-hidden bg-surface-alt ring-[3px] ring-teal-500 ring-offset-2 ring-offset-surface">
-                <div className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-teal-50 to-sea-50">
-                  <Avatar
-                    src={currentPet.avatar}
-                    petType={petTypeFromString(currentPet.type)}
-                    size="md"
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
+            <div className="h-[56px] w-[56px] rounded-full bg-gradient-to-br from-teal-400 to-sea-500 p-[2px]">
+              <Avatar
+                src={currentPet.avatar}
+                petType={petTypeFromString(currentPet.type)}
+                size="lg"
+                className="h-full w-full border-[3px] border-white"
+              />
             </div>
-            <span className="text-[11px] text-teal-500 font-medium truncate mt-1 max-w-[56px]">
-              你
+            <span className="mt-1.5 truncate max-w-[56px] text-[10px] font-semibold text-teal-600">
+              你的主页
             </span>
           </Link>
         )}
 
-        {/* Friend stories */}
         {friends.map((friend) => (
           <Link
             key={friend.id}
             href={`/pets/${friend.id}`}
-            className="flex flex-col items-center flex-shrink-0 w-[62px] text-center"
+            className="flex w-[76px] flex-shrink-0 flex-col items-center rounded-[20px] border border-white/70 bg-white/60 p-2.5 text-center shadow-[0_8px_20px_rgba(16,80,75,0.08)] backdrop-blur-xl"
           >
-            <div className="w-[52px] h-[52px] rounded-full p-[3px] ring-[2.5px] ring-sea-500 ring-offset-1 ring-offset-surface">
-              <div className="w-full h-full rounded-full overflow-hidden bg-surface-alt">
-                <Avatar
-                  src={friend.avatar}
-                  petType={petTypeFromString(friend.type)}
-                  size="md"
-                  className="w-full h-full"
-                />
-              </div>
-            </div>
-            <span className="text-[10px] text-ink-muted truncate mt-1 max-w-[56px]">
+            <Avatar
+              src={friend.avatar}
+              petType={petTypeFromString(friend.type)}
+              size="lg"
+              className="h-[52px] w-[52px] ring-[2.5px] ring-sea-500"
+            />
+            <span className="mt-1.5 truncate max-w-[56px] text-[10px] text-ink-muted font-medium">
               {friend.name}
             </span>
           </Link>
         ))}
 
-        {/* Recommended stories */}
         {recommended.map((rec) => (
           <Link
             key={rec.id}
             href={`/pets/${rec.id}`}
-            className="flex flex-col items-center flex-shrink-0 w-[62px] text-center"
+            className="flex w-[76px] flex-shrink-0 flex-col items-center rounded-[20px] border border-white/60 bg-white/50 p-2.5 text-center backdrop-blur-xl"
           >
-            <div className="w-[52px] h-[52px] rounded-full p-[3px] ring-[2px] ring-ink-faded/30">
-              <div className="w-full h-full rounded-full overflow-hidden bg-surface-alt">
-                <Avatar
-                  src={rec.avatar}
-                  petType={petTypeFromString(rec.type)}
-                  size="md"
-                  className="w-full h-full"
-                />
-              </div>
-            </div>
-            <span className="text-[10px] text-ink-faded truncate mt-1 max-w-[56px]">
+            <Avatar
+              src={rec.avatar}
+              petType={petTypeFromString(rec.type)}
+              size="lg"
+              className="h-[52px] w-[52px] ring-[2.5px] ring-teal-200"
+            />
+            <span className="mt-1.5 truncate max-w-[56px] text-[10px] text-ink-faded">
               {rec.name}
             </span>
           </Link>
         ))}
 
-        {/* If no friends beyond current pet, show "find more" CTA */}
         {!hasFriends && currentPet && (
           <Link
             href="/nearby"
-            className="flex flex-col items-center flex-shrink-0 w-[62px] text-center"
+            className="flex w-[82px] flex-shrink-0 flex-col items-center justify-center rounded-[20px] border border-dashed border-teal-200 bg-white/50 p-2.5 text-center backdrop-blur-xl"
           >
-            <div className="w-[52px] h-[52px] rounded-full border-2 border-dashed border-ink-faded/30 flex items-center justify-center bg-surface-alt/50">
-              <span className="text-[20px] text-ink-faded/40">+</span>
+            <div className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full bg-teal-50 text-teal-500">
+              <Plus className="h-5 w-5" />
             </div>
-            <span className="text-[10px] text-teal-500 truncate mt-1 max-w-[62px]">
-              去看看推荐
+            <span className="mt-1.5 truncate max-w-[70px] text-[10px] font-medium text-teal-500">
+              + 发现更多
             </span>
           </Link>
         )}

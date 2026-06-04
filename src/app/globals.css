@@ -34,8 +34,8 @@
   --color-ink-faded: #979A9F;
 
   /* === Surfaces: Warm off-white === */
-  --color-surface: #F8F7F5;
-  --color-surface-alt: #F0EFEC;
+  --color-surface: #F4F8F7;
+  --color-surface-alt: #EAF1EF;
   --color-surface-white: #FFFFFF;
   --color-border: #E8E6E2;
   --color-border-light: #F0EEEA;
@@ -47,8 +47,8 @@
   --color-rose-500: #DC4A4A;
 
   /* === Gradients === */
-  --gradient-page: linear-gradient(180deg, #F5F9F8 0%, #F8F7F5 40%, #F3F4F0 100%);
-  --gradient-card-glow: radial-gradient(circle at 50% 0%, rgba(29,138,128,0.04) 0%, transparent 70%);
+  --gradient-page: linear-gradient(160deg, #EAF6F4 0%, #FAFBF8 34%, #EEF5F1 68%, #F5F2EA 100%);
+  --gradient-card-glow: radial-gradient(circle at 50% 0%, rgba(29,138,128,0.08) 0%, transparent 70%);
 
   /* === Shadows === */
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
@@ -59,6 +59,7 @@
   --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.05);
   --shadow-modal: 0 20px 60px rgba(0,0,0,0.10);
   --shadow-tab: 0 -1px 3px rgba(0,0,0,0.04);
+  --shadow-premium: 0 18px 48px rgba(16,80,75,0.14), 0 4px 14px rgba(28,29,32,0.06);
 
   /* === Border Radius === */
   --radius-sm: 6px;
@@ -81,7 +82,21 @@
   to { opacity: 1; }
 }
 
+@keyframes petpal-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes petpal-soft-pulse {
+  0%, 100% { opacity: 0.72; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
 @layer base {
+  html {
+    background: #EAF6F4;
+  }
+
   body {
     background: var(--gradient-page);
     background-attachment: fixed;

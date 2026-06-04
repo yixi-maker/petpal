@@ -6,6 +6,7 @@ import { FilterChip } from '@/components/ui';
 import { MapPlaceholder } from '@/components/map/MapPlaceholder';
 import { MapBottomSheet } from '@/components/map/MapBottomSheet';
 import type { Place } from '@/components/map/MapBottomSheet';
+import { LocateFixed, MapPin, Search } from 'lucide-react';
 
 const CITIES = [
   { key: '北京', label: '北京' },
@@ -59,7 +60,7 @@ export default function MapPage() {
   };
 
   return (
-    <div className="h-[100vh] relative overflow-hidden bg-surface">
+    <div className="relative h-[100dvh] overflow-hidden bg-surface">
       {/* ---- Full-screen map placeholder ---- */}
       <div className="absolute inset-0">
         <MapPlaceholder />
@@ -67,12 +68,29 @@ export default function MapPage() {
 
       {/* ---- Top overlay: transparent gradient + filter chips ---- */}
       <div
-        className="absolute top-0 left-0 right-0 z-20
-          bg-gradient-to-b from-surface/90 to-transparent
-          pt-12 pb-4 px-4 max-w-mobile mx-auto"
+        className="absolute left-0 right-0 top-0 z-20 mx-auto max-w-mobile
+          bg-gradient-to-b from-[#EAF6F4]/95 via-[#EAF6F4]/72 to-transparent
+          px-4 pb-5 pt-12"
       >
-        {/* Row 1: City FilterChips */}
-        <div className="flex gap-2 mb-2 overflow-x-auto">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="mb-1 flex items-center gap-1.5 text-[12px] font-medium text-teal-600">
+              <MapPin className="h-3.5 w-3.5" />
+              宠物友好地图
+            </p>
+            <h1 className="text-[27px] font-semibold leading-tight text-ink">附近友好空间</h1>
+            <p className="mt-1 text-[12px] text-ink-faded">仅展示模糊定位，保护主人与宠物隐私</p>
+          </div>
+          <button
+            type="button"
+            className="flex h-[44px] w-[44px] flex-shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/75 text-teal-600 shadow-[0_10px_24px_rgba(16,80,75,0.14)] backdrop-blur-xl"
+            aria-label="定位到附近"
+          >
+            <LocateFixed className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
           {CITIES.map((city) => (
             <FilterChip
               key={city.key}
@@ -83,8 +101,10 @@ export default function MapPage() {
           ))}
         </div>
 
-        {/* Row 2: Type FilterChips (scrollable) */}
         <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/70 text-ink-faded shadow-[0_4px_14px_rgba(16,80,75,0.08)] backdrop-blur-xl">
+            <Search className="h-4 w-4" />
+          </div>
           {TYPE_FILTERS.map((t) => (
             <FilterChip
               key={t.key}
