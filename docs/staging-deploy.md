@@ -276,10 +276,10 @@ GRANT ALL PRIVILEGES ON DATABASE petpal_staging TO petpal_user;
 DATABASE_URL="postgresql://petpal_user:password@localhost:5432/petpal_staging?schema=public"
 
 # 执行迁移（不生成新的迁移文件，仅应用已有迁移）
-npx prisma migrate deploy
+npx prisma migrate deploy --config=prisma.config.postgres.ts
 
 # 生成 Prisma Client
-npx prisma generate
+npx prisma generate --config=prisma.config.postgres.ts
 ```
 
 **步骤 4：验证**
@@ -307,7 +307,7 @@ psql "$DATABASE_URL" < dev-dump.sql
 | 命令 | 用途 | 环境 |
 |------|------|------|
 | `npx prisma migrate dev` | 生成并应用迁移（开发迭代） | 仅开发 |
-| `npx prisma migrate deploy` | 应用已有迁移（不生成新文件） | Staging/生产 |
+| `npx prisma migrate deploy --config=prisma.config.postgres.ts` | 应用已有迁移（不生成新文件） | Staging/生产 |
 | `npx prisma generate` | 重新生成 Prisma Client | 所有环境 |
 | `npx prisma db push` | 直接同步 schema 到数据库（无迁移文件） | 原型/临时环境 |
 | `npx prisma studio` | 打开数据库管理 UI | 开发 |
@@ -395,7 +395,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production=false
 COPY . .
-RUN npx prisma generate
+RUN npx prisma generate --config=prisma.config.postgres.ts
 RUN npm run build
 
 FROM node:22-alpine AS runner
@@ -422,7 +422,7 @@ docker run -d \
   petpal-staging:latest
 
 # 运行数据库迁移（在容器内）
-docker exec petpal-staging npx prisma migrate deploy
+docker exec petpal-staging npx prisma migrate deploy --config=prisma.config.postgres.ts
 ```
 
 > 注意：需要 `next.config.ts` 中配置 `output: 'standalone'` 才能使用 Docker standalone 模式。
@@ -639,7 +639,7 @@ WHERE state = 'active' AND now() - pg_stat_activity.query_start > interval '5 se
 ## 9. 部署检查清单
 
 - [ ] PostgreSQL 数据库已创建并可通过 `DATABASE_URL` 访问
-- [ ] `npx prisma migrate deploy` 已成功执行
+- [ ] `npx prisma migrate deploy --config=prisma.config.postgres.ts` 已成功执行
 - [ ] `npx prisma generate` 已成功执行
 - [ ] `SESSION_SECRET` 和 `ADMIN_SESSION_SECRET` 已设置为 32 位以上随机字符串
 - [ ] `ADMIN_USERNAME` 和 `ADMIN_PASSWORD_HASH` 已设置
