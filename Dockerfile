@@ -7,6 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Generate Prisma clients for both SQLite (dev) and PostgreSQL (staging/prod)
+COPY prisma.config.postgres.ts ./
 COPY prisma/ ./prisma/
 RUN npx prisma generate
 RUN npx prisma generate --config=prisma.config.postgres.ts
@@ -35,6 +36,7 @@ RUN npm ci --production
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.postgres.ts ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
