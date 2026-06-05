@@ -30,7 +30,7 @@ ADMIN_SESSION_SECRET=$(openssl rand -base64 64)
 ADMIN_PASSWORD="your-secure-password"
 
 # 4. Generate the password hash for the server
-ADMIN_PASSWORD_HASH=$(node -e "const b=require('bcryptjs');b.hash(process.env.ADMIN_PASSWORD,10).then(h=>console.log(h))")
+ADMIN_PASSWORD_HASH=$(ADMIN_PASSWORD="$ADMIN_PASSWORD" node -e "const b=require('bcryptjs');b.hash(process.env.ADMIN_PASSWORD,10).then(h=>console.log(h))")
 
 # 5. Create .env.staging (hash only — never write plaintext password)
 cat > .env.staging << ENVEOF

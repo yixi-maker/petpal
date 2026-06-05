@@ -164,14 +164,14 @@ else
 
   if [ -n "$POST_IDS" ]; then
     echo "Hiding smoke test posts ..."
-    while read -r id; do <<< "$POST_IDS"
+    while read -r id; do
       if [ -z "$id" ]; then continue; fi
       if hide_post "$id" "(id ${id})"; then
         HIDDEN=$((HIDDEN + 1))
       else
         FAILED=$((FAILED + 1))
       fi
-    done
+    done <<< "$POST_IDS"
   fi
 fi
 
