@@ -1,0 +1,317 @@
+// ============================================================
+// PostgreSQL Schema — for staging & production deployment
+//
+// Usage:
+//   1. Set DATABASE_URL to your PostgreSQL connection string
+//   2. Run: npx prisma migrate deploy --schema=prisma/schema.postgres.prisma
+//   3. Run: npx prisma generate --schema=prisma/schema.postgres.prisma
+//
+// Development continues to use: prisma/schema.prisma (SQLite)
+// ============================================================
+//
+// Verified PostgreSQL compatible: all types (Int/autoincrement, String, Float, DateTime,
+// Boolean, JSON-as-String) work without @db annotations. No SQLite-specific features used.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  phone             String    @unique
+  nickname          String?
+  avatar            String?
+  status            String    @default("ACTIVE")
+  deletedAt         DateTime?
+  agreementAccepted Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  pets              Pet[]
+  reports           Report[]
+}
+
+model Pet {
+  id               Int       @id @default(autoincrement())
+  userId           Int
+  name             String
+  type             String
+  breed            String?
+  birthday         DateTime?
+  gender           String    @default("UNKNOWN")
+  size             String    @default("MEDIUM")
+  personalityTags  String    @default("[]")
+  bio              String?
+  avatar           String?
+  moderationStatus String    @default("PENDING")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id])
+  healthProfile    PetHealthProfile?
+  healthRecords    HealthRecord[]
+  posts            Post[]
+  comments         Comment[]
+  likes            Like[]
+  followers        Follow[]  @relation("Following")
+  following        Follow[]  @relation("Follower")
+  sentRequests     FriendRequest[]  @relation("FromPet")
+  receivedRequests FriendRequest[]  @relation("ToPet")
+  friendships1     Friendship[] @relation("Pet1")
+  friendships2     Friendship[] @relation("Pet2")
+  thread1          MessageThread[] @relation("Pet1InThread")
+  thread2          MessageThread[] @relation("Pet2InThread")
+  messages         Message[]
+  location         PetLocation?
+  placeReviews     PlaceReview[]
+  createdPlaydates Playdate[]  @relation("Creator")
+  invitedPlaydates Playdate[]  @relation("Target")
+  participations   PlaydateParticipant[]
+}
+
+model PetHealthProfile {
+  id              Int       @id @default(autoincrement())
+  petId           Int       @unique
+  weight          Float?
+  isNeutered      Boolean?
+  vaccineRecords  String    @default("[]")
+  dewormRecords   String    @default("[]")
+  allergies       String?
+  medicalHistory  String?
+  currentMeds     String?
+  lastVetVisit    DateTime?
+  lastVetReason   String?
+  nextReminder    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  pet             Pet       @relation(fields: [petId], references: [id])
+}
+
+model HealthRecord {
+  id          Int       @id @default(autoincrement())
+  petId       Int
+  type        String
+  recordDate  DateTime
+  description String?
+  images      String    @default("[]")
+  createdAt   DateTime  @default(now())
+  pet         Pet       @relation(fields: [petId], references: [id])
+}
+
+model Post {
+  id               Int       @id @default(autoincrement())
+  authorPetId      Int
+  content          String
+  mediaType        String    @default("TEXT")
+  fuzzyLocation    String?
+  status           String    @default("ACTIVE")
+  moderationStatus String    @default("PENDING")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  author           Pet       @relation(fields: [authorPetId], references: [id])
+  images           PostImage[]
+  comments         Comment[]
+  likes            Like[]
+}
+
+model PostImage {
+  id     Int    @id @default(autoincrement())
+  postId Int
+  url    String
+  order  Int
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id               Int      @id @default(autoincrement())
+  postId           Int
+  authorPetId      Int
+  content          String
+  status           String   @default("ACTIVE")
+  moderationStatus String   @default("PENDING")
+  createdAt        DateTime @default(now())
+  post             Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author           Pet      @relation(fields: [authorPetId], references: [id])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  petId     Int
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  pet       Pet      @relation(fields: [petId], references: [id])
+  @@unique([postId, petId])
+}
+
+model Follow {
+  id             Int      @id @default(autoincrement())
+  followerPetId  Int
+  followingPetId Int
+  createdAt      DateTime @default(now())
+  follower       Pet      @relation("Follower", fields: [followerPetId], references: [id])
+  following      Pet      @relation("Following", fields: [followingPetId], references: [id])
+  @@unique([followerPetId, followingPetId])
+}
+
+model FriendRequest {
+  id        Int      @id @default(autoincrement())
+  fromPetId Int
+  toPetId   Int
+  message   String
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  fromPet   Pet      @relation("FromPet", fields: [fromPetId], references: [id])
+  toPet     Pet      @relation("ToPet", fields: [toPetId], references: [id])
+}
+
+model Friendship {
+  id        Int      @id @default(autoincrement())
+  petId1    Int
+  petId2    Int
+  createdAt DateTime @default(now())
+  pet1      Pet      @relation("Pet1", fields: [petId1], references: [id])
+  pet2      Pet      @relation("Pet2", fields: [petId2], references: [id])
+  @@unique([petId1, petId2])
+}
+
+model MessageThread {
+  id            Int       @id @default(autoincrement())
+  petId1        Int
+  petId2        Int
+  lastMessageAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  pet1          Pet       @relation("Pet1InThread", fields: [petId1], references: [id])
+  pet2          Pet       @relation("Pet2InThread", fields: [petId2], references: [id])
+  messages      Message[]
+}
+
+model Message {
+  id               Int      @id @default(autoincrement())
+  threadId         Int
+  senderPetId      Int
+  content          String
+  moderationStatus String   @default("PENDING")
+  createdAt        DateTime @default(now())
+  thread           MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender           Pet      @relation(fields: [senderPetId], references: [id])
+}
+
+model PetLocation {
+  id        Int      @id @default(autoincrement())
+  petId     Int      @unique
+  city      String
+  district  String?
+  lat       Float
+  lng       Float
+  geohash   String?
+  updatedAt DateTime @updatedAt
+  pet       Pet      @relation(fields: [petId], references: [id])
+}
+
+model Place {
+  id               Int      @id @default(autoincrement())
+  name             String
+  type             String
+  city             String
+  district         String?
+  lat              Float
+  lng              Float
+  address          String
+  phone            String?
+  rating           Float?
+  isOpen           Boolean  @default(true)
+  openHours        String?
+  petFriendlyTags  String   @default("[]")
+  images           String   @default("[]")
+  ownerClaimStatus String   @default("UNCLAIMED")
+  merchantOwnerId  Int?
+  status           String   @default("ACTIVE")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  reviews          PlaceReview[]
+}
+
+model PlaceReview {
+  id               Int      @id @default(autoincrement())
+  placeId          Int
+  petId            Int
+  rating           Int
+  content          String
+  status           String   @default("ACTIVE")
+  moderationStatus String   @default("PENDING")
+  createdAt        DateTime @default(now())
+  place            Place    @relation(fields: [placeId], references: [id])
+  pet              Pet      @relation(fields: [petId], references: [id])
+}
+
+model Playdate {
+  id               Int      @id @default(autoincrement())
+  type             String
+  creatorPetId     Int
+  targetPetId      Int?
+  title            String
+  time             DateTime
+  place            String
+  description      String?
+  sizeLimit        Int?
+  suitableTypes    String   @default("[]")
+  suitableSizes    String   @default("[]")
+  status           String   @default("ACTIVE")
+  moderationStatus String   @default("PENDING")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  creator          Pet      @relation("Creator", fields: [creatorPetId], references: [id])
+  target           Pet?     @relation("Target", fields: [targetPetId], references: [id])
+  participants     PlaydateParticipant[]
+}
+
+model PlaydateParticipant {
+  id         Int      @id @default(autoincrement())
+  playdateId Int
+  petId      Int
+  createdAt  DateTime @default(now())
+  playdate   Playdate @relation(fields: [playdateId], references: [id])
+  pet        Pet      @relation(fields: [petId], references: [id])
+  @@unique([playdateId, petId])
+}
+
+model Report {
+  id             Int      @id @default(autoincrement())
+  reporterId     Int
+  targetType     String
+  targetId       Int
+  reason         String
+  status         String   @default("PENDING")
+  handlerAdminId Int?
+  resolution     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  reporter       User     @relation(fields: [reporterId], references: [id])
+  handler        AdminUser? @relation(fields: [handlerAdminId], references: [id])
+}
+
+model AdminUser {
+  id             Int           @id @default(autoincrement())
+  username       String        @unique
+  passwordHash   String
+  createdAt      DateTime      @default(now())
+  actions        AdminAction[]
+  handledReports Report[]
+}
+
+model AdminAction {
+  id         Int      @id @default(autoincrement())
+  adminId    Int
+  actionType String
+  targetType String
+  targetId   Int
+  detail     String?
+  createdAt  DateTime @default(now())
+  admin      AdminUser @relation(fields: [adminId], references: [id])
+}

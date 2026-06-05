@@ -47,12 +47,16 @@ fi
 echo -e "${GREEN}[OK]${NC} SESSION_SECRET is set"
 echo -e "${GREEN}[OK]${NC} ADMIN_SESSION_SECRET is set"
 
-# --- Check .env.staging ---
+# --- Load .env.staging ---
 if [ -f "$PROJECT_DIR/.env.staging" ]; then
-    echo -e "${GREEN}[OK]${NC} .env.staging found"
+    echo -e "${GREEN}[OK]${NC} .env.staging found, loading..."
+    set -a  # automatically export all variables
+    source "$PROJECT_DIR/.env.staging"
+    set +a
 else
     echo -e "${YELLOW}[WARN]${NC} .env.staging not found."
-    echo "  Create one from .env.example or set variables via environment."
+    echo "  Create one: cp .env.example .env.staging"
+    echo "  Then edit .env.staging with your staging configuration."
     echo ""
 fi
 

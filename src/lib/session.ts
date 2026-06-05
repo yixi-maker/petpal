@@ -46,12 +46,15 @@ export interface AdminSession {
   username: string;
 }
 
+const isDeployed = process.env.APP_ENV === 'production' ||
+  (process.env.NODE_ENV === 'production' && process.env.APP_ENV !== 'staging');
+
 const sessionOptions: SessionOptions = {
   cookieName: 'petpal_token',
   password: process.env.SESSION_SECRET || DEV_SESSION_SECRET,
   ttl: 60 * 60 * 24 * 7, // 7 days
   cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: isDeployed,
     httpOnly: true,
     sameSite: 'lax' as const,
     path: '/',
@@ -63,7 +66,7 @@ const adminSessionOptions: SessionOptions = {
   password: process.env.ADMIN_SESSION_SECRET || DEV_ADMIN_SESSION_SECRET,
   ttl: 60 * 60 * 8, // 8 hours
   cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: isDeployed,
     httpOnly: true,
     sameSite: 'lax' as const,
     path: '/',
