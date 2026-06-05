@@ -1,16 +1,25 @@
 #!/bin/bash
-# PetPal Smoke Tests — run against localhost:3000
-# Usage: bash scripts/smoke-test.sh [BASE_URL]
+# PetPal Smoke Tests — run against localhost:3000 or staging
+# Usage:
+#   bash scripts/smoke-test.sh                     # defaults to http://localhost:3000
+#   bash scripts/smoke-test.sh https://staging.example.com  # positional URL arg
+#   bash scripts/smoke-test.sh -u https://staging.example.com # -u flag (URL)
 #
 # Prerequisites:
-#   1. A PetPal dev server running on localhost:3000 (npm run dev)
+#   1. A PetPal dev server running on localhost:3000 (npm run dev), OR
+#      a staging server reachable at the given URL
 #   2. SMS_PROVIDER is NOT set to "production" (mock mode with code 123456)
 #
 # The script creates its own test data and is safe to run repeatedly.
 
 set -o pipefail
 
-BASE="${1:-http://localhost:3000}"
+# Parse -u flag or positional URL argument
+if [ "$1" = "-u" ]; then
+  BASE="${2:-http://localhost:3000}"
+else
+  BASE="${1:-http://localhost:3000}"
+fi
 USER_COOKIE_JAR="/tmp/petpal-smoke-user-cookies"
 ADMIN_COOKIE_JAR="/tmp/petpal-smoke-admin-cookies"
 PASS=0

@@ -1,28 +1,41 @@
 // Provider health checks — validates configuration of all service providers
 // Logs status to console at startup (non-blocking). Also exposed via API endpoint.
 
+export type HealthStatusKind = 'mock' | 'configured' | 'ready' | 'error';
+
 export interface HealthStatus {
   provider: string;
-  status: 'ready' | 'pending' | 'unavailable' | 'error';
+  status: HealthStatusKind;
+  stage: 'dev' | 'staging' | 'production';
   message: string;
+}
+
+function detectStage(): 'dev' | 'staging' | 'production' {
+  if (process.env.APP_ENV === 'production') return 'production';
+  if (process.env.APP_ENV === 'staging') return 'staging';
+  if (process.env.NODE_ENV === 'production') return 'production';
+  return 'dev';
 }
 
 export async function checkProviderHealth(): Promise<HealthStatus[]> {
   const results: HealthStatus[] = [];
+  const stage = detectStage();
 
   // SMS
   const smsProvider = process.env.SMS_PROVIDER || 'mock';
   if (smsProvider === 'mock') {
     results.push({
       provider: 'SMS',
-      status: 'pending',
+      status: 'mock',
+      stage,
       message: 'Using mock provider (code 123456)',
     });
   } else if (smsProvider === 'aliyun') {
     const hasCreds = !!(process.env.SMS_ACCESS_KEY && process.env.SMS_SECRET);
     results.push({
       provider: 'SMS',
-      status: hasCreds ? 'ready' : 'error',
+      status: hasCreds ? 'configured' : 'error',
+      stage,
       message: hasCreds
         ? 'Aliyun SMS configured'
         : 'Aliyun SMS: missing SMS_ACCESS_KEY or SMS_SECRET',
@@ -34,14 +47,16 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
   if (aiProvider === 'mock') {
     results.push({
       provider: 'AI',
-      status: 'pending',
+      status: 'mock',
+      stage,
       message: 'Using mock AI provider',
     });
   } else {
     const hasKey = !!process.env.AI_API_KEY;
     results.push({
       provider: 'AI',
-      status: hasKey ? 'ready' : 'error',
+      status: hasKey ? 'configured' : 'error',
+      stage,
       message: hasKey
         ? `${aiProvider} configured`
         : `${aiProvider}: missing AI_API_KEY`,
@@ -53,7 +68,8 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
   if (storageProvider === 'local') {
     results.push({
       provider: 'Storage',
-      status: 'pending',
+      status: 'mock',
+      stage,
       message: 'Using local storage (public/uploads)',
     });
   } else if (storageProvider === 's3') {
@@ -64,7 +80,8 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
     );
     results.push({
       provider: 'Storage',
-      status: hasCreds ? 'ready' : 'error',
+      status: hasCreds ? 'configured' : 'error',
+      stage,
       message: hasCreds
         ? 'S3 storage configured'
         : 'S3 storage: missing credentials',
@@ -76,14 +93,16 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
   if (modProvider === 'mock') {
     results.push({
       provider: 'Moderation',
-      status: 'pending',
+      status: 'mock',
+      stage,
       message: 'Using mock moderation (keyword filter)',
     });
   } else {
     const hasKey = !!process.env.MODERATION_API_KEY;
     results.push({
       provider: 'Moderation',
-      status: hasKey ? 'ready' : 'error',
+      status: hasKey ? 'configured' : 'error',
+      stage,
       message: hasKey
         ? 'Content moderation ready'
         : 'Content moderation: missing MODERATION_API_KEY (fail-closed)',
@@ -94,7 +113,8 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
   const mapKey = process.env.NEXT_PUBLIC_AMAP_KEY;
   results.push({
     provider: 'Maps',
-    status: mapKey ? 'ready' : 'pending',
+    status: mapKey ? 'configured' : 'mock',
+    stage,
     message: mapKey
       ? 'AMAP configured'
       : 'Using map placeholder (set NEXT_PUBLIC_AMAP_KEY for real maps)',
@@ -104,13 +124,15 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
   if (process.env.REDIS_URL) {
     results.push({
       provider: 'Redis',
-      status: 'ready',
+      status: 'configured',
+      stage,
       message: 'Redis configured',
     });
   } else {
     results.push({
       provider: 'Redis',
-      status: 'pending',
+      status: 'mock',
+      stage,
       message: 'Redis not configured (using memory store)',
     });
   }
@@ -121,12 +143,14 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
     results.push({
       provider: 'Database',
       status: 'ready',
+      stage,
       message: 'SQLite (dev)',
     });
   } else if (dbUrl.includes('postgres')) {
     results.push({
       provider: 'Database',
-      status: 'ready',
+      status: 'configured',
+      stage,
       message: 'PostgreSQL',
     });
   }
@@ -138,7 +162,8 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
 if (typeof window === 'undefined') {
   checkProviderHealth()
     .then((statuses) => {
-      console.log('[Provider Health]');
+      const stage = detectStage();
+      console.log(`[Provider Health] stage=${stage}`);
       for (const s of statuses) {
         console.log(`  ${s.provider}: ${s.status} — ${s.message}`);
       }

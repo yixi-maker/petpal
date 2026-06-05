@@ -1,25 +1,26 @@
-// Error monitoring placeholder — ready for Sentry integration
-// To enable: set SENTRY_DSN env var and install @sentry/nextjs
+// Error monitoring — integrates with Sentry when available
+// To enable: set SENTRY_DSN or NEXT_PUBLIC_SENTRY_DSN env var and install @sentry/nextjs
 
 let sentryInitialized = false;
+let SentryModule: typeof import('@sentry/nextjs') | null = null;
 
-export function initMonitoring() {
+export async function initMonitoring(): Promise<void> {
   if (typeof window !== 'undefined') return;
   if (sentryInitialized) return;
-  const dsn = process.env.SENTRY_DSN;
+  const dsn = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
   if (!dsn) return;
   try {
     // Dynamic import to avoid requiring @sentry/nextjs at build time
-    console.log(
-      '[Monitoring] Sentry DSN configured. To enable: npm install @sentry/nextjs',
-    );
-    // In production with @sentry/nextjs installed:
-    // import('@sentry/nextjs').then(Sentry =>
-    //   Sentry.init({ dsn, environment: process.env.NODE_ENV }),
-    // );
+    SentryModule = await import('@sentry/nextjs');
+    SentryModule.init({
+      dsn,
+      environment: process.env.APP_ENV || process.env.NODE_ENV || 'development',
+      tracesSampleRate: 0.1,
+    });
+    console.log('[Monitoring] Sentry initialized');
     sentryInitialized = true;
-  } catch {
-    /* optional dep */
+  } catch (err) {
+    console.warn('[Monitoring] Sentry not available:', err instanceof Error ? err.message : err);
   }
 }
 
@@ -105,7 +106,10 @@ export function captureError(
     console.error('[Error]', error.message, safeContext || '');
     return;
   }
-  // In production with Sentry: Sentry.captureException(error, { extra: safeContext });
+  if (SentryModule) {
+    SentryModule.captureException(error, { extra: safeContext });
+    return;
+  }
   console.error('[Error]', error.message);
 }
 
@@ -115,6 +119,9 @@ export function captureEvent(
 ) {
   if (process.env.NODE_ENV === 'development') return;
   const safeData = sanitizeContext(data);
-  // In production with Sentry: Sentry.captureMessage(message, { extra: safeData });
+  if (SentryModule) {
+    SentryModule.captureMessage(message, { extra: safeData });
+    return;
+  }
   console.log('[Event]', message, safeData ? JSON.stringify(safeData) : '');
 }

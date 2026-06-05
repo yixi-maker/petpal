@@ -11,10 +11,12 @@
     "smoke": "bash scripts/smoke-test.sh",
     "smoke:ci": "bash scripts/smoke-test-ci.sh",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:staging": "BASE_URL=https://staging.example.com playwright test"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "@sentry/nextjs": "^10.56.0",
     "bcryptjs": "^3.0.3",
     "ioredis": "^5.11.0",
     "iron-session": "^8.0.4",
