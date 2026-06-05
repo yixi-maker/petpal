@@ -153,7 +153,7 @@ function ActionBar({
           <button
             type="button"
             onClick={onShare}
-            className={`flex h-[38px] w-[38px] items-center justify-center transition-colors ${buttonClass}`}
+            className={`flex h-11 w-11 items-center justify-center transition-colors ${buttonClass}`}
             aria-label="分享"
           >
             <Share2 className="h-[18px] w-[18px]" />
@@ -355,7 +355,7 @@ export function PostCard({ post, currentPetId, liked, onLike }: PostCardProps) {
         </div>
       ) : (
         /* ===== Without Images variant ===== */
-        <div className="relative flex min-h-[238px] flex-col overflow-hidden rounded-[28px] border border-white/72 border-t-[3px] border-t-teal-400/20 bg-gradient-to-br from-sea-50/40 via-surface-white to-sage-50/30 shadow-sm backdrop-blur-xl">
+        <div className="relative flex min-h-[238px] flex-col overflow-hidden rounded-[28px] border border-white/72 border-t-[3px] border-t-teal-400/30 bg-gradient-to-br from-sea-50/70 via-surface-white to-sage-50/60 shadow-sm backdrop-blur-xl">
           <div className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full border border-white/60" />
           <div className="pointer-events-none absolute -bottom-20 left-8 h-44 w-44 rounded-full border border-teal-100/70" />
           {/* Author row */}

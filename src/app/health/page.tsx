@@ -96,6 +96,7 @@ export default function HealthPage() {
   // AI triage state
   const [triageSubmitting, setTriageSubmitting] = useState(false);
   const [triageResult, setTriageResult] = useState<AITriageResult | null>(null);
+  const [triageError, setTriageError] = useState('');
   const [triageForm, setTriageForm] = useState({
     petId: currentPet?.id?.toString() || '',
     symptoms: '',
@@ -232,6 +233,7 @@ export default function HealthPage() {
     if (!triageForm.petId || !triageForm.symptoms) return;
     setTriageSubmitting(true);
     setTriageResult(null);
+    setTriageError('');
     try {
       // Upload images first
       const imageUrls: string[] = [];
@@ -268,7 +270,7 @@ export default function HealthPage() {
         setTriageResult(data.result);
       }
     } catch {
-      // ignore
+      setTriageError('AI 服务暂时不可用，请稍后重试');
     } finally {
       setTriageSubmitting(false);
     }
@@ -450,8 +452,9 @@ export default function HealthPage() {
                     </div>
                   </div>
                 ) : profileLoading ? (
-                  <div className="flex justify-center py-12">
+                  <div className="flex flex-col items-center justify-center py-12 gap-2">
                     <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
+                    <span className="text-[13px] text-ink-faded">加载中...</span>
                   </div>
                 ) : (
                   <button
@@ -465,8 +468,9 @@ export default function HealthPage() {
 
                 {/* Profile card */}
                 {profileLoading ? (
-                  <div className="flex justify-center py-12">
+                  <div className="flex flex-col items-center justify-center py-12 gap-2">
                     <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
+                    <span className="text-[13px] text-ink-faded">加载中...</span>
                   </div>
                 ) : profile ? (
                   <div className="rounded-[24px] border border-white/70 bg-white/80 p-4 shadow-[0_16px_36px_rgba(16,80,75,0.10)] backdrop-blur-xl">
@@ -542,8 +546,9 @@ export default function HealthPage() {
 
                 {/* Records list */}
                 {recordsLoading ? (
-                  <div className="flex justify-center py-8">
+                  <div className="flex flex-col items-center justify-center py-8 gap-2">
                     <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
+                    <span className="text-[13px] text-ink-faded">加载中...</span>
                   </div>
                 ) : (
                   <HealthRecordList records={records} />
@@ -808,6 +813,14 @@ export default function HealthPage() {
                     </Button>
                   </div>
                 </div>
+
+                {/* Triage error display */}
+                {triageError && (
+                  <div className="flex items-start gap-2.5 rounded-[18px] border border-rose-500/15 bg-rose-50/70 p-3">
+                    <AlertTriangle className="w-4 h-4 text-rose-500 flex-shrink-0 mt-[1px]" />
+                    <p className="text-[13px] text-rose-600">{triageError}</p>
+                  </div>
+                )}
 
                 {/* Result display */}
                 {triageResult && <AIResultCard result={triageResult} />}

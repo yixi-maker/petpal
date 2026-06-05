@@ -1,16 +1,17 @@
-# PetPal - 毛孩子的社交乐园
+# PetPal - 毛孩子的社交与健康空间
 
-面向猫狗主人的宠物社交与本地生活应用。用户可以分享宠物动态、约玩交友、探索附近的宠物友好场所、管理宠物健康记录，以及获得 AI 健康咨询。
+PetPal 是一个手机优先的宠物社交、本地生活与健康管理 Web App。V1 面向猫狗主人，同时把宠物作为独立主体：宠物可以拥有档案、主页、动态、朋友关系和健康记录，主人可以探索附近宠物友好地点，并通过 AI 助手做初步健康分诊。
 
 ## 技术栈
 
 - **框架**: Next.js 16.2 (App Router)
 - **语言**: TypeScript 5
 - **样式**: Tailwind CSS v4
-- **数据库**: SQLite (Prisma ORM)
+- **数据库**: SQLite 开发库（Prisma ORM），生产环境预留 PostgreSQL
 - **认证**: iron-session + bcryptjs
 - **UI 图标**: Lucide React
-- **PWA**: Service Worker + Web App Manifest
+- **服务抽象**: SMS、AI、Storage、Moderation、Maps Provider
+- **移动端能力**: Web App Manifest + 移动端视口适配（V1 暂不启用 Service Worker）
 
 ## 快速开始
 
@@ -42,11 +43,14 @@ npm run dev
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| `DATABASE_URL` | 数据库连接串 | `file:./dev.db` |
+| `DATABASE_URL` | 数据库连接串；开发环境会解析到 `prisma/dev.db` | `file:./dev.db` |
 | `SESSION_SECRET` | 用户会话密钥（最少 32 字符） | 已预设开发值 |
 | `ADMIN_SESSION_SECRET` | 管理员会话密钥（最少 32 字符） | 已预设开发值 |
-| `AI_API_KEY` | AI API 密钥（可选，不填则使用模拟 AI） | 空 |
-| `AMAP_KEY` | 高德地图 API Key（可选） | 空 |
+| `SMS_PROVIDER` | 短信服务 Provider | `mock` |
+| `AI_PROVIDER` | AI 健康分诊 Provider | `mock` |
+| `STORAGE_PROVIDER` | 图片存储 Provider | `local` |
+| `MODERATION_PROVIDER` | 内容审核 Provider | `mock` |
+| `NEXT_PUBLIC_AMAP_KEY` / `AMAP_KEY` | 高德地图 Key（可选） | 空 |
 
 ## 生产环境部署
 
@@ -91,7 +95,7 @@ src/
 │   ├── map/                    # 地图页
 │   ├── me/                     # 个人中心
 │   ├── messages/               # 私信页
-│   ├── nearby/                 # 附近场所页
+│   ├── nearby/                 # 附近宠物与社交发现页
 │   ├── pets/                   # 宠物管理页
 │   ├── playdates/              # 约玩活动页
 │   ├── posts/                  # 动态详情页
@@ -101,7 +105,7 @@ src/
 ├── components/
 │   ├── admin/                  # 管理后台组件
 │   ├── health/                 # 健康相关组件
-│   ├── layout/                 # 布局组件（MobileShell, TabBar, OfflineBanner）
+│   ├── layout/                 # 布局组件（MobileShell, TabBar, Providers）
 │   ├── pet/                    # 宠物相关组件
 │   ├── post/                   # 动态相关组件
 │   ├── social/                 # 社交相关组件
@@ -111,21 +115,23 @@ src/
 └── proxy.ts                    # API 请求代理配置
 public/
 ├── manifest.json               # PWA 清单
-├── sw.js                       # Service Worker
 ├── icon.svg                    # App 图标
 ├── favicon.svg                 # 网站图标
 └── uploads/                    # 用户上传文件
 prisma/
-└── schema.prisma               # 数据库 Schema
+├── schema.prisma               # 数据库 Schema
+└── dev.db                      # 开发环境 SQLite 数据库
 ```
 
-## PWA 支持
+## 移动端支持
 
-PetPal 支持 PWA（渐进式 Web 应用），可在移动设备上添加到主屏幕：
+PetPal V1 按手机优先体验设计，并提供 Web App Manifest，可在移动设备上添加到主屏幕：
 
 - 独立的 App 图标和启动画面
-- Service Worker 提供离线缓存（首页、登录、附近、地图、健康、我的）
-- 离线状态下显示 "当前处于离线状态" 提示条
+- 贴近原生 App 的竖屏使用体验
+- 蓝绿色主题色与移动端浏览器状态栏适配
+
+> V1 为了稳定性暂不注册 Service Worker；真正的离线缓存、推送提醒可放到 V1.1/V2 处理。
 
 > 生产环境部署前，请将 `public/icon.svg` 转换为 192x192 和 512x512 的 PNG 图标，
 > 并更新 `public/manifest.json` 中的 `icons` 数组。可使用 `sharp` 或 [favicon generator](https://realfavicongenerator.net) 等工具。

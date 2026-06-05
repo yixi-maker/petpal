@@ -6,5 +6,3 @@ export { Tabs } from './Tabs';
 export { Badge } from './Badge';
 export { EmptyState } from './EmptyState';
 export { FilterChip } from './FilterChip';
-export { IconBadge } from './IconBadge';
-export { SegmentedControl } from './SegmentedControl';

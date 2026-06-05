@@ -34,9 +34,9 @@ export function HealthRecordList({ records }: HealthRecordListProps) {
   if (records.length === 0) {
     return (
       <div className="text-center py-12">
-        <ClipboardList className="w-10 h-10 mx-auto mb-2 text-ink-faded/30" />
+        <ClipboardList className="w-10 h-10 mx-auto mb-2 text-teal-500/40" />
         <p className="text-[14px] text-ink-faded">暂无健康记录</p>
-        <p className="text-[12px] text-ink-faded mt-1">点击上方按钮添加记录</p>
+        <p className="text-[12px] text-ink-faded mt-1">点击上方按钮添加第一条健康记录吧</p>
       </div>
     );
   }
