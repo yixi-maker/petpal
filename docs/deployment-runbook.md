@@ -26,15 +26,18 @@ cd /opt/petpal-staging
 SESSION_SECRET=$(openssl rand -base64 64)
 ADMIN_SESSION_SECRET=$(openssl rand -base64 64)
 
-# 3. Generate admin password hash (choose a secure password)
-ADMIN_PASSWORD=$(node -e "const b=require('bcryptjs');b.hash('your-secure-password',10).then(h=>console.log(h))")
+# 3. Choose a secure admin password (store it — you'll need it to log in)
+ADMIN_PASSWORD="your-secure-password"
 
-# 4. Create .env.staging
+# 4. Generate the password hash for the server
+ADMIN_PASSWORD_HASH=$(node -e "const b=require('bcryptjs');b.hash(process.env.ADMIN_PASSWORD,10).then(h=>console.log(h))")
+
+# 5. Create .env.staging (hash only — never write plaintext password)
 cat > .env.staging << ENVEOF
 SESSION_SECRET=${SESSION_SECRET}
 ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET}
 ADMIN_USERNAME=admin
-ADMIN_PASSWORD=${ADMIN_PASSWORD}
+ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
 # Optional — add provider keys when ready:
 # SMS_PROVIDER=aliyun
 # SMS_ACCESS_KEY=...
@@ -143,15 +146,13 @@ Exit code 1 if any provider is in `error` state, 2 if endpoint is unreachable.
 ## Seed Admin Account
 
 ```bash
-# Set credentials via env vars
-export ADMIN_USERNAME="admin"
-export ADMIN_PASSWORD='$2a$10$...'
-
-# Trigger admin account creation/verification
-ADMIN_USERNAME=admin ADMIN_PASSWORD=your-password bash scripts/setup-admin.sh http://localhost:3000
+# The admin password was set in step 3 of Quick Deploy.
+# .env.staging already has ADMIN_PASSWORD_HASH for the server.
+# Run setup-admin with the PLAINTEXT password (not the hash):
+ADMIN_USERNAME=admin ADMIN_PASSWORD=your-plaintext-password bash scripts/setup-admin.sh http://localhost:3000
 ```
 
-The admin account is auto-created on first `POST /api/admin/auth/login` when `ADMIN_USERNAME` and `ADMIN_PASSWORD` env vars are set.
+The admin account is auto-created on first `POST /api/admin/auth/login` when the server has `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH` env vars set, and the login request provides the matching plaintext password.
 
 ---
 
@@ -173,7 +174,7 @@ Requires admin credentials (reads from env vars or uses staging defaults).
 | `curl: (7) Failed to connect` | App container not running | `docker compose -f docker-compose.staging.yml up -d` |
 | App exits with `SMS_ACCESS_KEY required` | SMS_PROVIDER set to `aliyun` without credentials | Set `SMS_PROVIDER=mock` or provide real keys in `.env.staging` |
 | App exits with `DATABASE_URL must be set` | Missing `.env.staging` or env var | Verify `docker compose --env-file .env.staging` is used |
-| `401` on admin login | Wrong password or `ADMIN_PASSWORD` not set | Re-run `node -e "const b=require('bcryptjs');b.hash('your-pw',10).then(h=>console.log(h))"` and update `.env.staging` |
+| `401` on admin login | Wrong password or `ADMIN_PASSWORD_HASH` not set | Re-run `node -e "const b=require('bcryptjs');b.hash('your-pw',10).then(h=>console.log(h))"` and update `.env.staging` |
 | `403` on content creation | Moderation fail-closed in production | Set `MODERATION_API_KEY` or set `NODE_ENV=development` (not recommended for staging) |
 | Login returns error about code | SMS provider misconfigured | Check `SMS_PROVIDER=mock` for testing; use `123456` as code |
 | `500` on AI endpoints | AI provider misconfigured or timed out | Set `AI_PROVIDER=mock` for testing or check `AI_API_KEY` |

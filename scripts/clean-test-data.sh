@@ -146,14 +146,14 @@ if command -v jq &> /dev/null; then
 
   if [ -n "$POST_IDS" ]; then
     echo "Hiding smoke test posts ..."
-    echo "$POST_IDS" | while IFS=$'\t' read -r id content; do
+    while IFS=$'\t' read -r id content; do
       if [ -z "$id" ] || [ "$id" = "null" ]; then continue; fi
       if hide_post "$id" "${content:0:50}"; then
         HIDDEN=$((HIDDEN + 1))
       else
         FAILED=$((FAILED + 1))
       fi
-    done
+    done <<< "$POST_IDS"
   fi
 else
   echo "jq not available — using grep-based extraction ..."
@@ -164,7 +164,7 @@ else
 
   if [ -n "$POST_IDS" ]; then
     echo "Hiding smoke test posts ..."
-    echo "$POST_IDS" | while read -r id; do
+    while read -r id; do <<< "$POST_IDS"
       if [ -z "$id" ]; then continue; fi
       if hide_post "$id" "(id ${id})"; then
         HIDDEN=$((HIDDEN + 1))
