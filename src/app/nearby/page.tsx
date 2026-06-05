@@ -144,7 +144,7 @@ export default function NearbyPage() {
           <div className="flex justify-center mb-4">
             <Navigation className="w-[36px] h-[36px] text-sea-500" />
           </div>
-          <h2 className="text-[17px] font-semibold text-ink mb-1.5">发现附近宠物</h2>
+          <h2 className="text-[17px] font-semibold text-ink mb-1.5">发现宝贝</h2>
           <p className="text-[13px] text-ink-faded leading-relaxed mb-4">
             开启位置服务，发现身边的毛孩子<br />
             你的精确位置不会被展示给其他用户
@@ -204,8 +204,8 @@ export default function NearbyPage() {
 
   return (
     <div className="p-4 pb-20">
-      <h1 className="text-[17px] font-semibold text-ink mb-1">附近宠物</h1>
-      <p className="text-[11px] text-ink-faded/60 flex items-center gap-1 mb-4">
+      <h1 className="text-[17px] font-semibold text-ink mb-1">发现宝贝</h1>
+        <p className="text-[13px] text-ink-faded mb-3">找到附近的小伙伴，一起玩耍</p>      <p className="text-[11px] text-ink-faded/60 flex items-center gap-1 mb-4">
         <Shield className="w-3 h-3" />
         位置仅展示模糊距离，不暴露精确坐标
       </p>

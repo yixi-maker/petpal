@@ -281,7 +281,7 @@ export default function HealthPage() {
     // Scroll to the tabs section after a short delay for the tab to render
     setTimeout(() => {
       tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    }, 150);
   };
 
   const handleToggleEmergency = () => {
@@ -289,7 +289,7 @@ export default function HealthPage() {
     // Scroll to the emergency section
     setTimeout(() => {
       document.getElementById('emergency-guide-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    }, 150);
   };
 
   const handleToggleChecklist = () => {
@@ -297,7 +297,7 @@ export default function HealthPage() {
     // Scroll to the checklist section
     setTimeout(() => {
       document.getElementById('vet-checklist-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+    }, 150);
   };
 
   // --- Helpers ---

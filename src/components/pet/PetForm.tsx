@@ -43,6 +43,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
   const [tagsInput, setTagsInput] = useState((initialData?.personalityTags || []).join('、'));
   const [bio, setBio] = useState(initialData?.bio || '');
   const [avatar, setAvatar] = useState(initialData?.avatar || '');
+  const [avatarUploaded, setAvatarUploaded] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -71,6 +72,8 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
       }
 
       setAvatar(data.url);
+      setAvatarUploaded(true);
+      setTimeout(() => setAvatarUploaded(false), 2000);
     } catch {
       setError('头像上传失败，请重试');
     } finally {
@@ -125,7 +128,7 @@ export function PetForm({ initialData, onSubmit, submitLabel }: PetFormProps) {
             className="inline-flex items-center justify-center gap-2 rounded-full bg-teal-600 px-4 py-2.5 text-[14px] font-semibold text-white shadow-[0_10px_22px_rgba(29,138,128,0.20)] transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <UploadCloud className="h-4 w-4" />
-            {uploadingAvatar ? '上传中...' : avatar ? '更换图片' : '上传图片'}
+            {uploadingAvatar ? '上传中...' : avatarUploaded ? '✓ 上传成功' : avatar ? '更换图片' : '上传图片'}
           </button>
           {avatar && (
             <button
