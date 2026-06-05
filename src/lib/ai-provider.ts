@@ -362,6 +362,156 @@ async function callRealAI(request: AITriageRequest): Promise<AITriageResult> {
  * - When AI_PROVIDER is "openai" or "zhipu": attempts the real provider,
  *   falls back to mock with a warning log on failure.
  */
+// ---------------------------------------------------------------------------
+// Response parsing tests
+//
+// Manual testing: call testAIResponseParsing() from a Node REPL or test runner.
+// It runs the mock AI provider through several symptom inputs and validates
+// that every response meets the safety and structure invariants.
+// ---------------------------------------------------------------------------
+
+const PROHIBITED_TERMS = ['诊断', '处方', '用药剂量', 'mg', 'ml'] as const;
+
+interface TestCaseResult {
+  scenario: string;
+  passed: boolean;
+  errors: string[];
+  result: AITriageResult | null;
+}
+
+export async function testAIResponseParsing(): Promise<{
+  passed: number;
+  failed: number;
+  details: TestCaseResult[];
+}> {
+  const { getMockAITriage } = await import('./mock-ai');
+
+  const testCases: { scenario: string; request: AITriageRequest }[] = [
+    {
+      scenario: 'HIGH risk — poisoning',
+      request: {
+        pet: { type: 'DOG', breed: '金毛', age: 3 },
+        symptoms: '狗狗吃了巧克力后呕吐抽搐',
+        duration: '1小时内',
+        appetite: '废绝',
+        drinking: '正常',
+        energy: '嗜睡',
+        isVomiting: true,
+      },
+    },
+    {
+      scenario: 'MEDIUM risk — vomiting',
+      request: {
+        pet: { type: 'CAT', age: 1 },
+        symptoms: '猫咪呕吐，腹泻',
+        duration: '1-3天',
+        appetite: '减退',
+        drinking: '增加',
+        energy: '正常',
+        isVomiting: true,
+      },
+    },
+    {
+      scenario: 'LOW risk — mild',
+      request: {
+        pet: { type: 'DOG', breed: '泰迪', age: 5 },
+        symptoms: '偶尔流泪，轻微掉毛',
+        duration: '1-2周',
+        appetite: '正常',
+        drinking: '正常',
+        energy: '正常',
+      },
+    },
+  ];
+
+  const details: TestCaseResult[] = [];
+
+  for (const { scenario, request } of testCases) {
+    const errors: string[] = [];
+    let result: AITriageResult | null = null;
+
+    try {
+      result = await getMockAITriage(request);
+
+      // 1. Disclaimer is always present and non-trivial
+      if (!result.disclaimer || result.disclaimer.length < 20) {
+        errors.push('Missing or too-short disclaimer');
+      }
+      if (
+        !result.disclaimer.includes('参考') &&
+        !result.disclaimer.includes('不能替代')
+      ) {
+        errors.push('Disclaimer lacks reference/replacement language');
+      }
+
+      // 2. No prohibited terms in any string field
+      const textFields = [
+        ...result.possibleConditions,
+        ...result.homeCareAdvice,
+        ...result.precautions,
+        result.urgencyNote || '',
+        result.disclaimer,
+      ];
+      for (const field of textFields) {
+        const lower = field.toLowerCase();
+        for (const term of PROHIBITED_TERMS) {
+          const lowerTerm = term.toLowerCase();
+          if (lower.includes(lowerTerm)) {
+            errors.push(`Prohibited term "${term}" found in: "${field.slice(0, 60)}..."`);
+          }
+        }
+      }
+
+      // 3. Risk level is valid
+      if (!['LOW', 'MEDIUM', 'HIGH'].includes(result.riskLevel)) {
+        errors.push(`Invalid risk level: ${result.riskLevel}`);
+      }
+
+      // 4. JSON structure is correct
+      if (!result.id || typeof result.id !== 'string') {
+        errors.push('Missing or invalid id');
+      }
+      if (!Array.isArray(result.possibleConditions)) {
+        errors.push('possibleConditions is not an array');
+      }
+      if (!Array.isArray(result.homeCareAdvice)) {
+        errors.push('homeCareAdvice is not an array');
+      }
+      if (typeof result.shouldSeeVet !== 'boolean') {
+        errors.push('shouldSeeVet is not a boolean');
+      }
+      if (!Array.isArray(result.precautions)) {
+        errors.push('precautions is not an array');
+      }
+
+      // 5. HIGH risk must recommend vet visit
+      if (result.riskLevel === 'HIGH' && !result.shouldSeeVet) {
+        errors.push('HIGH risk must have shouldSeeVet=true');
+      }
+    } catch (e) {
+      errors.push(
+        `Exception: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    }
+
+    details.push({
+      scenario,
+      passed: errors.length === 0,
+      errors,
+      result,
+    });
+  }
+
+  const passed = details.filter((d) => d.passed).length;
+  const failed = details.filter((d) => !d.passed).length;
+
+  return { passed, failed, details };
+}
+
+// ---------------------------------------------------------------------------
+// Main entry point
+// ---------------------------------------------------------------------------
+
 export async function getAITriage(
   request: AITriageRequest,
 ): Promise<AITriageResult> {

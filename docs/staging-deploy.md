@@ -9,6 +9,109 @@
 
 ---
 
+## Docker 部署（推荐）
+
+使用 Docker Compose 一键部署 PetPal 全部服务（Next.js 应用 + PostgreSQL + Redis）。
+
+### 前置条件
+
+- Docker 24+ 和 Docker Compose 2+
+- Node.js 22+（仅在生成密码哈希时需要）
+
+### 步骤 1：准备环境变量文件
+
+创建工作目录下的 `.env.staging`（可参考 `.env.example`）：
+
+```bash
+cp .env.example .env.staging
+# 编辑 .env.staging 填入实际值
+```
+
+### 步骤 2：生成 Session 密钥
+
+```bash
+# 生成 SESSION_SECRET（至少 32 位随机字符串）
+openssl rand -base64 64
+# 生成 ADMIN_SESSION_SECRET
+openssl rand -base64 64
+```
+
+将生成的值写入 `.env.staging` 或设置为 shell 环境变量（`export SESSION_SECRET=...`）。
+
+### 步骤 3：生成管理员密码哈希
+
+```bash
+# 生成 bcrypt 哈希（需在项目目录下执行）
+node -e "const b=require('bcryptjs');b.hash('your-secure-password',10).then(h=>console.log(h))"
+```
+
+将输出的 `$2a$10$...` 设置为 `ADMIN_PASSWORD_HASH`。
+
+### 步骤 4：启动服务
+
+```bash
+# 确保环境变量已设置
+export SESSION_SECRET="<步骤2生成的值>"
+export ADMIN_SESSION_SECRET="<步骤2生成的值>"
+export ADMIN_USERNAME="admin"
+export ADMIN_PASSWORD_HASH="<步骤3生成的值>"
+
+# 构建并启动所有服务
+docker compose -f docker-compose.staging.yml up -d
+```
+
+或使用一键启动脚本：
+
+```bash
+bash scripts/staging-start.sh
+```
+
+### 步骤 5：验证部署
+
+```bash
+# 等待约 30 秒后检查健康状态
+curl -f http://localhost:3000/api/auth/me
+# 预期：返回 HTTP 401（表示应用在正常运行，只是未登录）
+
+# 查看容器状态
+docker compose -f docker-compose.staging.yml ps
+# 预期：app、db、redis 均为 Up / healthy
+
+# 测试登录 API
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"phone":"13800000001","code":"123456","agreementAccepted":true}'
+# 预期：{"success":true,"user":{...}}
+```
+
+### 常用命令
+
+```bash
+# 查看日志
+docker compose -f docker-compose.staging.yml logs -f app
+
+# 重启服务
+docker compose -f docker-compose.staging.yml restart
+
+# 停止服务
+docker compose -f docker-compose.staging.yml down
+
+# 停止服务并清空数据库卷
+docker compose -f docker-compose.staging.yml down -v
+```
+
+### 架构说明
+
+| 服务 | 镜像 | 端口 | 说明 |
+|------|------|------|------|
+| `app` | 本地构建（Dockerfile） | 3000 | Next.js 16 + Prisma |
+| `db` | postgres:16-alpine | - | PostgreSQL 数据库 |
+| `redis` | redis:7-alpine | - | 验证码 / 限流存储 |
+
+应用容器启动时自动执行 `prisma migrate deploy`，无需手动迁移。
+
+---
+
 ## 环境准备
 
 | 组件 | 版本要求 | 说明 | Staging 状态 |

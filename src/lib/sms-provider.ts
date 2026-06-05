@@ -60,6 +60,19 @@ class AliyunSmsProvider implements SmsProvider {
   private signName: string;
   private templateId: string;
 
+  /**
+   * Validate that all required env vars for Aliyun SMS are configured.
+   * Does not throw — returns a summary object so callers can decide how to handle.
+   */
+  static validateConfig(): { valid: boolean; missing: string[] } {
+    const missing: string[] = [];
+    if (!process.env.SMS_ACCESS_KEY) missing.push('SMS_ACCESS_KEY');
+    if (!process.env.SMS_SECRET) missing.push('SMS_SECRET');
+    if (!process.env.SMS_SIGN_NAME) missing.push('SMS_SIGN_NAME');
+    if (!process.env.SMS_TEMPLATE_ID) missing.push('SMS_TEMPLATE_ID');
+    return { valid: missing.length === 0, missing };
+  }
+
   constructor() {
     this.accessKey = process.env.SMS_ACCESS_KEY || '';
     this.secret = process.env.SMS_SECRET || '';

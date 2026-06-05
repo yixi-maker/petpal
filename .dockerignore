@@ -1,0 +1,14 @@
+node_modules
+.git
+.next
+prisma/dev.db
+prisma/dev.db-journal
+.env
+.env.local
+.env.staging
+.env.production
+public/uploads/*
+!public/uploads/.gitkeep
+*.md
+docs/
+scripts/

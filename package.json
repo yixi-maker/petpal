@@ -9,7 +9,9 @@
     "lint": "eslint",
     "seed-feed": "node prisma/seed-feed.mjs",
     "smoke": "bash scripts/smoke-test.sh",
-    "smoke:ci": "bash scripts/smoke-test-ci.sh"
+    "smoke:ci": "bash scripts/smoke-test-ci.sh",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -23,6 +25,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
