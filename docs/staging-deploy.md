@@ -16,7 +16,7 @@
 | Node.js | 22+ | 运行时 | 当前使用中 |
 | npm | 10+ | 随 Node.js 22 自带 | 当前使用中 |
 | PostgreSQL | 15+ | 生产数据库 | 未配置（运行在 SQLite） |
-| Redis | 7+ | 可选，用于验证码/限流持久化（未配置时使用内存存储） | 未配置（使用内存存储） |
+| Redis | 7+ | 可选，用于验证码/限流持久化；通过 CODE_STORE=redis / RATE_LIMIT_STORE=redis 启用；未配置时自动使用内存存储（MemoryCodeStore / MemoryRateLimitStore），适合单进程开发和低流量场景 | 未配置（使用内存存储） |
 
 ---
 
@@ -51,27 +51,38 @@ SMS_SIGN_NAME="PetPal"
 SMS_TEMPLATE_ID="SMS_123456789"
 
 # === AI 服务 ===
-AI_PROVIDER="openai"                         # openai | zhipu | 等
+AI_PROVIDER="openai"                         # openai | zhipu | mock（默认）
 AI_API_KEY="sk-your-api-key"
-AI_MODEL="gpt-4o"                            # 可选，有默认值
+AI_MODEL="gpt-4o-mini"                       # 可选，默认 gpt-4o-mini
+# AI 服务内置 15s 超时、JSON 解析降级（markdown 代码块提取）、药品名/剂量擦除。
+# AI_API_KEY 为空时自动回退到 mock 并输出 console.warn。
 
 # === 地图服务 ===
 NEXT_PUBLIC_AMAP_KEY="your_amap_web_key"     # 前端地图展示（客户端可见）
-AMAP_KEY="your_amap_server_key"              # 服务端 API（地理编码等）
+# 未设置时地图组件显示占位状态，不会报错。
 
 # === 对象存储 ===
-STORAGE_PROVIDER="s3"                        # s3 | oss | 等
+STORAGE_PROVIDER="s3"                        # s3 | local（默认）
 STORAGE_ENDPOINT="https://s3.amazonaws.com"
 STORAGE_BUCKET="petpal-uploads-staging"
 STORAGE_ACCESS_KEY="your_storage_access_key"
 STORAGE_SECRET_KEY="your_storage_secret_key"
+STORAGE_REGION="us-east-1"                   # 可选
+# 兼容：AWS S3、阿里云 OSS、腾讯云 COS、MinIO、Cloudflare R2（AWS SigV4 签名）
 
 # === 内容审核 ===
-# 注意：内容审核在 production 模式下自动启用（fail-closed）。
-# 开发环境使用 mock（全部通过）。生产环境无需设置 MODERATION_PROVIDER，
-# NODE_ENV=production 即启用 RealModerationProvider。
-# 若未配置 MODERATION_API_KEY，RealModerationProvider 会拒绝所有内容（fail-closed）。
+# 注意：内容审核在 NODE_ENV=production 时自动启用 RealModerationProvider（fail-closed）。
+# 开发环境使用 mock（关键词过滤）。生产环境无需单独设置 MODERATION_PROVIDER，
+# NODE_ENV=production 即启用真实审核。
+# 若未配置 MODERATION_API_KEY，RealModerationProvider 会拒绝所有内容（fail-closed，安全优先）。
 MODERATION_API_KEY="your_moderation_api_key"
+
+# === Redis（验证码 & 限流持久化，强烈推荐 staging/production 启用）===
+REDIS_URL="redis://localhost:6379"
+CODE_STORE="redis"                           # memory（默认）| redis
+RATE_LIMIT_STORE="redis"                     # memory（默认）| redis
+# 未设置 REDIS_URL 但 CODE_STORE/RATE_LIMIT_STORE=redis 时，模块加载即抛出明确错误。
+# 默认 memory 模式无需 Redis，适合单进程开发和低流量场景。
 
 # === 错误监控（可选）===
 # SENTRY_DSN="https://xxx@sentry.io/xxx"
@@ -107,8 +118,12 @@ STORAGE_BUCKET="petpal-staging"
 STORAGE_ACCESS_KEY="LTAI5t..."
 STORAGE_SECRET_KEY="..."
 
-# 内容审核在 production 模式下自动启用（fail-closed），无需单独的 PROVIDER 变量
+# 内容审核在 NODE_ENV=production 时自动启用（fail-closed），无需单独的 MODERATION_PROVIDER 变量
 MODERATION_API_KEY="..."
+
+REDIS_URL="redis://redis-staging.internal:6379"
+CODE_STORE="redis"
+RATE_LIMIT_STORE="redis"
 
 NODE_ENV="production"
 ```

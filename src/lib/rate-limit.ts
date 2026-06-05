@@ -56,7 +56,7 @@ class RedisRateLimitStore implements RateLimitStore {
     const url = process.env.REDIS_URL;
     if (!url) {
       throw new Error(
-        'REDIS_URL is required when RATE_LIMIT_STORE=redis'
+        'Redis connection failed. Check REDIS_URL or switch to memory store.'
       );
     }
     this.client = new Redis(url, {

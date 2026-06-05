@@ -1,4 +1,10 @@
- 
+// STAGING STATUS: RealModerationProvider is fail-closed.
+// If MODERATION_API_KEY is missing, ALL content is rejected (text and images).
+// To use in staging/production: set NODE_ENV=production and MODERATION_API_KEY.
+// The text/image API call methods contain placeholder implementations;
+// replace with actual Alibaba Cloud Green SDK calls before production use.
+// Note: Not yet tested against a real moderation account. Test with valid credentials.
+
 export interface ModerationProvider {
   /**
    * Check text content for inappropriate material.

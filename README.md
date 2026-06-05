@@ -39,18 +39,24 @@ npm run dev
 
 ## 环境变量
 
-复制 `.env.example` 为 `.env`，根据需要修改：
+复制 `.env.example` 为 `.env`，按需修改。详细的 dev/staging/production 分层说明请直接阅读 `.env.example` 文件内注释。
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `DATABASE_URL` | 数据库连接串；开发环境会解析到 `prisma/dev.db` | `file:./dev.db` |
-| `SESSION_SECRET` | 用户会话密钥（最少 32 字符） | 已预设开发值 |
-| `ADMIN_SESSION_SECRET` | 管理员会话密钥（最少 32 字符） | 已预设开发值 |
-| `SMS_PROVIDER` | 短信服务 Provider | `mock` |
-| `AI_PROVIDER` | AI 健康分诊 Provider | `mock` |
-| `STORAGE_PROVIDER` | 图片存储 Provider | `local` |
-| `MODERATION_PROVIDER` | 内容审核 Provider | `mock` |
-| `NEXT_PUBLIC_AMAP_KEY` / `AMAP_KEY` | 高德地图 Key（可选） | 空 |
+核心变量速查：
+
+| 变量 | 说明 | 开发默认值 | 生产要求 |
+|------|------|-----------|----------|
+| `DATABASE_URL` | 数据库连接串 | `file:./prisma/dev.db` (SQLite) | PostgreSQL 连接串 |
+| `SESSION_SECRET` | 用户会话密钥（最少 32 字符） | 已预设开发值 | `openssl rand -base64 64` |
+| `ADMIN_SESSION_SECRET` | 管理员会话密钥（最少 32 字符） | 已预设开发值 | `openssl rand -base64 64` |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` | 管理员登录凭据 | 自动创建 admin/admin123 | 必须通过环境变量设置 |
+| `SMS_PROVIDER` | 短信服务 Provider | `mock` (验证码 123456) | `aliyun` |
+| `AI_PROVIDER` | AI 健康分诊 Provider | `mock` (本地话术) | `openai` 或 `zhipu` |
+| `STORAGE_PROVIDER` | 文件存储 Provider | `local` (本地 uploads/) | `s3` |
+| `MODERATION_PROVIDER` | 内容审核 Provider | `mock` (关键词过滤) | `aliyun` |
+| `NEXT_PUBLIC_AMAP_KEY` | 高德地图 JS API Key | 空（占位地图） | 已申请的高德 Key |
+| `REDIS_URL` | Redis 连接串（可选） | 空（使用内存存储） | Redis 连接串 |
+| `CODE_STORE` | 验证码存储后端 | `memory` | `redis` |
+| `RATE_LIMIT_STORE` | 限流存储后端 | `memory` | `redis` |
 
 ## 生产环境部署
 

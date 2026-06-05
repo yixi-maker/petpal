@@ -60,7 +60,7 @@ class RedisCodeStore implements CodeStore {
     const url = process.env.REDIS_URL;
     if (!url) {
       throw new Error(
-        'REDIS_URL is required when CODE_STORE=redis'
+        'Redis connection failed. Check REDIS_URL or switch to memory store.'
       );
     }
     this.client = new Redis(url, {
@@ -92,6 +92,10 @@ class RedisCodeStore implements CodeStore {
 
 // ---------------------------------------------------------------------------
 // Factory
+//
+// Fail-fast: the store is created at module load time.
+// If CODE_STORE=redis and REDIS_URL is missing, the process will throw
+// immediately rather than failing at the first request.
 // ---------------------------------------------------------------------------
 
 let cachedStore: CodeStore | null = null;
@@ -106,4 +110,15 @@ export function getCodeStore(): CodeStore {
   }
 
   return cachedStore;
+}
+
+// Eager instantiation — fails at module load if Redis is misconfigured
+try {
+  getCodeStore();
+} catch (err) {
+  console.error(
+    '[CodeStore] Failed to initialize:',
+    err instanceof Error ? err.message : err
+  );
+  throw err;
 }

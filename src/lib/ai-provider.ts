@@ -1,3 +1,10 @@
+// STAGING STATUS: OpenAI and Zhipu AI providers are fully implemented.
+// The implementation includes 15s timeout, JSON response parsing with markdown
+// fallback, drug name sanitization, and forced disclaimer injection.
+// To use: set AI_PROVIDER=openai or AI_PROVIDER=zhipu and configure AI_API_KEY.
+// If AI_API_KEY is missing, falls back to mock with a console.warn.
+// Note: Not yet tested against real API keys. Test with valid credentials.
+
 import { AI_SYSTEM_PROMPT } from './ai-system-prompt';
 
 // ---------------------------------------------------------------------------

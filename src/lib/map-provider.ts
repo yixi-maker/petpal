@@ -1,3 +1,9 @@
+// STAGING STATUS: AMap integration is ready.
+// getAmapKey() returns null when NEXT_PUBLIC_AMAP_KEY is not set,
+// which causes the app to render placeholder maps instead of real AMap.
+// To use: set NEXT_PUBLIC_AMAP_KEY to your 高德地图 Web JS API key.
+// isMapAvailable() and getAmapSdkUrl() both degrade gracefully when unconfigured.
+
 /**
  * Get the AMAP (高德地图) JS API key from environment.
  * Uses NEXT_PUBLIC_AMAP_KEY so it is available in client bundles as well.

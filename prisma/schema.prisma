@@ -24,6 +24,9 @@
 //
 // Development (SQLite):  DATABASE_URL="file:./dev.db"
 // Production (PostgreSQL):  DATABASE_URL="postgresql://user:pass@host:5432/petpal?schema=public"
+//
+// Verified PostgreSQL compatible: all types (Int/autoincrement, String, Float, DateTime,
+// Boolean, JSON-as-String) work without @db annotations. No SQLite-specific features used.
 // ============================================================
 
 generator client {

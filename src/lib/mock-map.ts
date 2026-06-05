@@ -626,7 +626,7 @@ const REVIEWS: Record<string, MockReview[]> = {
   '申普宠物医院(黄浦总院)': [
     { rating: 5, content: '上海最好的宠物医院之一，设备先进' },
     { rating: 4, content: '急诊很及时，就是人有点多需要排队' },
-    { rating: 5, content: '医生的诊断很准确，少走了很多弯路' },
+    { rating: 5, content: '医生的判断很细致，服务很贴心' },
   ],
   '小精灵动物医院(静安分院)': [
     { rating: 5, content: '服务特别好，对宠物真的很有爱' },

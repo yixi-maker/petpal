@@ -157,12 +157,11 @@
 - [ ] 用户输入内容需去除个人敏感信息后再发送至 AI 服务
 
 #### AI Provider 切换待办
-- [ ] 选择合适的 AI 服务商（如 OpenAI、Anthropic Claude、百度文心、阿里通义千问等）
+- [ ] 选择合适的 AI 服务商（当前已实现 OpenAI 和智谱（Zhipu）两种 provider）
 - [ ] 申请 API Key 并配置 `AI_API_KEY`
-- [ ] 设置 `AI_PROVIDER` 为对应的生产服务
-- [ ] 实现真实 AI API 调用逻辑（`src/lib/ai-provider.ts` 中 `getAITriage` 函数当前直接委托给 mock）
+- [ ] 设置 `AI_PROVIDER` 为 `openai` 或 `zhipu`（`src/lib/ai-provider.ts` 已实现完整的 API 调用逻辑：15s 超时、JSON 解析降级、药品名擦除、强制免责声明注入。AI_API_KEY 为空时自动回退 mock）
 - [ ] 进行 AI 输出质量评估（准确率、安全率）
-- [ ] 配置 AI 服务的超时和降级策略
+- [ ] 验证 AI 服务的超时和降级策略（已内置 15s 超时 + mock 回退）
 
 ### 5.2 算法推荐说明
 - **状态**：待评估
@@ -194,18 +193,22 @@
 
 | 变量 | 开发值 | 生产要求 | 状态 |
 |------|--------|----------|------|
-| `DATABASE_URL` | `file:./dev.db` | PostgreSQL 连接串 | 待配置 |
-| `SESSION_SECRET` | `change-me-in-production-min-32-chars` | 至少32位随机字符串 | **必须更换** |
-| `ADMIN_SESSION_SECRET` | `change-me-in-production-min-32-chars` | 至少32位随机字符串 | **必须更换** |
-| `SMS_PROVIDER` | `mock` | 真实短信服务商 | 待配置 |
-| `AI_PROVIDER` | `mock` | 真实 AI 服务商 | 待配置 |
-| `AI_API_KEY` | 未设置 | AI 服务 API Key | 待配置 |
-| `NEXT_PUBLIC_AMAP_KEY` | 未设置 | 高德地图 Web Key | 待配置 |
-| `AMAP_KEY` | 未设置 | 高德地图服务端 Key | 待配置 |
-| `STORAGE_PROVIDER` | `local` | OSS/S3 | 待配置 |
-| `MODERATION_PROVIDER` | `mock` | 真实审核服务 | 待配置 |
+| `DATABASE_URL` | `file:./prisma/dev.db` | PostgreSQL 连接串 | 待配置 |
+| `SESSION_SECRET` | `petpal-dev-secret-at-least-32-chars-long!!` | 至少32位随机字符串（`openssl rand -base64 64`） | **必须更换** |
+| `ADMIN_SESSION_SECRET` | `petpal-admin-dev-secret-32-chars!!` | 至少32位随机字符串（`openssl rand -base64 64`） | **必须更换** |
 | `ADMIN_USERNAME` | 未设置 | 管理员用户名 | 待配置 |
 | `ADMIN_PASSWORD_HASH` | 未设置 | bcrypt 哈希的管理员密码 | 待配置 |
+| `SMS_PROVIDER` | `mock` | `aliyun` | 待配置 |
+| `SMS_ACCESS_KEY` / `SMS_SECRET` / `SMS_TEMPLATE_ID` | 未设置 | 阿里云短信凭证 | 待配置 |
+| `AI_PROVIDER` | `mock` | `openai` 或 `zhipu`（AI_API_KEY 为空时自动回退 mock） | 待配置 |
+| `AI_API_KEY` | 未设置 | AI 服务 API Key | 待配置 |
+| `NEXT_PUBLIC_AMAP_KEY` | 未设置 | 高德地图 Web JS API Key | 待配置 |
+| `STORAGE_PROVIDER` | `local` | `s3` | 待配置 |
+| `STORAGE_ENDPOINT` / `STORAGE_BUCKET` / `STORAGE_ACCESS_KEY` / `STORAGE_SECRET_KEY` | 未设置 | S3 兼容存储凭证 | 待配置 |
+| `MODERATION_API_KEY` | 未设置 | 内容审核 API Key（NODE_ENV=production 时自动启用 fail-closed） | 待配置 |
+| `REDIS_URL` | 未设置 | Redis 连接串（强烈建议 staging/production 配置） | 待配置 |
+| `CODE_STORE` | `memory` | `redis` | 待配置 |
+| `RATE_LIMIT_STORE` | `memory` | `redis` | 待配置 |
 
 ### 6.3 短信服务接入
 - **当前**：验证码固定为 `123456`（mock 模式）
@@ -217,14 +220,14 @@
 - [ ] 配置发送频率限制（防短信轰炸）
 
 ### 6.4 AI 服务接入
-- **当前**：使用 mock AI 插件生成固定话术
+- **当前**：`src/lib/ai-provider.ts` 已实现完整的 OpenAI / 智谱 API 调用（15s 超时、JSON 解析降级、药品名剂量擦除、强制免责声明注入）。`AI_API_KEY` 为空时自动回退 mock。
 - **需实现**：
-  - [ ] 选择 AI 服务商并接入 API
+  - [ ] 申请 AI 服务商 API Key 并配置 `AI_API_KEY`
   - [ ] 实现流式输出（提升用户体验）
   - [ ] 配置 Prompt 管理（已实现 System Prompt，见 `src/lib/ai-system-prompt.ts`）
-  - [ ] 设置超时和重试机制
+  - [ ] 验证超时和重试机制（已内置 15s 超时 + mock 回退）
   - [ ] 配置成本控制（Token 限制、调用频率限制）
-  - [ ] AI 输出内容安全兜底
+  - [ ] AI 输出内容安全兜底（已实现 validateAndNormalize 擦除逻辑）
 
 ### 6.5 地图服务接入
 - **当前**：地图功能无真实 Key，地图组件显示占位
