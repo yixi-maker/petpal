@@ -4,7 +4,7 @@
 # ============================================================
 # Usage: bash scripts/clean-test-data.sh [API_BASE_URL]
 #
-# Hides posts containing "Smoke test" or "CI smoke" from the
+# Hides posts containing "Smoke test", "CI smoke", or "E2E test" from the
 # public feed using the admin PUT /api/admin/posts endpoint.
 #
 # Requires env vars for admin login. Uses the server's own
@@ -26,7 +26,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 echo "============================================"
-echo "  PetPal Hide Smoke Test Posts"
+echo "  PetPal Hide Smoke/E2E Test Posts"
 echo "  Target: ${API_BASE}"
 echo "============================================"
 echo ""
@@ -89,17 +89,19 @@ fi
 
 # ---- Find smoke test posts ----
 
-echo "Searching for smoke test posts ..."
+TEST_POST_PATTERN="Smoke test|CI smoke|E2E test"
 
-MATCHING=$(echo "$POSTS_JSON" | grep -i -E '"content"[[:space:]]*:[[:space:]]*"[^"]*(Smoke test|CI smoke)[^"]*"' 2>/dev/null || echo "")
+echo "Searching for smoke/E2E test posts ..."
+
+MATCHING=$(echo "$POSTS_JSON" | grep -i -E "\"content\"[[:space:]]*:[[:space:]]*\"[^\"]*(${TEST_POST_PATTERN})[^\"]*\"" 2>/dev/null || echo "")
 
 if [ -z "$MATCHING" ]; then
-  echo -e "${GREEN}[OK]${NC} No smoke test posts found. Database is clean."
+  echo -e "${GREEN}[OK]${NC} No smoke/E2E test posts found. Database is clean."
   rm -f "$COOKIE_JAR"
   exit 0
 fi
 
-echo "Found smoke test posts:"
+echo "Found smoke/E2E test posts:"
 echo "$MATCHING" | while read -r line; do
   CONTENT=$(echo "$line" | grep -oE '"content"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"content"[[:space:]]*:[[:space:]]*"//' | tr -d '"')
   echo "  - \"${CONTENT}\""
@@ -134,18 +136,18 @@ if command -v jq &> /dev/null; then
   echo "Using jq for precise ID extraction ..."
   POST_IDS=$(echo "$POSTS_JSON" | jq -r '
     .posts[]?
-    | select(.content | test("Smoke test|CI smoke"; "i"))
+    | select(.content | test("Smoke test|CI smoke|E2E test"; "i"))
     | "\(.id)\t\(.content)"' 2>/dev/null) || POST_IDS=""
 
   if [ -z "$POST_IDS" ]; then
     POST_IDS=$(echo "$POSTS_JSON" | jq -r '
       .[]?
-      | select(.content | test("Smoke test|CI smoke"; "i"))
+      | select(.content | test("Smoke test|CI smoke|E2E test"; "i"))
       | "\(.id)\t\(.content)"' 2>/dev/null) || POST_IDS=""
   fi
 
   if [ -n "$POST_IDS" ]; then
-    echo "Hiding smoke test posts ..."
+    echo "Hiding smoke/E2E test posts ..."
     while IFS=$'\t' read -r id content; do
       if [ -z "$id" ] || [ "$id" = "null" ]; then continue; fi
       if hide_post "$id" "${content:0:50}"; then
@@ -157,13 +159,13 @@ if command -v jq &> /dev/null; then
   fi
 else
   echo "jq not available — using grep-based extraction ..."
-  POST_IDS=$(echo "$POSTS_JSON" | grep -B 3 -i -E '"content"[[:space:]]*:[[:space:]]*"[^"]*(Smoke test|CI smoke)' \
+  POST_IDS=$(echo "$POSTS_JSON" | grep -B 3 -i -E "\"content\"[[:space:]]*:[[:space:]]*\"[^\"]*(${TEST_POST_PATTERN})" \
     | grep -oE '"id"[[:space:]]*:[[:space:]]*[0-9]+' \
     | grep -oE '[0-9]+' \
     | sort -u) || POST_IDS=""
 
   if [ -n "$POST_IDS" ]; then
-    echo "Hiding smoke test posts ..."
+    echo "Hiding smoke/E2E test posts ..."
     while read -r id; do
       if [ -z "$id" ]; then continue; fi
       if hide_post "$id" "(id ${id})"; then

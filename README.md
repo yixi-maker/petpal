@@ -67,7 +67,11 @@ npm run dev
    - 必须设置 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD_HASH`（管理员密码的 bcrypt 哈希，可用 `node -e "const bcrypt=require('bcryptjs');bcrypt.hash('your-password',10).then(h=>console.log(h))"` 生成）。
    - 根据实际使用的服务配置 AI、SMS、地图、存储、内容审核的 Provider。
 
-2. **数据库**：将 `prisma/schema.prisma` 中的 provider 从 `sqlite` 改为 `postgresql`，设置 PostgreSQL 连接串，执行 `npx prisma migrate deploy && npx prisma generate`。
+2. **数据库**：本地开发继续使用 SQLite；Staging/Production 使用 PostgreSQL 专用配置：
+   ```bash
+   npx prisma migrate deploy --config=prisma.config.postgres.ts
+   npx prisma generate --config=prisma.config.postgres.ts
+   ```
 
 3. **会话安全**：应用启动时会自动检测生产环境中是否仍在使用开发默认密钥，若未修改则会抛出错误并拒绝启动。
 
@@ -125,7 +129,10 @@ public/
 ├── favicon.svg                 # 网站图标
 └── uploads/                    # 用户上传文件
 prisma/
-├── schema.prisma               # 数据库 Schema
+├── schema.prisma               # 本地开发 SQLite Schema
+├── schema.postgres.prisma      # Staging/Production PostgreSQL Schema
+├── migrations/                 # SQLite migrations
+├── migrations-postgres/        # PostgreSQL migrations
 └── dev.db                      # 开发环境 SQLite 数据库
 ```
 
