@@ -3,6 +3,8 @@
 > Last updated: 2026-06-08
 > Purpose: shared memory for Codex, Claude Code, and future maintainers.
 
+For the full decision archive, read `docs/project-memory.md`. This file is the shorter operational context; `project-memory.md` is the durable product and conversation memory.
+
 ## Product Direction
 
 PetPal is a mobile-first Web App for pet owners and pets as dual subjects. V1 focuses on cats and dogs. Pets are not only profile data; each pet has a social identity, profile page, activity feed presence, friends/follows, and health records.

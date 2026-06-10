@@ -5,6 +5,7 @@
 ## 当前有效文档
 
 - `project-context.md`：当前产品、工程、部署、验证与清理规则的统一上下文。Claude/Codex 后续优先读取。
+- `project-memory.md`：长期项目记忆，记录从想法到 V1 基线的关键需求、UI 偏好、协作规则、部署/上线理解与后续路线。
 - `beta-readiness.md`：V1 内测准备清单 —— 账号、种子数据、Key 清单、部署、回滚、已知限制、反馈收集、风险处理。
 - `beta-user-guide.md`：给内测用户阅读的使用指南，可替换为真实内测链接后分发。
 - `deployment-runbook.md`：Staging 部署操作手册，适合实际服务器部署时逐步执行。
