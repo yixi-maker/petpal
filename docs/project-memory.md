@@ -1,6 +1,6 @@
 # PetPal Long-Term Project Memory
 
-> Last updated: 2026-06-08
+> Last updated: 2026-06-10
 > Purpose: durable archive of product decisions, user preferences, workflow rules, and staged roadmap for Codex, Claude Code, and future maintainers.
 
 ## How To Use This File
@@ -244,7 +244,17 @@ Current staging status:
 - Stage two deployment preparation is complete.
 - File completeness, environment variable coverage, PostgreSQL schema validation, migration structure, shell syntax, lint, build, and E2E list checks passed.
 - Local Docker was unavailable, so `docker compose config` and `docker compose up` must be run on a real server.
-- The next step is real Staging deployment on Linux with Docker.
+- GitHub repository is configured and pushed: `https://github.com/yixi-maker/petpal.git`.
+- Staging server has been purchased:
+  - Ubuntu 24.04.2 LTS
+  - x86_64
+  - 2 vCPU / about 2GB RAM
+  - 40GB system disk
+  - public IP: `39.106.100.2`
+  - 4GB swap created
+  - Docker installed: `29.5.3`
+  - Docker Compose installed: `v5.1.4`
+- The next step is to clone the GitHub repository on the server and create `.env.staging`.
 
 Staging minimum requirements:
 
