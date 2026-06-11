@@ -46,6 +46,7 @@ RUN rm -rf prisma/migrations && cp -R prisma/migrations-postgres prisma/migratio
 COPY --from=builder /app/prisma.config.postgres.ts ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
 
 USER nextjs
 

@@ -141,6 +141,8 @@ Second startup attempt built the app image but the app container exited during P
 
 Next startup attempt on the 2GB staging server got stuck in `next build` TypeScript validation for several minutes and made SSH intermittently unresponsive. Fix: add a narrow `SKIP_NEXT_TYPECHECK=1` switch used only in the Docker builder stage. Normal local/CI builds still typecheck by default; the staging server avoids repeating heavy type validation during image build.
 
+After the app became healthy, server-local smoke tests found `/api/upload` returning 500. App logs showed `EACCES` when writing to `/app/public/uploads/...` because the runtime container switches to the non-root `nextjs` user after copying `public`. Fix: create/chown `public/uploads` for `nextjs:nodejs` in the runner stage.
+
 ## Likely Next Action
 
 Use these project-scoped images:
