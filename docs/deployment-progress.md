@@ -135,6 +135,8 @@ Verified on the staging server:
 - `m.daocloud.io/docker.io/library/postgres:16-alpine` manifest check succeeded.
 - `m.daocloud.io/docker.io/library/redis:7-alpine` manifest check succeeded.
 
+First Docker build then failed during `next build` because build-time route collection imported `src/lib/session.ts` while `NODE_ENV=production` and no `SESSION_SECRET` existed in the builder environment. The fix is project-scoped: Dockerfile supplies non-sensitive build-time placeholder secrets only in the builder stage. Runtime still requires real secrets from `.env.staging` / production envs.
+
 ## Likely Next Action
 
 Use these project-scoped images:
