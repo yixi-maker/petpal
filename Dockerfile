@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:22-alpine AS builder
+FROM m.daocloud.io/docker.io/library/node:22-alpine AS builder
 WORKDIR /app
 
 # Install dependencies (including devDependencies needed for build)
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Runner
-FROM node:22-alpine AS runner
+FROM m.daocloud.io/docker.io/library/node:22-alpine AS runner
 
 # Install curl for healthcheck
 RUN apk add --no-cache curl

@@ -127,34 +127,23 @@ Additional mirror tests completed after the initial handoff:
 - `docker.m.daocloud.io`: node pull started but stalled; manifest checks failed.
 - `public.ecr.aws/docker/library`: manifest checks for `node:22-alpine`, `postgres:16-alpine`, and `redis:7-alpine` failed or timed out.
 
-Current blocker: the staging server cannot reliably pull required container images from public registries.
+Current resolution path: use project-scoped DaoCloud mirror image references instead of Docker Hub default image references.
+
+Verified on the staging server:
+
+- `m.daocloud.io/docker.io/library/node:22-alpine` pulled successfully.
+- `m.daocloud.io/docker.io/library/postgres:16-alpine` manifest check succeeded.
+- `m.daocloud.io/docker.io/library/redis:7-alpine` manifest check succeeded.
 
 ## Likely Next Action
 
-If a working registry mirror is later found, test:
+Use these project-scoped images:
 
-```bash
-docker pull docker.m.daocloud.io/library/postgres:16-alpine
-docker pull docker.m.daocloud.io/library/redis:7-alpine
-```
+- `Dockerfile`: `m.daocloud.io/docker.io/library/node:22-alpine`
+- `docker-compose.staging.yml`: `m.daocloud.io/docker.io/library/postgres:16-alpine`
+- `docker-compose.staging.yml`: `m.daocloud.io/docker.io/library/redis:7-alpine`
 
-If a project-scoped mirror works, prefer project-scoped changes rather than global Docker daemon changes:
-
-- Change `Dockerfile` base images from:
-  - `node:22-alpine`
-  - `node:22-alpine`
-- To:
-  - `docker.m.daocloud.io/library/node:22-alpine`
-  - `docker.m.daocloud.io/library/node:22-alpine`
-
-- Change `docker-compose.staging.yml` service images from:
-  - `postgres:16-alpine`
-  - `redis:7-alpine`
-- To:
-  - `docker.m.daocloud.io/library/postgres:16-alpine`
-  - `docker.m.daocloud.io/library/redis:7-alpine`
-
-Then commit and push the project-scoped mirror changes, pull on server, and run:
+After committing and pushing the project-scoped mirror changes, pull on server and run:
 
 ```bash
 cd /opt/petpal-staging
