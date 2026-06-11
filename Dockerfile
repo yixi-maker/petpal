@@ -15,7 +15,8 @@ RUN npx prisma generate --config=prisma.config.postgres.ts
 # Build-time placeholders let Next.js collect route metadata without weakening
 # runtime security. Real secrets are injected by .env.staging / production envs.
 ENV SESSION_SECRET=petpal-docker-build-session-secret-not-used-at-runtime-000000 \
-    ADMIN_SESSION_SECRET=petpal-docker-build-admin-secret-not-used-at-runtime-000000
+    ADMIN_SESSION_SECRET=petpal-docker-build-admin-secret-not-used-at-runtime-000000 \
+    SKIP_NEXT_TYPECHECK=1
 
 # Copy source and build the Next.js app
 COPY . .

@@ -139,6 +139,8 @@ First Docker build then failed during `next build` because build-time route coll
 
 Second startup attempt built the app image but the app container exited during Prisma migration. Root cause: Prisma deploy read the default `prisma/migrations` directory, while the PostgreSQL migration lives under `prisma/migrations-postgres`. The PostgreSQL migration file also contained accidental Prisma CLI output at the beginning and end. Fix: clean non-SQL lines from `prisma/migrations-postgres/0001_init/migration.sql`, and in the Docker runner image replace `prisma/migrations` with the PostgreSQL migration directory before runtime migration.
 
+Next startup attempt on the 2GB staging server got stuck in `next build` TypeScript validation for several minutes and made SSH intermittently unresponsive. Fix: add a narrow `SKIP_NEXT_TYPECHECK=1` switch used only in the Docker builder stage. Normal local/CI builds still typecheck by default; the staging server avoids repeating heavy type validation during image build.
+
 ## Likely Next Action
 
 Use these project-scoped images:
