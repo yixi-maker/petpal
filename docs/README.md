@@ -9,6 +9,7 @@
 - `beta-readiness.md`：V1 内测准备清单 —— 账号、种子数据、Key 清单、部署、回滚、已知限制、反馈收集、风险处理。
 - `beta-user-guide.md`：给内测用户阅读的使用指南，可替换为真实内测链接后分发。
 - `deployment-runbook.md`：Staging 部署操作手册，适合实际服务器部署时逐步执行。
+- `deployment-progress.md`：当前真实 Staging 部署进度交接，包含服务器状态、已完成步骤、当前阻塞和下一步。
 - `launch-readiness.md`：上线前合规、技术、内容安全与阻塞项清单。
 - `staging-deploy.md`：Staging 环境部署、迁移、回滚与监控说明。
 

@@ -437,6 +437,8 @@ When reviewing Claude output:
 
 Proceed to real Staging deployment on a Linux server.
 
+Current deployment handoff is maintained in `docs/deployment-progress.md`. Read it before continuing server work, because it records the active server state, SSH access status, `.env.staging` status, Docker image pull blocker, and the user's constraint about not changing non-project local machine files/config.
+
 Once the server URL exists, validate:
 
 ```bash
