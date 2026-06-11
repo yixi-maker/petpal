@@ -137,6 +137,8 @@ Verified on the staging server:
 
 First Docker build then failed during `next build` because build-time route collection imported `src/lib/session.ts` while `NODE_ENV=production` and no `SESSION_SECRET` existed in the builder environment. The fix is project-scoped: Dockerfile supplies non-sensitive build-time placeholder secrets only in the builder stage. Runtime still requires real secrets from `.env.staging` / production envs.
 
+Second startup attempt built the app image but the app container exited during Prisma migration. Root cause: Prisma deploy read the default `prisma/migrations` directory, while the PostgreSQL migration lives under `prisma/migrations-postgres`. The PostgreSQL migration file also contained accidental Prisma CLI output at the beginning and end. Fix: clean non-SQL lines from `prisma/migrations-postgres/0001_init/migration.sql`, and in the Docker runner image replace `prisma/migrations` with the PostgreSQL migration directory before runtime migration.
+
 ## Likely Next Action
 
 Use these project-scoped images:
