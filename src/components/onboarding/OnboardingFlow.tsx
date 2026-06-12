@@ -89,8 +89,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-surface/95 backdrop-blur-sm px-4 py-6 sm:flex sm:items-center sm:justify-center">
-      <div className="w-full max-w-[400px] bg-surface-white rounded-[14px] shadow-sm mx-auto sm:my-0">
+    <div className="fixed inset-0 z-50 bg-surface/95 backdrop-blur-sm px-4 py-6 sm:flex sm:items-center sm:justify-center">
+      <div className="w-full max-w-[400px] max-h-[calc(100vh-3rem)] overflow-y-auto bg-surface-white rounded-[14px] shadow-sm mx-auto sm:my-0">
         {/* Step dots + progress */}
         <div className="px-6 pt-6">
           <div className="flex items-center justify-center gap-2.5 mb-4">
