@@ -145,6 +145,15 @@ After the app became healthy, server-local smoke tests found `/api/upload` retur
 
 Server-local smoke tests then passed 15/15 after `scripts/smoke-test.sh` was updated to accept `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Public access on port 3000 connected but returned an empty reply, while a temporary HTTP server on port 80 was reachable from the public internet. Fix: expose staging app on host port 80 as well as 3000, and use `http://39.106.100.2` as the external staging URL.
 
+As of 2026-06-12, Staging is live at:
+
+- External URL: `http://39.106.100.2`
+- Internal URL: `http://localhost:3000` on the server
+- Compose status: app, PostgreSQL, and Redis all healthy
+- Provider health: PostgreSQL and Redis configured; SMS, AI, Storage, Moderation, and Maps are still staging/mock providers
+- Public smoke test against `http://39.106.100.2`: 15 passed, 0 failed, 2 skipped
+- Admin password was reset for Staging and verified. The plaintext password is intentionally not stored in this repository; reset it again if lost.
+
 ## Likely Next Action
 
 Use these project-scoped images:
