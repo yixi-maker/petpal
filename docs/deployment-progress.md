@@ -143,6 +143,8 @@ Next startup attempt on the 2GB staging server got stuck in `next build` TypeScr
 
 After the app became healthy, server-local smoke tests found `/api/upload` returning 500. App logs showed `EACCES` when writing to `/app/public/uploads/...` because the runtime container switches to the non-root `nextjs` user after copying `public`. Fix: create/chown `public/uploads` for `nextjs:nodejs` in the runner stage.
 
+Server-local smoke tests then passed 15/15 after `scripts/smoke-test.sh` was updated to accept `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Public access on port 3000 connected but returned an empty reply, while a temporary HTTP server on port 80 was reachable from the public internet. Fix: expose staging app on host port 80 as well as 3000, and use `http://39.106.100.2` as the external staging URL.
+
 ## Likely Next Action
 
 Use these project-scoped images:
