@@ -73,6 +73,7 @@ export default function HomePage() {
 
   // Onboarding state
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const onboardingKey = user ? `petpal-onboarding-done:${user.id}` : null;
 
   // StoryRail data
   const [friendStories, setFriendStories] = useState<StoryPet[]>([]);
@@ -83,24 +84,24 @@ export default function HomePage() {
   // Auto-set onboarding flag when pets exist (existing users never see it)
   useEffect(() => {
     if (pets.length > 0) {
-      localStorage.setItem('petpal-onboarding-done', 'true');
+      if (onboardingKey) { localStorage.setItem(onboardingKey, 'true'); }
       setShowOnboarding(false);
     }
-  }, [pets.length]);
+  }, [pets.length, onboardingKey]);
 
   // Show onboarding ONLY when pet API has returned and confirmed no pets
   useEffect(() => {
     if (!petLoading && pets.length === 0) {
-      const done = localStorage.getItem('petpal-onboarding-done');
+      const done = onboardingKey ? localStorage.getItem(onboardingKey) : 'true';
       if (done !== 'true') {
         setShowOnboarding(true);
       }
     }
-  }, [petLoading, pets.length]);
+  }, [petLoading, pets.length, onboardingKey]);
 
   // Handle onboarding complete
   const handleOnboardingComplete = () => {
-    localStorage.setItem('petpal-onboarding-done', 'true');
+    if (onboardingKey) { localStorage.setItem(onboardingKey, 'true'); }
     setShowOnboarding(false);
   };
 
