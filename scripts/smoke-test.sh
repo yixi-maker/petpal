@@ -9,6 +9,7 @@
 #   1. A PetPal dev server running on localhost:3000 (npm run dev), OR
 #      a staging server reachable at the given URL
 #   2. SMS_PROVIDER is NOT set to "production" (mock mode with code 123456)
+#   3. For staging Admin checks, set ADMIN_USERNAME and ADMIN_PASSWORD.
 #
 # The script creates its own test data and is safe to run repeatedly.
 
@@ -316,7 +317,9 @@ check "POST /api/auth/send-code with mock provider" POST "/api/auth/send-code" '
 echo ""
 echo "--- Phase 7: Admin ---"
 
-ADMIN_DATA='{"username":"admin","password":"admin123"}'
+ADMIN_USERNAME="${ADMIN_USERNAME:-admin}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin123}"
+ADMIN_DATA=$(printf '{"username":"%s","password":"%s"}' "$ADMIN_USERNAME" "$ADMIN_PASSWORD")
 check "POST /api/admin/auth/login" POST "/api/admin/auth/login" "$ADMIN_DATA" 200 "$ADMIN_COOKIE_JAR"
 
 check "GET /api/admin/dashboard" GET "/api/admin/dashboard" "" 200 "$ADMIN_COOKIE_JAR"
