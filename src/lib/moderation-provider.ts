@@ -1,6 +1,7 @@
-// STAGING STATUS: RealModerationProvider is fail-closed.
-// If MODERATION_API_KEY is missing, ALL content is rejected (text and images).
-// To use in staging/production: set NODE_ENV=production and MODERATION_API_KEY.
+// Production status: RealModerationProvider is fail-closed.
+// If MODERATION_API_KEY is missing, all content is rejected (text and images).
+// Staging can explicitly use MODERATION_PROVIDER=mock while real moderation keys
+// are not configured yet; production always uses the fail-closed provider.
 // The text/image API call methods contain placeholder implementations;
 // replace with actual Alibaba Cloud Green SDK calls before production use.
 // Note: Not yet tested against a real moderation account. Test with valid credentials.
@@ -204,18 +205,48 @@ class RealModerationProvider implements ModerationProvider {
 // ---------------------------------------------------------------------------
 // Factory
 //
-// In production (NODE_ENV=production), ALWAYS returns RealModerationProvider.
-// In development, returns MockModerationProvider.
+// In production (APP_ENV=production), ALWAYS returns RealModerationProvider.
+// Staging can use MODERATION_PROVIDER=mock for beta testing before real keys
+// are configured, or MODERATION_PROVIDER=aliyun/real to test the real boundary.
 // ---------------------------------------------------------------------------
+
+export type ModerationProviderMode = 'mock' | 'real';
+
+export function resolveModerationProviderMode(): ModerationProviderMode {
+  const appEnv = process.env.APP_ENV;
+  const nodeEnv = process.env.NODE_ENV;
+  const configuredProvider = process.env.MODERATION_PROVIDER?.toLowerCase();
+
+  if (appEnv === 'production') {
+    return 'real';
+  }
+
+  if (configuredProvider === 'mock') {
+    return 'mock';
+  }
+
+  if (configuredProvider === 'aliyun' || configuredProvider === 'real') {
+    return 'real';
+  }
+
+  if (appEnv === 'staging') {
+    return 'mock';
+  }
+
+  if (nodeEnv === 'production') {
+    return 'real';
+  }
+
+  return 'mock';
+}
 
 let cachedProvider: ModerationProvider | null = null;
 
 export function getModerationProvider(): ModerationProvider {
   if (cachedProvider) return cachedProvider;
 
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  if (isProduction) {
+  const mode = resolveModerationProviderMode();
+  if (mode === 'real') {
     cachedProvider = new RealModerationProvider();
   } else {
     cachedProvider = new MockModerationProvider();

@@ -1,6 +1,8 @@
 // Provider health checks — validates configuration of all service providers
 // Logs status to console at startup (non-blocking). Also exposed via API endpoint.
 
+import { resolveModerationProviderMode } from './moderation-provider';
+
 export type HealthStatusKind = 'mock' | 'configured' | 'ready' | 'error';
 
 export interface HealthStatus {
@@ -89,8 +91,8 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
   }
 
   // Moderation
-  const modProvider = process.env.MODERATION_PROVIDER || 'mock';
-  if (modProvider === 'mock') {
+  const moderationMode = resolveModerationProviderMode();
+  if (moderationMode === 'mock') {
     results.push({
       provider: 'Moderation',
       status: 'mock',
