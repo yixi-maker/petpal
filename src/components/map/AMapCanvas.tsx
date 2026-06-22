@@ -5,7 +5,7 @@ import { getAmapKey, getAmapSecurityJsCode } from '@/lib/map-provider';
 import { MapPlaceholder } from './MapPlaceholder';
 
 interface AMapCanvasProps {
-  places: Array<{ id: number; name: string; lng: number; lat: number }>;
+  places: Array<{ id: number; name: string; lng: number; lat: number; type?: string }>;
   city?: string;
   onPlaceClick?: (placeId: number) => void;
   selectedPlaceId?: number;
@@ -65,6 +65,9 @@ export function AMapCanvas({ places, city, onPlaceClick, selectedPlaceId, zoom }
             zoom: zoom || 13,
             center,
             resizeEnable: true,
+            mapStyle: 'amap://styles/fresh',
+            showLabel: true,
+            features: ['bg', 'road', 'point'],
           }
         );
         mapRef.current = mapInstance;
@@ -76,10 +79,8 @@ export function AMapCanvas({ places, city, onPlaceClick, selectedPlaceId, zoom }
             const marker = new (AMap.Marker as new (opts: Record<string, unknown>) => unknown)({
               position: [place.lng, place.lat],
               title: place.name,
-              icon: selectedPlaceId === place.id
-                ? 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
-                : 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png',
-              offset: new (AMap.Pixel as new (x: number, y: number) => unknown)(-12, -32),
+              content: createMarkerContent(place.type, selectedPlaceId === place.id),
+              offset: new (AMap.Pixel as new (x: number, y: number) => unknown)(-18, -42),
             });
 
             if (onPlaceClick) {
@@ -92,6 +93,12 @@ export function AMapCanvas({ places, city, onPlaceClick, selectedPlaceId, zoom }
             return marker;
           });
           markersRef.current = newMarkers;
+          const fitView = (mapInstance as {
+            setFitView?: (overlays?: unknown[], immediately?: boolean, avoid?: number[], maxZoom?: number) => void;
+          }).setFitView;
+          if (fitView && newMarkers.length > 1) {
+            fitView.call(mapInstance, newMarkers, false, [70, 70, 260, 70], 14);
+          }
         }
       } catch {
         if (!cancelled) setLoadError(true);
@@ -121,7 +128,12 @@ export function AMapCanvas({ places, city, onPlaceClick, selectedPlaceId, zoom }
   }
 
   return (
-    <div ref={containerRef} className="w-full h-full min-h-[300px]" />
+    <div className="relative h-full w-full min-h-[300px] overflow-hidden bg-[#EAF6F4]">
+      <div ref={containerRef} className="h-full w-full" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,transparent_0%,transparent_54%,rgba(242,248,246,0.54)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#F2F8F6]/80 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#F2F8F6]/76 to-transparent" />
+    </div>
   );
 }
 
@@ -157,6 +169,78 @@ function loadAmapSdk(key: string): Promise<void> {
 
   amapLoadPromise.set(key, promise);
   return promise;
+}
+
+function createMarkerContent(type: string | undefined, selected: boolean): string {
+  const labelMap: Record<string, string> = {
+    HOSPITAL: '医',
+    PARK: '园',
+    MALL: '商',
+    CAFE: '咖',
+    RESTAURANT: '餐',
+    GROOMING: '洗',
+    BOARDING: '宿',
+  };
+  const label = labelMap[type || ''] || '地';
+  const background = selected
+    ? 'linear-gradient(145deg,#10504B,#1D8A80)'
+    : 'linear-gradient(145deg,rgba(255,255,255,0.96),rgba(232,247,244,0.92))';
+  const color = selected ? '#FFFFFF' : '#10504B';
+  const ring = selected ? 'rgba(29,138,128,0.22)' : 'rgba(16,80,75,0.12)';
+  const shadow = selected
+    ? '0 16px 34px rgba(16,80,75,0.34)'
+    : '0 14px 30px rgba(16,80,75,0.20)';
+
+  return `
+    <div style="
+      position:relative;
+      width:36px;
+      height:42px;
+      transform:translateZ(0);
+    ">
+      <div style="
+        position:absolute;
+        left:3px;
+        top:0;
+        width:30px;
+        height:30px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:16px;
+        border:2px solid rgba(255,255,255,0.92);
+        background:${background};
+        color:${color};
+        box-shadow:${shadow};
+        font-size:13px;
+        font-weight:700;
+        line-height:1;
+      ">${label}</div>
+      <div style="
+        position:absolute;
+        left:13px;
+        top:26px;
+        width:10px;
+        height:10px;
+        transform:rotate(45deg);
+        border-right:2px solid rgba(255,255,255,0.92);
+        border-bottom:2px solid rgba(255,255,255,0.92);
+        background:${selected ? '#1D8A80' : 'rgba(232,247,244,0.96)'};
+        box-shadow:7px 7px 18px rgba(16,80,75,0.14);
+      "></div>
+      <div style="
+        position:absolute;
+        left:-2px;
+        top:-5px;
+        width:40px;
+        height:40px;
+        border-radius:999px;
+        background:${ring};
+        filter:blur(1px);
+        z-index:-1;
+      "></div>
+    </div>
+  `;
 }
 
 // Type declaration for AMap on window

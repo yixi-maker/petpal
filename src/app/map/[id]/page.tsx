@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Avatar, Button, Badge } from '@/components/ui';
 import { AMapCanvas } from '@/components/map/AMapCanvas';
+import { buildAmapNavigationUrl } from '@/lib/amap-navigation';
 
 interface ReviewPet {
   id: number;
@@ -251,6 +252,11 @@ export default function PlaceDetailPage() {
 
   const allTags = getAllPlaceTags(place);
   const showRecentConfirmation = hasRecentReview(place.reviews);
+  const navigationUrl = buildAmapNavigationUrl({
+    name: place.name,
+    lng: place.lng,
+    lat: place.lat,
+  });
 
   return (
     <div className="min-h-screen bg-surface">
@@ -353,11 +359,11 @@ export default function PlaceDetailPage() {
           {/* Navigate button */}
           <Button
             variant="outline"
-            onClick={() => alert('导航功能将在接入高德地图后启用，需要配置 AMAP_KEY 环境变量')}
+            onClick={() => window.open(navigationUrl, '_blank', 'noopener,noreferrer')}
             className="w-full"
           >
             <Navigation className="w-4 h-4 mr-1.5" />
-            导航到此
+            用高德导航到此
           </Button>
         </div>
 
