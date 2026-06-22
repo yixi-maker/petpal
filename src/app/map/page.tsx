@@ -55,9 +55,9 @@ export default function MapPage() {
     fetchPlaces();
   }, [fetchPlaces]);
 
-  const handlePlaceClick = (id: number) => {
+  const handlePlaceClick = useCallback((id: number) => {
     router.push(`/map/${id}`);
-  };
+  }, [router]);
 
   return (
     <div className="relative h-[100dvh] overflow-hidden bg-surface">

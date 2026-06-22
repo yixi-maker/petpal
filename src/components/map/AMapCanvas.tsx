@@ -114,7 +114,7 @@ export function AMapCanvas({ places, city, onPlaceClick, selectedPlaceId, zoom }
         try { map.destroy?.(); } catch { /* ignore */ }
       }
     };
-  }, [key, securityJsCode, city, zoom]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key, securityJsCode, city, places, onPlaceClick, selectedPlaceId, zoom]);
 
   if (!key || loadError) {
     return <MapPlaceholder />;
