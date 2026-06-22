@@ -212,7 +212,7 @@ export default function NearbyPage() {
 
       {/* Filters */}
       <div className="space-y-2 mb-4">
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
           {typeOptions.map((o) => (
             <FilterChip
               key={o.value}
@@ -222,7 +222,7 @@ export default function NearbyPage() {
             />
           ))}
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
           {sizeOptions.map((o) => (
             <FilterChip
               key={o.value}
@@ -232,7 +232,7 @@ export default function NearbyPage() {
             />
           ))}
         </div>
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {commonTags.map((tag) => (
             <FilterChip
               key={tag}

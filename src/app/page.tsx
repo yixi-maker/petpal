@@ -211,7 +211,7 @@ export default function HomePage() {
   const hasMorePosts = posts.length > INITIAL_POST_LIMIT;
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-x-hidden">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[260px] bg-[radial-gradient(circle_at_22%_8%,rgba(122,174,198,0.26),transparent_32%),radial-gradient(circle_at_86%_0%,rgba(106,168,110,0.20),transparent_30%)]" />
 
       {/* ===== Native-feeling top area: tabs first, then stories ===== */}

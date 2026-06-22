@@ -145,7 +145,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-[calc(100dvh-5rem)] bg-white flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border-light bg-white sticky top-0 z-10">
         <button onClick={() => router.back()} className="p-1 -ml-1">

@@ -143,7 +143,7 @@ interface MapBottomSheetProps {
 export function MapBottomSheet({ places, loading, onPlaceClick }: MapBottomSheetProps) {
   return (
     <div
-      className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px))] left-0 right-0 z-30 max-w-mobile mx-auto
+      className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] left-0 right-0 z-30 max-w-mobile mx-auto
         rounded-t-[32px] border-x border-t border-white/76 bg-white/82 backdrop-blur-2xl
         shadow-[0_-24px_56px_rgba(16,80,75,0.18)]
         animate-slide-up"
