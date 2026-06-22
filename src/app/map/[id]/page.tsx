@@ -19,7 +19,7 @@ import {
   Send,
 } from 'lucide-react';
 import { Avatar, Button, Badge } from '@/components/ui';
-import { MapPlaceholder } from '@/components/map/MapPlaceholder';
+import { AMapCanvas } from '@/components/map/AMapCanvas';
 
 interface ReviewPet {
   id: number;
@@ -270,7 +270,7 @@ export default function PlaceDetailPage() {
 
       {/* Map placeholder */}
       <div className="h-[200px]">
-        <MapPlaceholder />
+        <AMapCanvas places={[place]} city={place.city} selectedPlaceId={place.id} zoom={15} />
       </div>
 
       <div className="px-4 py-4 space-y-4 max-w-mobile mx-auto">

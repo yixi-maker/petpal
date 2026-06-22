@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { FilterChip } from '@/components/ui';
-import { MapPlaceholder } from '@/components/map/MapPlaceholder';
+import { AMapCanvas } from '@/components/map/AMapCanvas';
 import { MapBottomSheet } from '@/components/map/MapBottomSheet';
 import type { Place } from '@/components/map/MapBottomSheet';
 import { Layers, LocateFixed, MapPin, Navigation, SlidersHorizontal } from 'lucide-react';
@@ -63,7 +63,7 @@ export default function MapPage() {
     <div className="relative h-[100dvh] overflow-hidden bg-surface">
       {/* ---- Full-screen map placeholder ---- */}
       <div className="absolute inset-0">
-        <MapPlaceholder />
+        <AMapCanvas places={places} city={activeCity} onPlaceClick={handlePlaceClick} />
       </div>
 
       {/* ---- Top overlay: compact native map controls ---- */}

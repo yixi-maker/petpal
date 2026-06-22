@@ -18,6 +18,12 @@ ENV SESSION_SECRET=petpal-docker-build-session-secret-not-used-at-runtime-000000
     ADMIN_SESSION_SECRET=petpal-docker-build-admin-secret-not-used-at-runtime-000000 \
     SKIP_NEXT_TYPECHECK=1
 
+# NEXT_PUBLIC_* vars are baked at build time. Pass via docker-compose build args.
+ARG NEXT_PUBLIC_AMAP_KEY
+ARG NEXT_PUBLIC_AMAP_SECURITY_JS_CODE
+ENV NEXT_PUBLIC_AMAP_KEY=${NEXT_PUBLIC_AMAP_KEY:-} \
+    NEXT_PUBLIC_AMAP_SECURITY_JS_CODE=${NEXT_PUBLIC_AMAP_SECURITY_JS_CODE:-}
+
 # Copy source and build the Next.js app
 COPY . .
 RUN npm run build
