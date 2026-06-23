@@ -8,7 +8,7 @@
 # Prerequisites:
 #   1. A PetPal dev server running on localhost:3000 (npm run dev), OR
 #      a staging server reachable at the given URL
-#   2. SMS_PROVIDER is NOT set to "production" (mock mode with code 123456)
+#   2. SMS_PROVIDER is "mock" or unset (mock mode with code 123456)
 #   3. For staging Admin checks, set ADMIN_USERNAME and ADMIN_PASSWORD.
 #
 # The script creates its own test data and is safe to run repeatedly.

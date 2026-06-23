@@ -12,13 +12,16 @@ const CODE_TTL_SECONDS = 5 * 60;
 
 const DEV_CODE = '123456';
 
+function isMockSmsMode(): boolean {
+  return (process.env.SMS_PROVIDER || 'mock') === 'mock';
+}
+
 /**
  * Generate a 6-digit random verification code.
- * In dev mode (when SMS_PROVIDER is not "production"), always returns 123456.
+ * In mock SMS mode, always returns 123456.
  */
 export function generateCode(): string {
-  const isDev = process.env.SMS_PROVIDER !== 'production';
-  if (isDev) return DEV_CODE;
+  if (isMockSmsMode()) return DEV_CODE;
 
   return String(Math.floor(100000 + Math.random() * 900000));
 }
@@ -32,12 +35,10 @@ export async function storeCode(phone: string, code: string): Promise<void> {
 
 /**
  * Verify a code against the stored code for a phone number.
- * In dev mode, also accepts 123456 for convenience.
+ * In mock SMS mode, also accepts 123456 for convenience.
  */
 export async function verifyCode(phone: string, code: string): Promise<boolean> {
-  // Dev mode: 123456 always works
-  const isDev = process.env.SMS_PROVIDER !== 'production';
-  if (isDev && code === DEV_CODE) return true;
+  if (isMockSmsMode() && code === DEV_CODE) return true;
 
   const stored = await codeStore.get(phone);
   if (!stored) return false;
@@ -71,7 +72,7 @@ export async function checkIpRateLimit(ip: string): Promise<boolean> {
 
 /**
  * Combined rate-limit check for a send-code request.
- * In dev mode, limits are checked but never enforced (always returns true).
+ * In mock SMS mode, limits are checked but never enforced (always returns true).
  *
  * @returns An object with { allowed, reason? }. When allowed is false, reason explains why.
  */
@@ -79,12 +80,10 @@ export async function checkSendCodeRateLimit(
   phone: string,
   ip: string
 ): Promise<{ allowed: boolean; reason?: string }> {
-  const isDev = process.env.SMS_PROVIDER !== 'production';
-
   const phoneOk = await checkCodeRateLimit(phone);
   const ipOk = await checkIpRateLimit(ip);
 
-  if (isDev) {
+  if (isMockSmsMode()) {
     if (!phoneOk) console.log(`[DEV] Rate limit would block phone: ${phone}`);
     if (!ipOk) console.log(`[DEV] Rate limit would block IP: ${ip}`);
     return { allowed: true };
