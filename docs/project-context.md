@@ -60,7 +60,7 @@ Current main-line stage: **V1 Staging Stable → Real Provider integration → S
 - Redis-ready code store & rate limit
 - Docker Compose staging deployment
 - Playwright E2E (15 tests), Bash smoke (17 tests)
-- Sentry SDK installed (DSN pending)
+- Monitoring ready: Aliyun ARMS browser RUM scaffolded; Sentry SDK remains available as fallback
 
 ## Current Staging
 
@@ -68,7 +68,7 @@ Current main-line stage: **V1 Staging Stable → Real Provider integration → S
 - IP: `39.106.100.2` (HTTP only, no domain yet)
 - Docker Compose: app + PostgreSQL 16 + Redis 7
 - Project path: `/opt/petpal-staging`
-- Latest deploy: `7febc8b`
+- Latest source sync: `1a6f098`
 
 ## Key Version Nodes
 
@@ -92,6 +92,7 @@ Current main-line stage: **V1 Staging Stable → Real Provider integration → S
 | AI | mock |
 | Storage | local uploads |
 | Moderation | mock |
+| Monitoring | not configured |
 
 ## Cleanup Rules
 
@@ -101,4 +102,4 @@ Do NOT commit: `.env`, `.env.staging`, real API keys, real AMAP keys, plaintext 
 
 ## Next Step
 
-Connect real Providers in priority order: Sentry → OSS/S3 → AI → SMS → Moderation. After each: re-run provider health + smoke + E2E + manual check.
+Connect real Providers in priority order: Aliyun ARMS → OSS/S3 → AI → SMS → Moderation. After each: re-run provider health + smoke + E2E + manual check.

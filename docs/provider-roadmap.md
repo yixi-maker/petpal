@@ -14,11 +14,11 @@
 | AI | 🔶 mock | OpenAI/Zhipu provider implemented, real key needed |
 | Storage | 🔶 mock | S3/OSS provider implemented, bucket needed |
 | Moderation | 🔶 mock | Fail-closed gate implemented, Green service needed |
-| Sentry | 🔶 ready | SDK installed, DSN needed |
+| Monitoring | 🔶 ready | Aliyun ARMS browser RUM scaffolded; Sentry remains available as fallback |
 
 ## Priority Order
 
-1. **Sentry** — zero-infra cost to start, catch staging errors immediately
+1. **Aliyun ARMS** — preferred for China mainland staging; catches browser errors and user experience issues
 2. **OSS/S3** — pet avatars and post images need real storage for beta
 3. **AI** — health triage needs real AI for beta credibility
 4. **SMS** — real login codes needed before public use
@@ -26,16 +26,19 @@
 
 ## Provider Details
 
-### 1. Sentry
+### 1. Monitoring (Aliyun ARMS preferred)
 
-**Files:** `sentry.client.config.ts`, `sentry.server.config.ts`, `src/lib/monitoring.ts`
+**Files:** `src/components/monitoring/ArmsRum.tsx`, `src/lib/provider-health.ts`, `src/lib/monitoring.ts`, `sentry.client.config.ts`, `sentry.server.config.ts`
 
-**To enable:**
-1. Create Sentry project → get DSN
-2. Add `SENTRY_DSN` and `NEXT_PUBLIC_SENTRY_DSN` to `.env.staging`
-3. Rebuild: phone/symptom data is already redacted in `beforeSend`
+**To enable Aliyun ARMS:**
+1. In Aliyun ARMS / User Experience Monitoring, create a Web/H5 app named `petpal-staging`
+2. Copy the browser monitoring PID
+3. Set in `.env.staging`: `NEXT_PUBLIC_MONITORING_PROVIDER=arms`, `NEXT_PUBLIC_ARMS_PID`, `NEXT_PUBLIC_ARMS_ENV=staging`
+4. Rebuild
 
-**Verify:** trigger a test error, confirm it appears in Sentry dashboard.
+**Verify:** open staging in browser, confirm `/retcode/bl.js` loads and the ARMS dashboard receives page/error data.
+
+**Sentry fallback:** set `SENTRY_DSN` and `NEXT_PUBLIC_SENTRY_DSN`; Sentry SDK remains installed.
 
 ### 2. OSS / S3 Storage
 

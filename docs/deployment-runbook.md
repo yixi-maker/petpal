@@ -34,6 +34,12 @@ ADMIN_PASSWORD_HASH=$(ADMIN_PASSWORD="$ADMIN_PASSWORD" node -e "const b=require(
 
 # 5. Create .env.staging (hash only — never write plaintext password)
 cat > .env.staging << ENVEOF
+NODE_ENV=production
+APP_ENV=staging
+DATABASE_URL=postgresql://petpal:petpal@db:5432/petpal
+REDIS_URL=redis://redis:6379
+CODE_STORE=redis
+RATE_LIMIT_STORE=redis
 SESSION_SECRET=${SESSION_SECRET}
 ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET}
 ADMIN_USERNAME=admin
@@ -47,6 +53,10 @@ ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
 # AI_PROVIDER=openai
 # AI_API_KEY=sk-...
 # NEXT_PUBLIC_AMAP_KEY=...
+# NEXT_PUBLIC_AMAP_SECURITY_JS_CODE=...
+# NEXT_PUBLIC_MONITORING_PROVIDER=arms
+# NEXT_PUBLIC_ARMS_PID=...
+# NEXT_PUBLIC_ARMS_ENV=staging
 # STORAGE_PROVIDER=s3
 # STORAGE_ENDPOINT=...
 # STORAGE_BUCKET=...

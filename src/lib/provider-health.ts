@@ -122,6 +122,52 @@ export async function checkProviderHealth(): Promise<HealthStatus[]> {
       : 'Using map placeholder (set NEXT_PUBLIC_AMAP_KEY for real maps)',
   });
 
+  // Monitoring
+  const monitoringProvider =
+    process.env.MONITORING_PROVIDER ||
+    process.env.NEXT_PUBLIC_MONITORING_PROVIDER ||
+    (process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
+      ? 'sentry'
+      : process.env.NEXT_PUBLIC_ARMS_PID
+        ? 'arms'
+        : 'none');
+
+  if (monitoringProvider === 'none') {
+    results.push({
+      provider: 'Monitoring',
+      status: 'mock',
+      stage,
+      message: 'Error monitoring not configured',
+    });
+  } else if (monitoringProvider === 'sentry') {
+    const hasDsn = !!(
+      process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
+    );
+    results.push({
+      provider: 'Monitoring',
+      status: hasDsn ? 'configured' : 'error',
+      stage,
+      message: hasDsn ? 'Sentry configured' : 'Sentry DSN missing',
+    });
+  } else if (monitoringProvider === 'arms') {
+    const hasPid = !!process.env.NEXT_PUBLIC_ARMS_PID;
+    results.push({
+      provider: 'Monitoring',
+      status: hasPid ? 'configured' : 'error',
+      stage,
+      message: hasPid
+        ? 'Aliyun ARMS RUM configured'
+        : 'Aliyun ARMS: missing NEXT_PUBLIC_ARMS_PID',
+    });
+  } else {
+    results.push({
+      provider: 'Monitoring',
+      status: 'error',
+      stage,
+      message: `Unknown monitoring provider: ${monitoringProvider}`,
+    });
+  }
+
   // Redis
   if (process.env.REDIS_URL) {
     results.push({

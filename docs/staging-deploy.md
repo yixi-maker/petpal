@@ -16,7 +16,7 @@ Current staging state:
 - Project path: `/opt/petpal-staging`
 - Runtime: Docker Compose
 - Services: Next.js app, PostgreSQL 16, Redis 7
-- Latest known deploy: `7febc8b`
+- Latest known source sync: `1a6f098`
 - Real Provider status: AMAP configured; SMS, AI, Storage, Moderation still staged/mock unless changed in `.env.staging`
 
 ## Files That Matter
@@ -159,11 +159,11 @@ Manual checks:
 | AI | mock | `AI_PROVIDER=openai` or `AI_PROVIDER=zhipu` plus API key |
 | Storage | local | `STORAGE_PROVIDER=s3` plus OSS/S3 bucket credentials |
 | Moderation | mock | Real provider still needs implementation of API calls before production |
-| Sentry | ready | Set `SENTRY_DSN` and `NEXT_PUBLIC_SENTRY_DSN` |
+| Monitoring | ready | China mainland preferred: Aliyun ARMS with `NEXT_PUBLIC_ARMS_PID`; Sentry remains available as fallback |
 
 Provider connection priority:
 
-1. Sentry
+1. Aliyun ARMS
 2. OSS/S3 Storage
 3. AI
 4. SMS
@@ -228,7 +228,7 @@ For production, database rollback must use backups. Staging does not yet have au
 - Domain and HTTPS
 - ICP / required China mainland compliance
 - PostgreSQL backup cron and restore rehearsal
-- Sentry DSN configured and verified
+- Aliyun ARMS monitoring configured and verified
 - Real object storage
 - Real SMS
 - Real AI

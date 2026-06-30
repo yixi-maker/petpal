@@ -75,7 +75,7 @@ Current stage: V1 Staging Stable → Real Provider integration → Small Beta pr
 1. **Claude/Codex collaboration** — Claude implements, Codex reviews/tests/deploys
 2. **GitHub repo** — `https://github.com/yixi-maker/petpal`, main branch
 3. **Staging server** — Aliyun ECS, Ubuntu 24.04, IP `39.106.100.2`, Docker Compose
-4. **Real Provider integration** — priority: Sentry → OSS/S3 → AI → SMS → Moderation
+4. **Real Provider integration** — priority: Aliyun ARMS → OSS/S3 → AI → SMS → Moderation
 5. **Testing & QA** — smoke (17/17), E2E (15/15), provider health, manual checks
 6. **Compliance & launch** — ICP, domain, HTTPS, content safety, data backup
 7. **Monetization** — deferred until after Beta validates daily use

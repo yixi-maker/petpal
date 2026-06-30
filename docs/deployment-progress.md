@@ -5,7 +5,7 @@
 
 ## Current Status (2026-06-30)
 
-Staging is live at `http://39.106.100.2`. All 3 containers healthy. AMAP real maps active. Latest deploy: `7febc8b`.
+Staging is live at `http://39.106.100.2`. All 3 containers healthy. AMAP real maps active. Latest source sync: `1a6f098`.
 
 ## Server
 
@@ -41,6 +41,9 @@ RATE_LIMIT_STORE=redis
 ADMIN_USERNAME=admin
 NEXT_PUBLIC_AMAP_KEY=<real key>
 NEXT_PUBLIC_AMAP_SECURITY_JS_CODE=<real key>
+NEXT_PUBLIC_MONITORING_PROVIDER=arms
+NEXT_PUBLIC_ARMS_PID=<pending>
+NEXT_PUBLIC_ARMS_ENV=staging
 SMS_PROVIDER=mock
 AI_PROVIDER=mock
 STORAGE_PROVIDER=local
