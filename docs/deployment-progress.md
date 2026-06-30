@@ -1,73 +1,37 @@
-# PetPal Deployment Progress Handoff
+# PetPal Deployment Progress
 
-> Last updated: 2026-06-10
-> Purpose: exact handoff for continuing Staging deployment if conversation context is interrupted.
+> Last updated: 2026-06-30
+> Purpose: live staging server state, deployment history, pending actions.
 
-## User Constraint
+## Current Status (2026-06-30)
 
-The user explicitly allowed full access for deployment, but then added this constraint:
+Staging is live at `http://39.106.100.2`. All 3 containers healthy. AMAP real maps active. Latest deploy: `7febc8b`.
 
-- Apart from project files, do not change other local machine files or local machine configuration.
+## Server
 
-Practical interpretation:
+| Item | Value |
+|------|-------|
+| Provider | Aliyun ECS |
+| OS | Ubuntu 24.04.2 LTS, x86_64 |
+| Specs | 2 vCPU, ~2GB RAM, 40GB disk, 4GB swap |
+| Public IP | `39.106.100.2` |
+| Domain | None (HTTP only) |
+| Docker | 29.5.3 |
+| Compose | v5.1.4 |
+| Path | `/opt/petpal-staging` |
+| GitHub | `https://github.com/yixi-maker/petpal.git` (main) |
 
-- Local project edits under `/Users/luohanyu/Documents/petpal` are allowed.
-- SSH commands to the staging server are allowed for deployment.
-- Server-side work should stay inside `/opt/petpal-staging` and the Docker Compose resources for this project unless the user explicitly approves broader server changes.
-- Do not modify local global config, local SSH config, Docker daemon config, system firewall, or unrelated machine settings.
+## Container Status
 
-## Project Mainline And Active Side Task
+| Container | Image | Health |
+|-----------|-------|--------|
+| app | Built from Dockerfile | healthy |
+| db | postgres:16-alpine (DaoCloud mirror) | healthy |
+| redis | redis:7-alpine (DaoCloud mirror) | healthy |
 
-PetPal product completion is the mainline task.
+## .env.staging (current intent)
 
-This document tracks the active side task: deploy the PetPal V1 baseline to the purchased staging server for Staging testing and later beta validation.
-
-Staging server:
-
-- Public IP: `39.106.100.2`
-- OS: Ubuntu 24.04.2 LTS
-- Arch: x86_64
-- CPU/RAM/Disk: 2 vCPU, about 2GB RAM, 40GB disk
-- Swap: 4GB created
-- Docker: 29.5.3
-- Docker Compose: v5.1.4
-
-Repository:
-
-- GitHub: `https://github.com/yixi-maker/petpal.git`
-- Branch: `main`
-- Latest pushed commit at the time of this handoff: `a7d56d6 fix: use provider health for docker healthcheck`
-
-Server project directory:
-
-- `/opt/petpal-staging`
-
-## Completed Deployment Side-task Steps
-
-1. GitHub repository was created and pushed.
-2. `.env.example` was originally missing from GitHub because `.gitignore` ignored `.env*`.
-3. Fixed `.gitignore` with `!.env.example`, committed, and pushed:
-   - `4eaa964 chore: include staging env example`
-4. Found Docker healthcheck bug:
-   - old check: `/api/auth/me`
-   - problem: unauthenticated endpoint returns 401, so `curl -f` marks container unhealthy
-   - fixed check: `/api/provider-health`
-   - commit pushed: `a7d56d6 fix: use provider health for docker healthcheck`
-5. SSH access from Codex local environment to server was enabled by the user adding the generated public key to `/root/.ssh/authorized_keys`.
-6. Server repo was pulled to latest `a7d56d6`.
-7. `.env.staging` was created on server under `/opt/petpal-staging/.env.staging`.
-8. `.env.staging` contains generated random session secrets and bcrypt admin password hash.
-9. Admin username is `admin`.
-10. The generated admin plaintext password was printed once in the conversation output. It is intentionally not stored in this document or repository.
-11. If the admin plaintext password is lost, generate a new bcrypt hash and update only `/opt/petpal-staging/.env.staging`.
-
-## Current `.env.staging` Intent
-
-The staging file should contain only staging values and no real production keys yet.
-
-Current intended settings:
-
-```text
+```
 NODE_ENV=production
 APP_ENV=staging
 DATABASE_URL=postgresql://petpal:petpal@db:5432/petpal
@@ -75,139 +39,54 @@ REDIS_URL=redis://redis:6379
 CODE_STORE=redis
 RATE_LIMIT_STORE=redis
 ADMIN_USERNAME=admin
+NEXT_PUBLIC_AMAP_KEY=<real key>
+NEXT_PUBLIC_AMAP_SECURITY_JS_CODE=<real key>
 SMS_PROVIDER=mock
 AI_PROVIDER=mock
-AI_MODEL=gpt-4o-mini
 STORAGE_PROVIDER=local
 MODERATION_PROVIDER=mock
-NEXT_PUBLIC_AMAP_KEY=
-NEXT_PUBLIC_APP_URL=http://39.106.100.2:3000
 ```
 
-Sensitive values exist in the server file but must not be committed or copied into docs:
+Sensitive values (SESSION_SECRET, ADMIN_SESSION_SECRET, ADMIN_PASSWORD_HASH) exist in server file only — never committed.
 
-- `SESSION_SECRET`
-- `ADMIN_SESSION_SECRET`
-- `ADMIN_PASSWORD_HASH`
-- admin plaintext password
-
-## Current Blocker
-
-Docker Hub is timing out from the China mainland staging server:
-
-```text
-docker pull node:22-alpine
-failed to resolve reference "docker.io/library/node:22-alpine"
-i/o timeout
-```
-
-Alibaba public mirror paths tested:
-
-```text
-registry.cn-hangzhou.aliyuncs.com/library/node:22-alpine
-registry.cn-hangzhou.aliyuncs.com/library/redis:7-alpine
-```
-
-Both returned pull access denied / repository does not exist.
-
-DaoCloud mirror test:
-
-```text
-docker pull docker.m.daocloud.io/library/node:22-alpine
-```
-
-This started pulling but stalled for a long time and did not produce a usable image. The stuck pull process was stopped.
-
-Additional mirror tests completed after the initial handoff:
-
-- `docker.1ms.run`: manifest checks failed / unknown blob / missing manifest.
-- `docker.1panel.live`: manifest checks failed.
-- `dockerpull.cn`: returned HTML / unsupported manifest media type.
-- `hub.rat.dev`: timeout / unknown blob.
-- `docker.m.daocloud.io`: node pull started but stalled; manifest checks failed.
-- `public.ecr.aws/docker/library`: manifest checks for `node:22-alpine`, `postgres:16-alpine`, and `redis:7-alpine` failed or timed out.
-
-Current resolution path: use project-scoped DaoCloud mirror image references instead of Docker Hub default image references.
-
-Verified on the staging server:
-
-- `m.daocloud.io/docker.io/library/node:22-alpine` pulled successfully.
-- `m.daocloud.io/docker.io/library/postgres:16-alpine` manifest check succeeded.
-- `m.daocloud.io/docker.io/library/redis:7-alpine` manifest check succeeded.
-
-First Docker build then failed during `next build` because build-time route collection imported `src/lib/session.ts` while `NODE_ENV=production` and no `SESSION_SECRET` existed in the builder environment. The fix is project-scoped: Dockerfile supplies non-sensitive build-time placeholder secrets only in the builder stage. Runtime still requires real secrets from `.env.staging` / production envs.
-
-Second startup attempt built the app image but the app container exited during Prisma migration. Root cause: Prisma deploy read the default `prisma/migrations` directory, while the PostgreSQL migration lives under `prisma/migrations-postgres`. The PostgreSQL migration file also contained accidental Prisma CLI output at the beginning and end. Fix: clean non-SQL lines from `prisma/migrations-postgres/0001_init/migration.sql`, and in the Docker runner image replace `prisma/migrations` with the PostgreSQL migration directory before runtime migration.
-
-Next startup attempt on the 2GB staging server got stuck in `next build` TypeScript validation for several minutes and made SSH intermittently unresponsive. Fix: add a narrow `SKIP_NEXT_TYPECHECK=1` switch used only in the Docker builder stage. Normal local/CI builds still typecheck by default; the staging server avoids repeating heavy type validation during image build.
-
-After the app became healthy, server-local smoke tests found `/api/upload` returning 500. App logs showed `EACCES` when writing to `/app/public/uploads/...` because the runtime container switches to the non-root `nextjs` user after copying `public`. Fix: create/chown `public/uploads` for `nextjs:nodejs` in the runner stage.
-
-Server-local smoke tests then passed 15/15 after `scripts/smoke-test.sh` was updated to accept `ADMIN_USERNAME` and `ADMIN_PASSWORD`. Public access on port 3000 connected but returned an empty reply, while a temporary HTTP server on port 80 was reachable from the public internet. Fix: expose staging app on host port 80 as well as 3000, and use `http://39.106.100.2` as the external staging URL.
-
-As of 2026-06-12, Staging is live at:
-
-- External URL: `http://39.106.100.2`
-- Internal URL: `http://localhost:3000` on the server
-- Compose status: app, PostgreSQL, and Redis all healthy
-- Provider health: PostgreSQL and Redis configured; SMS, AI, Storage, Moderation, and Maps are still staging/mock providers
-- Public smoke test against `http://39.106.100.2`: 15 passed, 0 failed, 2 skipped
-- Admin password was reset for Staging and verified. The plaintext password is intentionally not stored in this repository; reset it again if lost.
-
-## Likely Next Action
-
-Use these project-scoped images:
-
-- `Dockerfile`: `m.daocloud.io/docker.io/library/node:22-alpine`
-- `docker-compose.staging.yml`: `m.daocloud.io/docker.io/library/postgres:16-alpine`
-- `docker-compose.staging.yml`: `m.daocloud.io/docker.io/library/redis:7-alpine`
-
-After committing and pushing the project-scoped mirror changes, pull on server and run:
+## Deploy Commands
 
 ```bash
 cd /opt/petpal-staging
-bash scripts/staging-start.sh
+git pull origin main
+sudo docker compose --env-file .env.staging -f docker-compose.staging.yml up -d --build --force-recreate
 ```
 
-As of 2026-06-11, the user has approved modifying server service configuration for the deployment side task. If no image registry works, choose one of these broader alternatives carefully and record the change:
-
-1. Configure a Docker registry mirror in server Docker daemon config.
-2. Use a private image registry in China mainland, such as Alibaba Cloud ACR, and push required images there.
-3. Install Node.js, PostgreSQL, and Redis directly on the server and run PetPal without Docker for Staging.
-4. Use a managed PostgreSQL/Redis service and only deploy the Next app runtime.
-
-Do not choose these alternatives silently because they modify server-level configuration or introduce new external services.
-
-## Validation Targets After Startup
-
-After Docker Compose starts:
+## Verify After Deploy
 
 ```bash
-cd /opt/petpal-staging
-docker compose -f docker-compose.staging.yml ps
-docker compose -f docker-compose.staging.yml logs --tail=200 app
-curl -s http://localhost:3000/api/provider-health?format=table
+# Container health
+sudo docker compose -f docker-compose.staging.yml ps
+sudo docker compose -f docker-compose.staging.yml logs --tail=50 app
+
+# Provider status
+curl -s 'http://localhost:3000/api/provider-health?format=table'
+
+# Smoke (from local)
+ADMIN_USERNAME=admin ADMIN_PASSWORD=<pw> bash scripts/smoke-test.sh http://39.106.100.2
+
+# E2E (from local)
+BASE_URL=http://39.106.100.2 ADMIN_USERNAME=admin ADMIN_PASSWORD=<pw> npm run test:e2e:staging
 ```
 
-From local machine:
+## Historical Issues (Resolved)
 
-```bash
-bash scripts/smoke-test.sh http://39.106.100.2:3000
-BASE_URL=http://39.106.100.2:3000 npm run test:e2e:staging
-```
+1. **Docker Hub timeout** — China mainland can't pull from Docker Hub. Fixed: use `m.daocloud.io/docker.io/library/` mirror in Dockerfile and compose.
+2. **Build-time SESSION_SECRET** — Next.js build imports session.ts. Fixed: Dockerfile supplies placeholder secrets in builder stage.
+3. **Prisma migration directory** — Migrate deploy read SQLite migrations. Fixed: runner stage copies `migrations-postgres` to `migrations`.
+4. **Next.js build OOM on 2GB** — TypeScript typecheck consumed memory. Fixed: `SKIP_NEXT_TYPECHECK=1` in builder only.
+5. **Upload EACCES** — `nextjs` user couldn't write to `public/uploads`. Fixed: `mkdir -p public/uploads && chown nextjs:nodejs` in runner.
+6. **Port 3000 unreachable** — Aliyun security group. Fixed: expose port 80 in compose and open in cloud console.
+7. **Admin password hash mismatch** — Hash generated locally had `$` escaping issues. Fixed: generate on server directly.
 
-If port `3000` is inaccessible externally, check the cloud provider security group / firewall in the cloud console. Do not change server firewall config unless the user approves.
+## Pending
 
-## Important Reminder
-
-Do not call mock provider checks "real service verified".
-
-Current staging goal is first deployment with mock providers:
-
-- SMS mock
-- AI mock
-- local storage
-- mock moderation
-- placeholder / no AMAP key
-
-Real provider integration comes after staging is live.
+- [ ] Bind domain + HTTPS
+- [ ] PostgreSQL backup cron
+- [ ] Rollback runbook
+- [ ] AMAP Key domain whitelist update

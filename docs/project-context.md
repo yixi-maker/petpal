@@ -1,205 +1,104 @@
 # PetPal Project Context
 
-> Last updated: 2026-06-08
-> Purpose: shared memory for Codex, Claude Code, and future maintainers.
-
-For the full decision archive, read `docs/project-memory.md`. This file is the shorter operational context; `project-memory.md` is the durable product and conversation memory.
+> Last updated: 2026-06-30
+> Purpose: operational context for Codex, Claude Code, and future maintainers.
+> For durable decision archive, see `docs/project-memory.md`.
 
 ## Product Direction
 
-PetPal is a mobile-first Web App for pet owners and pets as dual subjects. V1 focuses on cats and dogs. Pets are not only profile data; each pet has a social identity, profile page, activity feed presence, friends/follows, and health records.
+PetPal is a mobile-first Web App for pet owners and pets as dual subjects. V1 focuses on cats and dogs. Each pet has a social identity, profile page, activity feed presence, friends/follows, and health records.
 
-The desired product feeling is warm, premium, natural, and pet-friendly. The approved UI direction is Apple/Instagram-inspired, with blue-green and natural compound colors, refined pet elements, immersive feed cards, and a bottom navigation of:
+The desired product feeling is warm, premium, natural, and pet-friendly. The approved UI direction is Apple/Instagram-inspired, with blue-green and natural compound colors, refined pet elements, immersive feed cards.
 
-- Home
-- Map
-- 宝贝
-- Health
-- Me
+Bottom navigation: Home · Map · 宝贝 · Health · Me
 
-The product should feel like a real app, not a marketing page or a component demo.
+## Main Line vs Side Lines
 
-## Current V1 Scope
+**Main Line:** Build PetPal from idea → shippable, iterable pet social + map + health Web App.
 
-Core user features:
+**Side Lines** (serve the main line, not ends in themselves):
+- Claude/Codex collaboration
+- GitHub repo management
+- Staging server deployment
+- Real Provider integration
+- Testing & QA
+- Compliance & launch prep
+- Monetization planning (deferred)
+
+Current main-line stage: **V1 Staging Stable → Real Provider integration → Small Beta prep**
+
+## V1 Scope (Complete)
 
 - SMS-style login with dev/mock code `123456`
-- Home feed with Follow / Nearby / Recommended switching
+- Home feed with Follow / Nearby / Recommended tabs
 - Posts with text, images, pet tag, fuzzy location, likes, comments
 - Pet creation, edit, avatar upload, pet profile pages
-- Nearby pets and social discovery
+- Nearby pets and social discovery (宝贝 discovery)
 - Friend/follow/greeting/private message flows
-- Map and pet-friendly places
-- Health records and AI health triage
-- Admin pages for users, pets, posts, comments, reports, hide/ban workflows
+- Map and pet-friendly places (AMAP real integration)
+- AMAP navigation (app deep-link + web fallback)
+- Health records and AI health triage (mock)
+- Admin pages: users, pets, posts, comments, reports, hide/ban
 - Legal pages: privacy, terms, community guidelines, health disclaimer
+- Onboarding flow (4 steps, skippable)
 
-Current product stance:
+## UI Direction (Finalized)
 
-- Health AI is only initial triage / risk judgment / care guidance.
-- It must not claim diagnosis, prescription, dosage, or treatment authority.
-- Precise user/pet location must not be exposed.
+- Mobile-first, 390x844 primary viewport
+- Blue-green / teal primary, natural compound colors
+- Soft glass / light depth / refined shadows
+- Pet-specific iconography (DOG/CAT SVG avatars, paw elements)
+- Immersive feed cards (image-first, gradient overlays)
+- Map with floating bottom sheet
+- Health: professional, sage/teal medical feel
+- Avoid: cheap icons, emoji as primary, plain white cards, heavy gradients
 
-## Current Engineering State
+## Technical Baseline
 
-Framework and runtime:
+- Next.js 16.2 App Router, React 19, TypeScript 5, Tailwind CSS v4
+- Prisma 6: SQLite (dev) + PostgreSQL (staging/prod)
+- Redis-ready code store & rate limit
+- Docker Compose staging deployment
+- Playwright E2E (15 tests), Bash smoke (17 tests)
+- Sentry SDK installed (DSN pending)
 
-- Next.js 16.2 App Router
-- React 19
-- TypeScript 5
-- Tailwind CSS v4
-- Prisma 6
-- iron-session
-- bcryptjs
-- Playwright
-- Sentry SDK installed, but real DSN reporting still needs live verification
+## Current Staging
 
-Database setup:
+- Server: Aliyun ECS, Ubuntu 24.04, 2 vCPU, ~2GB RAM, 40GB disk
+- IP: `39.106.100.2` (HTTP only, no domain yet)
+- Docker Compose: app + PostgreSQL 16 + Redis 7
+- Project path: `/opt/petpal-staging`
+- Latest deploy: `7febc8b`
 
-- Local development uses SQLite:
-  - `prisma/schema.prisma`
-  - `prisma/migrations`
-  - `prisma/dev.db`
-- Staging/production use PostgreSQL:
-  - `prisma/schema.postgres.prisma`
-  - `prisma.config.postgres.ts`
-  - `prisma/migrations-postgres/0001_init/migration.sql`
+## Key Version Nodes
 
-Important: do not restore root-level `dev.db`. The real local SQLite database is `prisma/dev.db`.
+| Commit | Description |
+|--------|-------------|
+| `208e655` | Fix staging moderation provider (fail-closed gate) |
+| `52ec70d` | Mobile UI audit fixes (overflow, TabBar overlap) |
+| `d64d493` | Real AMAP integration with MapPlaceholder fallback |
+| `d07e96d` | Fix AMAP markers after async places load |
+| `e2b9990` | Polish AMAP visuals + navigation deep-link |
+| `7febc8b` | Gate fixed SMS code to mock provider only |
 
-Provider setup:
+## Provider Status (Staging)
 
-- SMS: mock locally, Aliyun provider implemented but needs real credentials
-- AI: mock locally, OpenAI/Zhipu provider implemented but needs real key verification
-- Storage: local uploads locally, S3-compatible provider implemented but needs real bucket verification
-- Moderation: mock locally, fail-closed real provider boundary exists but needs real moderation service
-- Maps: placeholder by default, AMAP key detection and SDK URL helper exist
-- Redis: optional locally, required/recommended for staging code store and rate limit
-- Sentry: config files exist; must be tested with real DSN before calling monitoring complete
-
-## Deployment State
-
-Stage five is complete from local engineering checks. The next real milestone is a live Staging deployment.
-
-Available deployment artifacts:
-
-- `Dockerfile`
-- `docker-compose.staging.yml`
-- `scripts/staging-start.sh`
-- `docs/deployment-runbook.md`
-- `docs/staging-deploy.md`
-- `docs/beta-readiness.md`
-- `docs/beta-user-guide.md`
-
-Staging expectation:
-
-- Linux server with Docker and Docker Compose
-- PostgreSQL 16 container
-- Redis 7 container
-- `.env.staging` with generated session secrets and `ADMIN_PASSWORD_HASH`
-- `NODE_ENV=production`
-- `APP_ENV=staging`
-- HTTP can be used for local Docker staging; real remote beta should use HTTPS
-
-Admin setup:
-
-- Server env uses `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH`
-- Operator keeps the plaintext admin password separately
-- `scripts/setup-admin.sh` verifies login with `ADMIN_USERNAME` + `ADMIN_PASSWORD`
-- Do not write `ADMIN_PASSWORD` into `.env.staging`
-
-## Validation Commands
-
-Local baseline:
-
-```bash
-npm run lint
-npm run build
-npx playwright test --list
-npx playwright test --config=playwright.staging.config.ts --list
-bash -n scripts/*.sh
-```
-
-PostgreSQL schema validation:
-
-```bash
-DATABASE_URL="postgresql://petpal:petpal@localhost:5432/petpal" \
-  npx prisma validate --config=prisma.config.postgres.ts
-```
-
-Local full-flow validation:
-
-```bash
-npm run dev
-bash scripts/smoke-test.sh http://localhost:3000
-npx playwright test
-```
-
-Staging validation:
-
-```bash
-bash scripts/staging-start.sh
-bash scripts/verify-providers.sh https://your-staging-domain
-bash scripts/smoke-test.sh https://your-staging-domain
-BASE_URL=https://your-staging-domain npm run test:e2e:staging
-```
-
-## Latest Local Stabilization
-
-Completed on 2026-06-08:
-
-- Restored a broken local Git index from a valid `.git/index.lock`; source files were not lost.
-- Reworked `e2e/smoke.spec.ts` to match the current UI and avoid false failures from stale selectors.
-- Ran local full-flow validation:
-  - `npm run lint` passed.
-  - `npm run build` passed.
-  - `bash scripts/smoke-test.sh http://localhost:3000` passed 17/17.
-  - `npx playwright test` passed 15/15.
-- Cleaned local test artifacts:
-  - removed stale untracked legacy files/directories listed in Cleanup Rules
-  - removed local Playwright `test-results`
-  - removed generated test upload images
-  - hid and then deleted local Smoke/E2E test posts from `prisma/dev.db`
-  - removed the E2E test account `13800009901` and its pets from `prisma/dev.db`
-- Saved key mobile screenshots under `docs/screenshots/`:
-  - `01-login.png`
-  - `02-home-feed.png`
-  - `03-map.png`
-  - `04-nearby.png`
-  - `05-health.png`
-  - `06-me.png`
-  - `07-admin-dashboard.png`
+| Provider | Status |
+|----------|--------|
+| Database | PostgreSQL configured |
+| Redis | configured |
+| Maps | AMAP configured (real) |
+| SMS | mock |
+| AI | mock |
+| Storage | local uploads |
+| Moderation | mock |
 
 ## Cleanup Rules
 
-Do not restore these removed legacy files or directories:
+Do NOT restore: root `dev.db`, `docs/superpowers/`, `public/sw.js`, `OfflineBanner.tsx`, `IconBadge.tsx`, `SegmentedControl.tsx`, `src/lib/errors.ts`.
 
-- root `dev.db`
-- `docs/superpowers`
-- `public/sw.js`
-- `src/components/layout/OfflineBanner.tsx`
-- `src/components/ui/IconBadge.tsx`
-- `src/components/ui/SegmentedControl.tsx`
-- `src/lib/errors.ts`
+Do NOT commit: `.env`, `.env.staging`, real API keys, real AMAP keys, plaintext admin passwords.
 
-Do not commit secrets:
+## Next Step
 
-- `.env`
-- `.env.staging`
-- real API keys
-- real Sentry DSN
-- plaintext admin password
-
-Do not treat mock provider output as real service validation. Scripts being ready is not the same as real SMS, storage, AI, moderation, map, or Sentry verification.
-
-## Current Next Step
-
-The local V1 baseline is stable enough to proceed toward real Staging.
-
-Recommended next sequence:
-
-1. Prepare the real Staging server and `.env.staging`.
-2. Configure real third-party keys in priority order: SMS, Storage, AI, Moderation, AMAP, Sentry.
-3. Run `bash scripts/staging-start.sh`.
-4. Run provider, API smoke, and E2E validation against the real Staging URL.
-5. Start a small internal beta only after real SMS login, storage upload, provider health, and Sentry reporting are verified.
+Connect real Providers in priority order: Sentry → OSS/S3 → AI → SMS → Moderation. After each: re-run provider health + smoke + E2E + manual check.
